@@ -234,6 +234,7 @@ def process_case(case_id: str, *, state: PlatformState | None = None) -> dict[st
             content=content,
             filename=invoice_doc.filename,
             content_type=invoice_doc.content_type,
+            storage_uri=invoice_doc.storage_uri,
         )
         case.invoice_extraction = pipeline.extraction
         agent_trace_payload = [item.model_dump(mode="json") for item in pipeline.agent_trace]
@@ -251,6 +252,7 @@ def process_case(case_id: str, *, state: PlatformState | None = None) -> dict[st
             content=raw,
             content_type=bol_doc.content_type,
             filename=bol_doc.filename,
+            storage_uri=bol_doc.storage_uri,
         )
         case.bol_extraction = parse_labeled_bol(extracted.text)
     else:

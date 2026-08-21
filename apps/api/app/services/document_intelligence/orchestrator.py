@@ -184,12 +184,14 @@ class InvoiceExtractionService:
         filename: str,
         content_type: str = "text/plain",
         run_id: str | None = None,
+        storage_uri: str | None = None,
     ) -> InvoicePipelineResult:
         ingested = ingest_document(
             document_id=document_id,
             content=content,
             filename=filename,
             content_type=content_type,
+            storage_uri=storage_uri,
         )
         cache_key = build_cache_key(
             file_sha256=ingested.sha256,

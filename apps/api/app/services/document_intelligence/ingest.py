@@ -12,6 +12,10 @@ ALLOWED_CONTENT_TYPES = frozenset(
         "text/plain",
         "text/csv",
         "application/octet-stream",
+        "image/jpeg",
+        "image/jpg",
+        "image/png",
+        "image/tiff",
     }
 )
 
@@ -32,6 +36,9 @@ def ingest_document(
     content: bytes,
     filename: str,
     content_type: str,
+    storage_uri: str | None = None,
+    s3_bucket: str | None = None,
+    s3_key: str | None = None,
 ) -> IngestedDocument:
     if not content:
         raise ValueError("Document content is empty")
@@ -43,7 +50,14 @@ def ingest_document(
         raise ValueError(f"Unsupported content type: {normalized_type}")
 
     digest = sha256_hex(content)
-    text = extract_text(content=content, content_type=normalized_type, filename=filename)
+    text = extract_text(
+        content=content,
+        content_type=normalized_type,
+        filename=filename,
+        storage_uri=storage_uri,
+        s3_bucket=s3_bucket,
+        s3_key=s3_key,
+    )
     return IngestedDocument(
         document_id=document_id,
         filename=filename,

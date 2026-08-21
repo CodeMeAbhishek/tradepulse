@@ -1,4 +1,4 @@
-"""PDF / document byte adapters: hashing and text extraction (no OCR stack)."""
+"""PDF / document byte adapters: hashing and text extraction."""
 
 from __future__ import annotations
 
@@ -46,13 +46,13 @@ def _pdf_text_from_show_ops(blob: str) -> str:
     return "\n".join(lines).strip()
 
 
-def extract_text(*, content: bytes, content_type: str, filename: str = "") -> ExtractedDocumentText:
-    """
-    Extract plain text for downstream agents.
-
-    Supports text/plain fixtures. PDF uploads (application/pdf or %PDF magic) use a
-    stdlib printable-run fallback — demo-safe until Textract/Bedrock OCR is configured.
-    """
+def extract_text_local(
+    *,
+    content: bytes,
+    content_type: str,
+    filename: str = "",
+) -> ExtractedDocumentText:
+    """Stdlib / fixture-safe extraction (no AWS)."""
     normalized_type = (content_type or "").split(";")[0].strip().lower()
     lower_name = filename.lower()
     is_pdf = (
@@ -89,7 +89,7 @@ def extract_text(*, content: bytes, content_type: str, filename: str = "") -> Ex
             extractor=extractor,
             warning=(
                 "PDF text used stdlib extraction (not production OCR). "
-                "Scanned image PDFs need Textract/Bedrock later."
+                "Enable TEXT_EXTRACT_MODE=textract for Amazon Textract."
             ),
         )
 
@@ -98,4 +98,78 @@ def extract_text(*, content: bytes, content_type: str, filename: str = "") -> Ex
         text=text,
         page_count=1 if text else 0,
         extractor="utf8_text",
+    )
+
+
+def extract_text(
+    *,
+    content: bytes,
+    content_type: str,
+    filename: str = "",
+    s3_bucket: str | None = None,
+    s3_key: str | None = None,
+    storage_uri: str | None = None,
+) -> ExtractedDocumentText:
+    """
+    Extract plain text for downstream agents.
+
+    Modes (TEXT_EXTRACT_MODE):
+    - local (default): stdlib UTF-8 / PDF Tj parse
+    - textract: Amazon Textract (S3Object for PDF; Bytes for JPEG/PNG), then local fallback
+    """
+    normalized_type = (content_type or "").split(";")[0].strip().lower()
+    lower_name = (filename or "").lower()
+
+    # Plain text fixtures never need OCR.
+    if (
+        normalized_type in {"text/plain", "text/csv"}
+        or lower_name.endswith((".txt", ".csv"))
+    ) and not content.startswith(b"%PDF"):
+        return extract_text_local(
+            content=content, content_type=content_type, filename=filename
+        )
+
+    from app.adapters.textract import get_textract_adapter, parse_s3_uri
+    from app.config import get_settings
+
+    mode = (get_settings().text_extract_mode or "local").strip().lower()
+    if mode not in {"textract", "aws", "live"}:
+        return extract_text_local(
+            content=content, content_type=content_type, filename=filename
+        )
+
+    bucket, key = s3_bucket, s3_key
+    if (not bucket or not key) and storage_uri:
+        parsed = parse_s3_uri(storage_uri)
+        if parsed:
+            bucket, key = parsed
+
+    textract = get_textract_adapter().extract(
+        content=content,
+        content_type=normalized_type,
+        filename=filename,
+        s3_bucket=bucket,
+        s3_key=key,
+    )
+    if textract.available and textract.text.strip():
+        return ExtractedDocumentText(
+            text=textract.text,
+            page_count=textract.page_count,
+            extractor=textract.extractor,
+            warning=None,
+        )
+
+    local = extract_text_local(
+        content=content, content_type=content_type, filename=filename
+    )
+    detail = textract.detail or "Textract unavailable"
+    warning = (
+        f"{local.warning + ' ' if local.warning else ''}"
+        f"Textract fallback: {detail}"
+    ).strip()
+    return ExtractedDocumentText(
+        text=local.text,
+        page_count=local.page_count,
+        extractor=local.extractor,
+        warning=warning,
     )

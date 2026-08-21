@@ -10,6 +10,7 @@ buyer: Gulf Importers LLC
 description: Copper cathodes Grade A
 quantity: 500
 unit: cartons
+kg_per_unit: 200
 unit_price: 1780.8
 line_total: 890400
 total_amount: 890400

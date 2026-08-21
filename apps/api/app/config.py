@@ -43,6 +43,10 @@ class Settings(BaseSettings):
     document_storage_backend: str = "memory"
     s3_documents_bucket: str = ""
     s3_documents_prefix: str = "tradepulse/docs/"
+    # local = stdlib PDF/text; textract = Amazon Textract (falls back to local)
+    text_extract_mode: str = "local"
+    textract_poll_seconds: float = 1.0
+    textract_max_polls: int = 60
 
 
 @lru_cache

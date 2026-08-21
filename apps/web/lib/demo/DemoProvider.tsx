@@ -172,14 +172,14 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
                 lei: FIXTURE_LEI,
                 quantity: 500,
                 unit: "cartons",
-                unitPrice: 55,
-                kgPerUnit: 25,
-                invoiceNumber: "INV-MISMATCH-01",
+                unitPrice: 1780.8,
+                kgPerUnit: 200,
+                invoiceNumber: "INV-SYN-2208",
               }),
             ],
             { type: "text/plain" },
           ),
-          "invoice.txt",
+          "commercial_invoice.txt",
           "commercial_invoice",
         );
         await api.uploadDocument(
@@ -190,13 +190,13 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
                 shipper: FIXTURE_SELLER,
                 quantity: 350,
                 unit: "cartons",
-                invoiceNumber: "INV-MISMATCH-01",
+                invoiceNumber: "INV-SYN-2208",
                 blNumber: "BL-MISMATCH-01",
               }),
             ],
             { type: "text/plain" },
           ),
-          "bol.txt",
+          "bill_of_lading.txt",
           "bill_of_lading",
         );
         await api.processCase(mismatch.case_id);
@@ -234,7 +234,7 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
                   quantity: invQty,
                   unit,
                   ...(input.mismatchQty
-                    ? { unitPrice: 55, kgPerUnit: 25 }
+                    ? { unitPrice: 1780.8, kgPerUnit: 200 }
                     : {}),
                 }),
               ],
