@@ -412,7 +412,15 @@ class TestDuplicateFingerprint:
 # ============================================================================
 
 
+import pytest
+
 class TestPriceAudit:
+    @pytest.fixture(autouse=True)
+    def setup_static_price_mode(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        from app.config import get_settings
+        monkeypatch.setenv("PRICE_SOURCE_MODE", "static")
+        get_settings.cache_clear()
+
 
     def test_negative_unit_price_triggers_review(self) -> None:
         """Negative price vs reference 950 is extreme variance => REVIEW_REQUIRED."""
