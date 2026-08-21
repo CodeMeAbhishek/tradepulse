@@ -1,1 +1,1 @@
-"""TradePulse API package root."""
+"""TradePulse API application package."""

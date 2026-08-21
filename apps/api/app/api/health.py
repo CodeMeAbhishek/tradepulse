@@ -2,33 +2,39 @@
 
 from __future__ import annotations
 
-from fastapi import APIRouter
-from pydantic import BaseModel, Field
+from fastapi import APIRouter, Response, status
+from tradepulse_contracts import HealthResponse, ReadyResponse, ReadyStatus
+
+from app.config import get_settings
+from app.db import check_database
 
 router = APIRouter(tags=["health"])
 
 
-class HealthResponse(BaseModel):
-    status: str = Field(description="Process liveness indicator")
-
-
-class ReadyResponse(BaseModel):
-    status: str = Field(description="Readiness indicator")
-    database_configured: bool = Field(
-        description="True when a DATABASE_URL / default SQLite URL is present (not a live connectivity proof)"
+@router.get("/healthz", response_model=HealthResponse)
+def healthz() -> HealthResponse:
+    """Liveness: process is up. Does not check dependencies."""
+    settings = get_settings()
+    return HealthResponse(
+        status="ok",
+        service=settings.app_name,
+        version=settings.app_version,
     )
 
 
-@router.get("/healthz", response_model=HealthResponse)
-def healthz() -> HealthResponse:
-    """Liveness — process is up."""
-    return HealthResponse(status="ok")
-
-
 @router.get("/readyz", response_model=ReadyResponse)
-def readyz() -> ReadyResponse:
-    """Readiness placeholder — does not open a DB connection yet."""
-    from app.db import get_sqlite_url
-
-    url = get_sqlite_url()
-    return ReadyResponse(status="ready", database_configured=bool(url))
+def readyz(response: Response) -> ReadyResponse:
+    """Readiness: database must be reachable. State-changing routes should refuse when not ready."""
+    db_ok = check_database()
+    if not db_ok:
+        response.status_code = status.HTTP_503_SERVICE_UNAVAILABLE
+        return ReadyResponse(
+            status=ReadyStatus.NOT_READY,
+            database=False,
+            detail="Database unavailable",
+        )
+    return ReadyResponse(
+        status=ReadyStatus.READY,
+        database=True,
+        detail=None,
+    )

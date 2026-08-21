@@ -2,15 +2,15 @@
 
 LEI/VLEI-enabled documentary trade-compliance workbench for bank and GIFT IFSC trade-house officers.
 
+> Prototype environment — synthetic/demo data. Outputs are decision-support only and require authorised human review.
+
 **Authority docs**
 
 1. `docs/adr/001-canonical-contracts-addendum.md` — binding shared enums/ownership
-2. `packages/contracts/` — executable source of truth
+2. `packages/contracts/` — shared contracts (canonical addendum + `tradepulse_contracts` package used by API)
 3. `tradepulse-prd-v7-unified-trade-trust.md` — product
 4. `tradepulse-system-design-v4-unified-trade-trust.md` — architecture
 5. `tradepulse-cursor-master-prompt-v2-lei-vlei.md` — execution prompts
-
-This repository currently contains a **skeleton + frontend mock workbench + canonical contracts**. No production business logic, live sanctions, production VLEI verification, ICEGATE, payments, or deployment.
 
 ## Layout
 
@@ -31,17 +31,18 @@ cd apps/api
 python -m venv .venv
 # Windows: .venv\Scripts\activate
 # macOS/Linux: source .venv/bin/activate
-pip install -r requirements.txt
+pip install -e "../../packages/contracts" -e ".[dev]"
 copy ..\..\.env.example .env   # or: cp ../../.env.example .env
-uvicorn app.main:app --reload --app-dir .
+uvicorn app.main:app --reload --port 8000
 ```
 
-Health checks:
-
-- `GET http://127.0.0.1:8000/healthz`
-- `GET http://127.0.0.1:8000/readyz`
+- Liveness: `GET /healthz`
+- Readiness: `GET /readyz` (requires SQLite)
+- OpenAPI: `http://localhost:8000/docs`
+- API base: `http://localhost:8000/api/v1`
 
 ```bash
+cd apps/api
 pytest -q
 ```
 
@@ -53,16 +54,13 @@ pnpm install   # or: npm install
 pnpm dev       # or: npm run dev
 ```
 
-Open `http://localhost:3000` (dashboard) and `http://localhost:3000/cases/demo` (case route placeholder).
+Open `http://localhost:3000`. Point `NEXT_PUBLIC_API_BASE_URL` at the API (`http://localhost:8000/api/v1`).
 
 ```bash
 pnpm lint
 pnpm typecheck
 ```
 
-## Intentionally not implemented
+## Safety
 
-- Document intake, agent swarm, rules engine
-- GLEIF/VLEI live verification, sanctions screening
-- Maker/checker persistence, RegWatch, audit chain
-- Authentication, deployment, ICEGATE/ULIP/payments
+TradePulse does not approve transactions, release funds, or make definitive sanctions determinations. `DATA_UNAVAILABLE` / `NOT_AVAILABLE` never map to `PASS`. Demo screening/price/VLEI sources stay explicitly labelled.

@@ -1,0 +1,20 @@
+---
+description: Frontend ownership, TypeScript strictness, safe language and evidence visibility
+globs: apps/web/**
+alwaysApply: false
+---
+
+# Frontend Ownership
+
+Ansh owns apps/web/app, apps/web/components and frontend API consumption.
+Atharva may work in UI components only with Ansh's explicit task scope.
+Shivansh may add tests and QA fixtures but should not change production behavior without a tracked defect/fix task.
+
+Frontend requirements:
+- TypeScript strict mode.
+- Use typed API responses; do not duplicate backend policy logic.
+- Never call LLMs, GLEIF, sanctions providers or RegWatch sources from browser code.
+- Show synthetic, cached, live/reference, stale and unavailable states visibly.
+- Use safe language: potential match, review required, discrepancy, TBML risk indicator.
+- Do not say guilty, fraud confirmed, sanctioned, or AI approved unless source-backed product policy explicitly supports it.
+- Every important result needs source/version/evidence visibility.
