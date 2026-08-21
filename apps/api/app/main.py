@@ -22,16 +22,23 @@ from tradepulse_contracts import (
     ErrorBody,
     ErrorResponse,
     ExtractionResult,
+    IdentityEvidence,
+    LEIEvidence,
     RuleResult,
     SourceMetadata,
     SourceSnapshot,
+    VLEIEvidence,
 )
 
 from app.api.health import router as health_router
+from app.api.v1 import router as api_v1_router
 from app.config import get_settings
 
 _OPENAPI_MODELS = (
     CaseRecord,
+    IdentityEvidence,
+    LEIEvidence,
+    VLEIEvidence,
     DocumentMetadata,
     ExtractionResult,
     RuleResult,
@@ -149,6 +156,7 @@ def create_app() -> FastAPI:
         )
 
     application.include_router(health_router)
+    application.include_router(api_v1_router)
 
     def custom_openapi() -> dict:
         if application.openapi_schema:

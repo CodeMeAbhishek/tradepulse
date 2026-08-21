@@ -6,8 +6,13 @@ from tradepulse_contracts.enums import (
     CheckStatus,
     DocumentType,
     FreshnessLabel,
+    IdentityPartyRole,
+    IdentityResolutionStatus,
+    LEIEvidenceSource,
     Severity,
     SourceRegistryStatus,
+    TradeProfile,
+    VLEIVerificationStatus,
 )
 
 __all__ = [
@@ -16,6 +21,11 @@ __all__ = [
     "CheckStatus",
     "DocumentType",
     "FreshnessLabel",
+    "IdentityPartyRole",
+    "IdentityResolutionStatus",
+    "LEIEvidenceSource",
     "Severity",
     "SourceRegistryStatus",
+    "TradeProfile",
+    "VLEIVerificationStatus",
 ]

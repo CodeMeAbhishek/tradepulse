@@ -16,12 +16,38 @@ from tradepulse_contracts import (
     ExtractedField,
     ExtractionResult,
     ExtractionValidation,
+    IdentityEvidence,
+    IdentityPartyRole,
+    IdentityResolutionStatus,
+    LEIEvidence,
+    LEIEvidenceSource,
     RuleResult,
     Severity,
+    TradeProfile,
+    VLEIEvidence,
+    VLEIVerificationStatus,
     assert_not_unavailable_as_pass,
 )
 from tradepulse_contracts.document import DocumentProcessingState
 from tradepulse_contracts.enums import ExtractionValidationStatus
+
+
+def test_trade_profile_uses_system_design_names() -> None:
+    assert TradeProfile.INVOICE_ONLY_PRE_REVIEW.value == "INVOICE_ONLY_PRE_REVIEW"
+    assert TradeProfile.POST_SHIPMENT_DOCUMENT_REVIEW in TradeProfile
+    assert TradeProfile.DOMESTIC_INDIA_GOODS_MOVEMENT in TradeProfile
+    assert len(TradeProfile) == 7
+
+
+def test_case_requires_transaction_profile() -> None:
+    with pytest.raises(ValidationError):
+        CaseRecord(
+            case_id="CASE-1",
+            state=CaseState.INGESTED,
+            created_at=datetime.now(timezone.utc),
+            updated_at=datetime.now(timezone.utc),
+            version=1,
+        )
 
 
 def test_case_state_includes_maker_checker_path() -> None:
@@ -30,12 +56,52 @@ def test_case_state_includes_maker_checker_path() -> None:
     assert CaseState.CHECKER_APPROVED in CaseState
     case = CaseRecord(
         case_id="CASE-1",
+        transaction_profile=TradeProfile.INVOICE_ONLY_PRE_REVIEW,
         state=CaseState.INGESTED,
         created_at=datetime.now(timezone.utc),
         updated_at=datetime.now(timezone.utc),
         version=1,
     )
     assert case.state is CaseState.INGESTED
+    assert case.transaction_profile is TradeProfile.INVOICE_ONLY_PRE_REVIEW
+    assert case.identities == []
+
+
+def test_case_identity_fields_are_optional_and_typed() -> None:
+    identity = IdentityEvidence(
+        role=IdentityPartyRole.SELLER,
+        raw_name="Amit Trading Co.",
+        gstin="27AABCU9603R1ZM",
+        pan="AABCU9603R",
+        iec="1234567890",
+        lei=LEIEvidence(
+            lei="5493001KJTIIGC8Y1R12",
+            source=LEIEvidenceSource.DOCUMENT,
+            is_exact_document_match=True,
+        ),
+        vlei=VLEIEvidence(
+            status=VLEIVerificationStatus.VERIFIED_FIXTURE,
+            source="fixture",
+            data_label="SYNTHETIC_DEMO_CREDENTIAL",
+        ),
+        resolution_status=IdentityResolutionStatus.IDENTITY_UNRESOLVED,
+    )
+    case = CaseRecord(
+        case_id="CASE-2",
+        transaction_profile=TradeProfile.POST_SHIPMENT_DOCUMENT_REVIEW,
+        state=CaseState.INGESTED,
+        corridor="IN-AE",
+        created_at=datetime.now(timezone.utc),
+        updated_at=datetime.now(timezone.utc),
+        identities=[identity],
+    )
+    assert case.identities[0].gstin == "27AABCU9603R1ZM"
+    assert case.identities[0].lei is not None
+    assert case.identities[0].lei.lei == "5493001KJTIIGC8Y1R12"
+    assert case.identities[0].vlei is not None
+    assert case.identities[0].vlei.status is VLEIVerificationStatus.VERIFIED_FIXTURE
+    assert case.identities[0].vlei.status is not VLEIVerificationStatus.VERIFIED_LIVE
+    assert case.identities[0].resolution_status is IdentityResolutionStatus.IDENTITY_UNRESOLVED
 
 
 def test_document_metadata_requires_sha256_hex() -> None:

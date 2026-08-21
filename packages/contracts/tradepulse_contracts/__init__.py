@@ -26,9 +26,14 @@ from tradepulse_contracts.enums import (
     ExtractionValidationStatus,
     FieldResolutionStatus,
     FreshnessLabel,
+    IdentityPartyRole,
+    IdentityResolutionStatus,
+    LEIEvidenceSource,
     Severity,
     SourceAccessType,
     SourceRegistryStatus,
+    TradeProfile,
+    VLEIVerificationStatus,
 )
 from tradepulse_contracts.error import ApiError, ErrorBody, ErrorResponse
 from tradepulse_contracts.extraction import (
@@ -39,6 +44,12 @@ from tradepulse_contracts.extraction import (
     ModelMetadata,
 )
 from tradepulse_contracts.health import HealthResponse, ReadyResponse, ReadyStatus
+from tradepulse_contracts.identity import (
+    IdentityEvidence,
+    LEIEvidence,
+    RegistryCandidate,
+    VLEIEvidence,
+)
 from tradepulse_contracts.rule_result import (
     RuleDataSourceRef,
     RuleEvidenceItem,
@@ -86,9 +97,15 @@ __all__ = [
     "FreshnessInfo",
     "FreshnessLabel",
     "HealthResponse",
+    "IdentityEvidence",
+    "IdentityPartyRole",
+    "IdentityResolutionStatus",
+    "LEIEvidence",
+    "LEIEvidenceSource",
     "ModelMetadata",
     "ReadyResponse",
     "ReadyStatus",
+    "RegistryCandidate",
     "RuleDataSourceRef",
     "RuleEvidenceItem",
     "RuleResult",
@@ -98,6 +115,9 @@ __all__ = [
     "SourceRegistryEntry",
     "SourceRegistryStatus",
     "SourceSnapshot",
+    "TradeProfile",
+    "VLEIEvidence",
+    "VLEIVerificationStatus",
     "assert_not_unavailable_as_pass",
     "classify_freshness",
     "guard_debate_round",
