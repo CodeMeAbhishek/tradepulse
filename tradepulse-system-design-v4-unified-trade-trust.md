@@ -2,8 +2,9 @@
 ## System Design — Unified Trade Trust Fabric
 
 **Version:** 4.0 — Full-context, LEI/VLEI/GSTIN, platform-ready system design  
-**Supersedes:** `tradepulse-system-design-v2-bank-tradehouse.md`, `tradepulse-system-design-v3-lei-vlei.md`, mentor `SYSTEM_DESIGN.md`  
+**Supersedes (historical):** prior bank/tradehouse and LEI/VLEI system-design drafts; mentor `SYSTEM_DESIGN.md`  
 **Product authority:** `tradepulse-prd-v7-unified-trade-trust.md`  
+**Contracts:** `docs/adr/001-canonical-contracts-addendum.md` and `packages/contracts/` are binding for shared enums.  
 **Team:** Abhishek, Ansh, Atharva  
 **Prototype:** 22-hour modular monolith, architected for iterative platform expansion
 
@@ -45,7 +46,7 @@ flowchart TB
     ORCH --> VAL[Validator]
     ORCH --> CHAL[Challenger]
     ORCH --> ARB[Arbiter]
-    ORCH --> RECON[Cross-Document Reconciler]
+    ORCH --> CROSS_DOCUMENT_RECONCILER[Cross-Document Reconciler]
     ORCH --> LLM[Model Adapter]
 
     POLICY --> DOCREQ[Document Requirement Engine]
@@ -85,8 +86,9 @@ The same canonical model supports profile-specific evidence and rules.
 | `LC_DOCUMENT_REVIEW` | Documentary-credit readiness | LEI/VLEI + LC parties | Invoice + LC + configured required documents |
 | `DOCUMENTARY_COLLECTION_REVIEW` | Collection/draft workflow | LEI/GSTIN/IEC | Invoice + configured transport/payment docs |
 | `ENHANCED_TRADE_HOUSE_REVIEW` | Expanded compliance packet | LEI/VLEI/GSTIN/IEC | Invoice + BoL/AWB; conditional supporting docs |
-| `DOMESTIC_INDIA_GOODS_MOVEMENT` | Domestic B2B/document readiness | GSTIN/PAN/CIN, optional LEI/VLEI | Invoice; conditional IRN/e-way-bill/transport docs |
-| `MERCHANT_SHIPMENT_READINESS` | Future pre-filing readiness | GSTIN/IEC/LEI | Configurable merchant packet |
+
+> Non-normative illustration. Hackathon `TradeProfile` source of truth is `packages/contracts/enums.py`. Merchant readiness is deferred roadmap scope (not a kernel `TradeProfile` value).
+
 
 Document policy is data, not hardcoded if/else logic.
 
@@ -283,7 +285,7 @@ class Challenge(BaseModel):
     evidence: list[Evidence]
 
 class AgentResult(BaseModel):
-    agent: Literal["EXTRACTOR", "VALIDATOR", "CHALLENGER", "ARBITER", "RECONCILER"]
+    agent: Literal["EXTRACTOR", "VALIDATOR", "CHALLENGER", "ARBITER", "CROSS_DOCUMENT_RECONCILER"]
     round: int
     status: Literal["COMPLETE", "REVIEW_REQUIRED", "FAILED"]
     claims: list[FieldClaim]

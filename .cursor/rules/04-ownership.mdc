@@ -9,6 +9,12 @@ Abhishek owns apps/api/**, backend contracts, rules, adapters, persistence, audi
 Ansh owns apps/web/app/**, frontend product flow, workbench screens and API consumption.
 Atharva owns scoped UI/UX components, visual/accessibility quality, integration support and tests under explicit task assignment.
 
+packages/contracts/** ownership (binding addendum):
+- Primary author of enums/models/policies: Abhishek
+- Required frontend impact reviewer: Ansh
+- Contract tests / QA gate: Atharva
+- If Abhishek and Ansh disagree, do not merge; keep current contract; ADR after 10-minute review.
+
 Shared contracts require:
 1. Dedicated task/issue.
 2. Backend impact documented by Abhishek.

@@ -1,0 +1,2 @@
+# Root formatter/linter placeholders.
+# Prefer apps/api/pyproject.toml for Python and apps/web for Next/ESLint.

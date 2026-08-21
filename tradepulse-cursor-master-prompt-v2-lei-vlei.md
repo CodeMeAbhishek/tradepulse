@@ -22,15 +22,18 @@ Create `.cursor/rules/00-tradepulse-core.mdc` with the following content:
 # TradePulse Core Rules
 
 Before planning or changing code, read:
-1. tradepulse-prd-v6-lei-vlei.md
-2. tradepulse-system-design-v3-lei-vlei.md
-3. this Cursor master prompt
-4. relevant existing code and tests
+1. docs/adr/001-canonical-contracts-addendum.md
+2. packages/contracts/enums.py
+3. tradepulse-prd-v7-unified-trade-trust.md
+4. tradepulse-system-design-v4-unified-trade-trust.md
+5. this Cursor master prompt
+6. relevant existing code and tests
 
 Authority order:
+- Canonical Contracts Addendum + packages/contracts define shared enums and ownership.
 - PRD defines user, product scope, business rules, document policy, acceptance criteria and team roles.
 - System design defines architecture, schemas, safety boundaries, storage, APIs, failure handling and tests.
-- If these documents conflict, stop and explain the conflict. Do not invent a compromise.
+- If prose conflicts with packages/contracts, contracts win. Otherwise if documents conflict, stop and explain — do not invent a compromise.
 
 TradePulse is documentary trade-compliance decision support for bank and trade-house users.
 It is not a Customs portal, container inspection system, ICEGATE filing tool, payment engine or autonomous compliance decision-maker.
@@ -174,8 +177,8 @@ Paste this once into Cursor/Claude Code after creating the clean repository:
 You are initializing TradePulse AI, a LEI/VLEI-enabled documentary trade-compliance workbench.
 
 Read:
-- tradepulse-prd-v6-lei-vlei.md
-- tradepulse-system-design-v3-lei-vlei.md
+- tradepulse-prd-v7-unified-trade-trust.md
+- tradepulse-system-design-v4-unified-trade-trust.md
 - tradepulse-cursor-master-prompt-v2-lei-vlei.md
 
 Create only the repository skeleton described below. Do not implement business logic, authentication, real sanctions integration, production VLEI verification, ICEGATE integration, payment functions or deployment.
@@ -227,8 +230,8 @@ Use this for every task. Replace the brackets.
 You are working on TradePulse AI.
 
 Before acting, read:
-1. tradepulse-prd-v6-lei-vlei.md
-2. tradepulse-system-design-v3-lei-vlei.md
+1. tradepulse-prd-v7-unified-trade-trust.md
+2. tradepulse-system-design-v4-unified-trade-trust.md
 3. tradepulse-cursor-master-prompt-v2-lei-vlei.md
 4. Existing code, tests and git status.
 
@@ -676,7 +679,7 @@ No force-push to `main`. Fix forward from a new branch.
 After placing the PRD, system design and this file in the repository, use this exact prompt:
 
 ```text
-Read tradepulse-prd-v6-lei-vlei.md, tradepulse-system-design-v3-lei-vlei.md and tradepulse-cursor-master-prompt-v2-lei-vlei.md completely.
+Read tradepulse-prd-v7-unified-trade-trust.md, tradepulse-system-design-v4-unified-trade-trust.md, docs/adr/001-canonical-contracts-addendum.md and tradepulse-cursor-master-prompt-v2-lei-vlei.md completely.
 
 We are starting the TradePulse 22-hour prototype from a clean repository.
 
