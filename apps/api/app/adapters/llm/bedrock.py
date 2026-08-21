@@ -1,7 +1,15 @@
 """Amazon Bedrock Converse LLM adapter for invoice extraction.
 
-Model output is untrusted until Pydantic validation in the swarm.
-Fails closed: Bedrock errors return an empty dict (invalid extraction → REVIEW_REQUIRED).
+Aligned with Amazon Nova Converse tool-use guidance:
+https://docs.aws.amazon.com/nova/latest/userguide/tool-use-definition.html
+https://docs.aws.amazon.com/nova/latest/userguide/prompting-tool-troubleshooting.html
+
+- Top-level ToolInputSchema: only type/properties/required (no $schema, title,
+  description, additionalProperties at the root).
+- Property names + descriptions drive field population.
+- toolChoice forced to the extraction tool; temperature=0 and topK=1 (greedy).
+- Model output is untrusted until Pydantic validation in the swarm.
+- Fails closed: Bedrock errors return {} → REVIEW_REQUIRED upstream.
 """
 
 from __future__ import annotations
@@ -17,54 +25,82 @@ from botocore.exceptions import BotoCoreError, ClientError
 logger = logging.getLogger(__name__)
 
 DEFAULT_BEDROCK_MODEL_ID = "apac.amazon.nova-lite-v1:0"
-DEFAULT_PROMPT_VERSION = "invoice-extract-bedrock@1.0.0"
+DEFAULT_PROMPT_VERSION = "invoice-extract-bedrock@1.2.0"
 _JSON_FENCE = re.compile(r"```(?:json)?\s*(.*?)\s*```", re.DOTALL | re.IGNORECASE)
 
-# Bedrock tool schemas avoid Pydantic $ref/$defs (not reliably supported by all models).
-_NULLABLE_STR = {"type": ["string", "null"]}
-_NULLABLE_NUM = {"type": ["number", "null"]}
-_PARTY_SCHEMA: dict[str, Any] = {
-    "type": "object",
-    "properties": {
-        "legal_name": _NULLABLE_STR,
-        "address": _NULLABLE_STR,
-        "country": _NULLABLE_STR,
-        "gstin": _NULLABLE_STR,
-        "pan": _NULLABLE_STR,
-        "lei": _NULLABLE_STR,
-        "iec": _NULLABLE_STR,
-    },
-}
+# Prefer concrete types + omit-when-absent (Nova docs). Optional = not in required.
+_STR = {"type": "string"}
+_NUM = {"type": "number"}
+
+
+def _str_prop(description: str) -> dict[str, Any]:
+    return {**_STR, "description": description}
+
+
+def _num_prop(description: str) -> dict[str, Any]:
+    return {**_NUM, "description": description}
+
+
+def _party_schema(*, role: str) -> dict[str, Any]:
+    return {
+        "type": "object",
+        "properties": {
+            "legal_name": _str_prop(f"{role} legal name as printed on the invoice"),
+            "address": _str_prop(f"{role} address if present"),
+            "country": _str_prop(f"{role} country code or name if present"),
+            "gstin": _str_prop(f"{role} GSTIN if present"),
+            "pan": _str_prop(f"{role} PAN if present"),
+            "lei": _str_prop(f"{role} 20-character LEI if explicitly present; never invent"),
+            "iec": _str_prop(f"{role} IEC if present"),
+        },
+    }
+
+
 _LINE_ITEM_SCHEMA: dict[str, Any] = {
     "type": "object",
     "properties": {
-        "description": _NULLABLE_STR,
-        "quantity": _NULLABLE_NUM,
-        "unit": _NULLABLE_STR,
-        "unit_price": _NULLABLE_NUM,
-        "line_total": _NULLABLE_NUM,
-        "hs_code": _NULLABLE_STR,
+        "description": _str_prop("Goods / line description"),
+        "quantity": _num_prop("Line quantity"),
+        "unit": _str_prop("Unit of measure, e.g. MT, KG, cartons"),
+        "unit_price": _num_prop("Price per unit in invoice currency"),
+        "line_total": _num_prop("Line total amount if present"),
+        "hs_code": _str_prop("HS / HSN code if present"),
+        "kg_per_unit": _num_prop(
+            "Kilograms per pack unit when labeled (kg_per_unit / kg_per_carton); "
+            "required for pack→MT price conversion; omit if not on document"
+        ),
+        "net_weight_kg": _num_prop(
+            "Total net weight in kilograms when labeled; omit if not on document"
+        ),
     },
 }
 
 
 def _invoice_tool_schema() -> dict[str, Any]:
-    """JSON Schema for Converse toolConfig aligned with InvoiceExtraction."""
+    """Nova-compatible ToolInputSchema (root: type, properties, required only)."""
     return {
         "type": "object",
         "properties": {
-            "schema_version": {"type": "string"},
-            "invoice_number": _NULLABLE_STR,
-            "invoice_date": _NULLABLE_STR,
-            "currency": _NULLABLE_STR,
-            "seller": _PARTY_SCHEMA,
-            "buyer": _PARTY_SCHEMA,
-            "items": {"type": "array", "items": _LINE_ITEM_SCHEMA},
-            "total_amount": _NULLABLE_NUM,
-            "incoterm": _NULLABLE_STR,
-            "port_of_loading": _NULLABLE_STR,
-            "port_of_discharge": _NULLABLE_STR,
+            "schema_version": {
+                **_STR,
+                "description": "Schema id; use invoice@1.0.0",
+            },
+            "invoice_number": _str_prop("Commercial invoice number"),
+            "invoice_date": _str_prop("Invoice date as written"),
+            "currency": _str_prop("ISO currency code, e.g. USD"),
+            "seller": _party_schema(role="Seller / exporter"),
+            "buyer": _party_schema(role="Buyer / importer"),
+            "items": {
+                "type": "array",
+                "description": "Invoice line items; include weight fields when labeled",
+                "items": _LINE_ITEM_SCHEMA,
+            },
+            "total_amount": _num_prop("Invoice total amount"),
+            "incoterm": _str_prop("Incoterm if present, e.g. FOB, CIF"),
+            "port_of_loading": _str_prop("Port of loading if present"),
+            "port_of_discharge": _str_prop("Port of discharge if present"),
         },
+        "required": ["schema_version", "items"],
     }
 
 
@@ -93,10 +129,10 @@ def _parse_json_object(text: str) -> dict[str, Any]:
 
 class BedrockLLMAdapter:
     """
-    Bedrock Converse extractor.
+    Bedrock Converse extractor for Amazon Nova (and compatible models).
 
-    Prefer tool-use for InvoiceExtraction; fall back to JSON-in-text parse.
-    Never stores chain-of-thought — only structured dicts for validation.
+    Uses forced toolChoice extraction (structured tool input), not free-form CoT
+    persistence. Reasoning tags from Nova are ignored; only toolUse.input is kept.
     """
 
     def __init__(
@@ -106,7 +142,7 @@ class BedrockLLMAdapter:
         region: str = "ap-south-1",
         profile: str | None = "tradepulse",
         prompt_version: str = DEFAULT_PROMPT_VERSION,
-        max_tokens: int = 2048,
+        max_tokens: int = 3000,
         client: Any | None = None,
     ) -> None:
         self._model_id = model_id
@@ -160,14 +196,21 @@ class BedrockLLMAdapter:
         user_prompt: str,
     ) -> dict[str, Any]:
         tool_name = "emit_invoice_extraction"
+        tool_description = (
+            "Emit a structured commercial invoice extraction from document text. "
+            "Copy only values present on the document. "
+            "When the document labels kg_per_unit, kg_per_carton, or net_weight_kg, "
+            "include those on the matching line item for pack-to-MT price conversion. "
+            "Never invent LEIs, amounts, weights, HS codes, or party names."
+        )
         response = self._client.converse(
             modelId=self._model_id,
             system=[
                 {
                     "text": (
                         f"{system_prompt} "
-                        f"Call the {tool_name} tool with fields present in the document only. "
-                        "Do not invent LEIs, amounts, or party names."
+                        f"You must call the {tool_name} tool exactly once with the extraction. "
+                        "Do not invent fields."
                     )
                 }
             ],
@@ -179,7 +222,7 @@ class BedrockLLMAdapter:
                             "text": (
                                 "Commercial invoice document text:\n\n"
                                 f"{user_prompt}\n\n"
-                                f"Emit structured fields via {tool_name}."
+                                f"Call {tool_name} with fields evidenced above."
                             )
                         }
                     ],
@@ -190,14 +233,20 @@ class BedrockLLMAdapter:
                     {
                         "toolSpec": {
                             "name": tool_name,
-                            "description": "Emit structured commercial invoice extraction.",
+                            "description": tool_description,
                             "inputSchema": {"json": _invoice_tool_schema()},
                         }
                     }
                 ],
+                # Force single tool call (Nova: toolChoice.tool).
                 "toolChoice": {"tool": {"name": tool_name}},
             },
-            inferenceConfig={"maxTokens": self._max_tokens, "temperature": 0},
+            # Greedy decoding recommended for Nova tool use.
+            inferenceConfig={
+                "maxTokens": self._max_tokens,
+                "temperature": 0,
+            },
+            additionalModelRequestFields={"inferenceConfig": {"topK": 1}},
         )
         content = response.get("output", {}).get("message", {}).get("content") or []
         for block in content:
@@ -211,7 +260,7 @@ class BedrockLLMAdapter:
                 return payload
             if isinstance(payload, str):
                 return _parse_json_object(payload)
-        # Model ignored tool — try any text block.
+        # Nova may emit reasoning text blocks; ignore them. Last-resort text JSON.
         for block in content:
             text = block.get("text") if isinstance(block, dict) else None
             if text:
@@ -229,6 +278,7 @@ class BedrockLLMAdapter:
             system=[{"text": f"{system_prompt} Respond with a single JSON object only."}],
             messages=[{"role": "user", "content": [{"text": user_prompt}]}],
             inferenceConfig={"maxTokens": self._max_tokens, "temperature": 0},
+            additionalModelRequestFields={"inferenceConfig": {"topK": 1}},
         )
         content = response.get("output", {}).get("message", {}).get("content") or []
         for block in content:

@@ -17,7 +17,7 @@ def build_llm_adapter() -> LLMAdapter:
             or DEFAULT_BEDROCK_MODEL_ID,
             region=settings.aws_region or "ap-south-1",
             profile=settings.aws_profile or None,
-            prompt_version=settings.llm_prompt_version or "invoice-extract-bedrock@1.0.0",
-            max_tokens=settings.bedrock_max_tokens or 2048,
+            prompt_version=settings.llm_prompt_version or "invoice-extract-bedrock@1.2.0",
+            max_tokens=settings.bedrock_max_tokens or 3000,
         )
     return FixtureLLMAdapter()

@@ -23,6 +23,7 @@ from tradepulse_contracts.enums import (
 )
 
 from app.adapters.llm.base import LLMAdapter
+from app.adapters.llm.fixture import labeled_line_weight_fields
 from app.schemas.invoice import INVOICE_SCHEMA_VERSION, InvoiceExtraction
 
 _CRITICAL_PATHS = (
@@ -35,8 +36,29 @@ _CRITICAL_PATHS = (
 
 _EXTRACTOR_SYSTEM = (
     "Extract structured commercial invoice fields. Return JSON only. "
-    "Cite values present in the document. Do not invent identifiers."
+    "Cite values present in the document. Do not invent identifiers. "
+    "When present, extract line kg_per_unit and net_weight_kg for pack units."
 )
+
+
+def _merge_labeled_weight_evidence(
+    extraction: InvoiceExtraction,
+    document_text: str,
+) -> InvoiceExtraction:
+    """Fill missing weight fields from labeled document text only (no invention)."""
+    if not extraction.items:
+        return extraction
+    kg_per_unit, net_weight_kg = labeled_line_weight_fields(document_text)
+    item = extraction.items[0]
+    updates: dict[str, float] = {}
+    if item.kg_per_unit is None and kg_per_unit is not None:
+        updates["kg_per_unit"] = kg_per_unit
+    if item.net_weight_kg is None and net_weight_kg is not None:
+        updates["net_weight_kg"] = net_weight_kg
+    if not updates:
+        return extraction
+    merged = item.model_copy(update=updates)
+    return extraction.model_copy(update={"items": [merged, *extraction.items[1:]]})
 
 
 def _path_value(extraction: InvoiceExtraction, path: str) -> Any:
@@ -85,6 +107,8 @@ def run_extractor(
             notes="Invalid LLM output rejected; no chain-of-thought stored.",
         )
         return None, response
+
+    extraction = _merge_labeled_weight_evidence(extraction, document_text)
 
     claims: list[FieldClaim] = []
     for path in _CRITICAL_PATHS:

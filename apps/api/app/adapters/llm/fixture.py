@@ -37,6 +37,18 @@ def _to_float(raw: str | None) -> float | None:
         return None
 
 
+def labeled_line_weight_fields(document_text: str) -> tuple[float | None, float | None]:
+    """Read pack-weight labels from fixture text (never invent)."""
+    labels = _parse_labeled_text(document_text)
+    kg_per_unit = _to_float(
+        _get(labels, "kg_per_unit", "kg_per_carton", "weight_per_unit_kg")
+    )
+    net_weight_kg = _to_float(
+        _get(labels, "net_weight_kg", "net_weight", "total_net_weight_kg")
+    )
+    return kg_per_unit, net_weight_kg
+
+
 class FixtureLLMAdapter:
     """
     Heuristic extractor for labeled invoice fixtures.

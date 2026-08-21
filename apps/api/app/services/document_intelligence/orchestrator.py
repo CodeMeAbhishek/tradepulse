@@ -87,6 +87,8 @@ def _to_extracted_fields(extraction: InvoiceExtraction) -> list[ExtractedField]:
         add(f"items[{idx}].unit_price", item.unit_price)
         add(f"items[{idx}].line_total", item.line_total)
         add(f"items[{idx}].hs_code", item.hs_code)
+        add(f"items[{idx}].kg_per_unit", item.kg_per_unit)
+        add(f"items[{idx}].net_weight_kg", item.net_weight_kg)
     return fields
 
 

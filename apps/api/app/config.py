@@ -33,9 +33,9 @@ class Settings(BaseSettings):
     price_source_mode: str = "live"
     llm_provider: str = "fixture"
     llm_api_key: str = ""
-    llm_prompt_version: str = "invoice-extract-bedrock@1.0.0"
+    llm_prompt_version: str = "invoice-extract-bedrock@1.2.0"
     bedrock_model_id: str = "apac.amazon.nova-lite-v1:0"
-    bedrock_max_tokens: int = 2048
+    bedrock_max_tokens: int = 3000
 
     # AWS (profile-based; no keys required in env when using `aws login`)
     aws_profile: str = "tradepulse"
