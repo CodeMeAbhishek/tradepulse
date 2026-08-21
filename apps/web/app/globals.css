@@ -7,6 +7,12 @@
   --tp-fg: #e8eef4;
   --tp-muted: #94a3b8;
   --tp-accent: #38bdf8;
+
+  /* Keyboard focus. A compliance reviewer may work this queue all day without
+     a mouse, so the indicator has to be obvious against every surface here:
+     the page gradient, slate-900 cards and slate-950 panels. */
+  --tp-focus-ring: #7dd3fc;
+  --tp-focus-halo: #0b1220;
 }
 
 body {
@@ -18,4 +24,54 @@ body {
     var(--tp-bg);
   color: var(--tp-fg);
   font-family: var(--font-ibm-plex-sans), "IBM Plex Sans", "Segoe UI", sans-serif;
+}
+
+/* ---------------------------------------------------------------------------
+   Keyboard focus (WCAG 2.4.7)
+
+   :focus-visible rather than :focus, so the ring appears for keyboard and
+   assistive-tech users without flashing on every mouse click.
+
+   The double ring -- accent outline plus a dark halo -- keeps the indicator
+   legible whether the focused control sits on the page gradient, a slate-900
+   card, or a slate-950 panel. outline follows border-radius in modern browsers,
+   so rounded chips and buttons are traced correctly.
+   --------------------------------------------------------------------------- */
+
+/* Deliberately universal rather than a list of interactive tags. Browsers also
+   make scroll containers keyboard-focusable so the queue's horizontally
+   scrolling tables can be reached, and those divs would otherwise fall back to
+   the low-contrast default ring. :where() keeps specificity at zero, so any
+   component can still override it. */
+:where(*):focus-visible {
+  outline: 2px solid var(--tp-focus-ring);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px var(--tp-focus-halo);
+}
+
+/* Windows High Contrast / forced-colors: let the OS supply the indicator, and
+   drop the custom halo, which is not rendered in that mode anyway. */
+@media (forced-colors: active) {
+  :where(*):focus-visible {
+    outline: 3px solid Highlight;
+    box-shadow: none;
+  }
+}
+
+/* The file input renders its control through ::file-selector-button, which does
+   not inherit the ring from its host input. */
+input[type="file"]:focus-visible::file-selector-button {
+  outline: 2px solid var(--tp-focus-ring);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
