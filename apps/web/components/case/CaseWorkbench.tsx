@@ -6,20 +6,76 @@ import { policyLabel, statusLabel } from "@/lib/api/map";
 import { useDemo } from "@/lib/demo/DemoProvider";
 import { InvestigationCanvas } from "@/components/case/InvestigationCanvas";
 import { RiskChip, ToneChip, WorkflowChip } from "@/components/ui/StatusChips";
-import { profileLabel } from "@/lib/demo/store";
+import { profileLabel, type Finding, type TradeCase } from "@/lib/demo/store";
 
 const TABS = [
-  "Investigate",
-  "Summary",
-  "Documents",
-  "Reconciliation",
-  "Identity",
-  "Agent trace",
-  "Decision",
+  { id: "investigate", label: "Investigate" },
+  { id: "checks", label: "Checks" },
+  { id: "docs", label: "Docs" },
+  { id: "compare", label: "Compare" },
+  { id: "party", label: "Party" },
+  { id: "how-checked", label: "How we checked" },
+  { id: "decide", label: "Decide" },
 ] as const;
 
+type TabId = (typeof TABS)[number]["id"];
+
+function agentStepTitle(agent: string): string {
+  const key = agent.trim().toLowerCase();
+  if (key.includes("extract")) return "Extracted fields";
+  if (key.includes("valid")) return "Checked fields";
+  if (key.includes("challeng")) return "Flagged issues";
+  if (key.includes("arbit")) return "Settled values";
+  return agent;
+}
+
+function buildBrief(live: TradeCase): { bullets: string[]; cta: string } {
+  const bullets: string[] = [];
+  const mismatch = live.recon.find((r) => r.status === "MISMATCH");
+  if (mismatch) {
+    bullets.push(
+      `Document mismatch: invoice ${mismatch.invoice} vs bill of lading ${mismatch.bol ?? "—"}.`,
+    );
+  }
+  const price = live.findings.find((f) => /price/i.test(f.title));
+  if (price && price.tone !== "clear") {
+    bullets.push(`Price check needs review (${price.statusLabel}).`);
+  } else if (price) {
+    bullets.push("Price check is within tolerance of the market reference.");
+  }
+  const screening = live.findings.find((f) => /screen/i.test(f.title));
+  if (screening?.tone === "clear") {
+    bullets.push("Screening: no potential match on the configured list.");
+  } else if (screening) {
+    bullets.push(`Screening: ${screening.statusLabel} — review required.`);
+  }
+  const idUpper = live.identity.outcome.toUpperCase();
+  if (idUpper.includes("VERIFIED") || idUpper.includes("SUPPORTED")) {
+    bullets.push(`Party identity: ${live.identity.outcome}.`);
+  } else {
+    bullets.push(`Party identity needs attention: ${live.identity.outcome}.`);
+  }
+  while (bullets.length > 3) bullets.pop();
+  if (bullets.length === 0) {
+    bullets.push("No open alerts yet — review the packet, then decide.");
+  }
+
+  let cta = "Open Decide when you are ready to act as maker or checker.";
+  if (mismatch && price && price.tone !== "clear") {
+    cta = "Resolve the quantity mismatch, then review price plausibility on Decide.";
+  } else if (mismatch) {
+    cta = "Resolve the document mismatch on Compare, then continue to Decide.";
+  } else if (price && price.tone !== "clear") {
+    cta = "Review price plausibility, then continue to Decide.";
+  } else if (live.workflow === "PENDING_MAKER") {
+    cta = "Packet is ready for maker action on Decide.";
+  }
+
+  return { bullets, cta };
+}
+
 export function CaseWorkbench({ caseId }: { caseId: string }) {
-  const [tab, setTab] = useState<(typeof TABS)[number]>("Investigate");
+  const [tab, setTab] = useState<TabId>("investigate");
   const [note, setNote] = useState("");
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
@@ -54,6 +110,8 @@ export function CaseWorkbench({ caseId }: { caseId: string }) {
     return null;
   }, [live]);
 
+  const brief = useMemo(() => (live ? buildBrief(live) : null), [live]);
+
   if (!ready) {
     return <p className="text-sm text-[var(--tp-muted)]">Loading case…</p>;
   }
@@ -62,7 +120,10 @@ export function CaseWorkbench({ caseId }: { caseId: string }) {
       <div className="tp-card p-8 text-center">
         <h1 className="text-lg font-semibold text-[var(--tp-navy)]">Case not found</h1>
         {err ? <p className="mt-2 text-sm text-rose-700">{err}</p> : null}
-        <Link href="/queue" className="mt-3 inline-block text-sm text-[var(--tp-accent)]">
+        <Link
+          href="/workbench/queue"
+          className="mt-3 inline-block text-sm text-[var(--tp-accent)]"
+        >
           Back to queue
         </Link>
       </div>
@@ -86,7 +147,7 @@ export function CaseWorkbench({ caseId }: { caseId: string }) {
   return (
     <div className="space-y-4">
       <p>
-        <Link href="/queue" className="text-sm font-medium text-[var(--tp-accent)]">
+        <Link href="/workbench/queue" className="text-sm font-medium text-[var(--tp-accent)]">
           ← Queue
         </Link>
       </p>
@@ -97,7 +158,9 @@ export function CaseWorkbench({ caseId }: { caseId: string }) {
             <p className="text-[11px] uppercase tracking-[0.14em] text-[var(--tp-muted)]">
               Case workbench {mode === "api" ? "· live API" : "· local demo"}
             </p>
-            <h1 className="mt-1 text-2xl font-semibold text-[var(--tp-navy)]">{live.reference}</h1>
+            <h1 className="font-display mt-1 text-2xl font-semibold text-[var(--tp-navy)]">
+              {live.reference}
+            </h1>
             <p className="mt-1 text-[var(--tp-ink)]">{live.counterparty}</p>
             <p className="mt-1 text-sm text-[var(--tp-muted)]">
               {live.corridor} · {profileLabel(live.profile)} · {live.currency} {live.amount}
@@ -122,36 +185,65 @@ export function CaseWorkbench({ caseId }: { caseId: string }) {
             <p className="mt-2 text-sm text-amber-900/90">{mismatch.note}</p>
           </div>
         ) : null}
+
+        {brief ? (
+          <div className="mt-4 flex flex-col gap-3 rounded-lg border border-[var(--tp-line)] bg-slate-50 px-4 py-3 sm:flex-row sm:items-end sm:justify-between">
+            <div className="min-w-0">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--tp-muted)]">
+                Case brief
+              </p>
+              <ul className="mt-2 space-y-1.5 text-sm text-[var(--tp-ink)]">
+                {brief.bullets.map((b) => (
+                  <li key={b} className="flex gap-2">
+                    <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--tp-navy)]" />
+                    <span>{b}</span>
+                  </li>
+                ))}
+              </ul>
+              <p className="mt-2 text-sm font-medium text-[var(--tp-teal)]">{brief.cta}</p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setTab("decide")}
+              className="tp-btn-primary shrink-0"
+            >
+              Go to Decide
+            </button>
+          </div>
+        ) : null}
+
         {err ? <p className="mt-3 text-sm text-rose-700">{err}</p> : null}
       </header>
 
-      <div className="flex flex-wrap gap-1 border-b border-[var(--tp-line)] pb-2">
+      <div className="flex flex-wrap gap-1 border-b border-[var(--tp-line)] pb-2" role="tablist">
         {TABS.map((t) => (
           <button
-            key={t}
+            key={t.id}
             type="button"
-            onClick={() => setTab(t)}
+            role="tab"
+            aria-selected={tab === t.id}
+            onClick={() => setTab(t.id)}
             className={
-              tab === t
-                ? "rounded-md bg-[var(--tp-navy)] px-3 py-1.5 text-sm font-medium text-white"
-                : "rounded-md px-3 py-1.5 text-sm text-[var(--tp-muted)] hover:bg-white"
+              tab === t.id
+                ? "cursor-pointer rounded-md bg-[var(--tp-navy)] px-3 py-1.5 text-sm font-medium text-white transition duration-200"
+                : "cursor-pointer rounded-md px-3 py-1.5 text-sm text-[var(--tp-muted)] transition duration-200 hover:bg-white"
             }
           >
-            {t}
+            {t.label}
           </button>
         ))}
       </div>
 
-      {tab === "Investigate" ? <InvestigationCanvas tradeCase={live} /> : null}
+      {tab === "investigate" ? <InvestigationCanvas tradeCase={live} /> : null}
 
-      {tab === "Summary" ? (
+      {tab === "checks" ? (
         <section className="grid gap-3 md:grid-cols-3">
           {live.findings.length === 0 ? (
             <p className="text-sm text-[var(--tp-muted)] md:col-span-3">
-              No findings yet. Process the case after uploading documents.
+              No checks yet. Process the case after uploading documents.
             </p>
           ) : (
-            live.findings.map((f) => (
+            live.findings.map((f: Finding) => (
               <article key={f.id} className="tp-card flex flex-col p-4">
                 <div className="flex items-start justify-between gap-2">
                   <h2 className="text-sm font-semibold text-[var(--tp-navy)]">{f.title}</h2>
@@ -179,7 +271,7 @@ export function CaseWorkbench({ caseId }: { caseId: string }) {
         </section>
       ) : null}
 
-      {tab === "Documents" ? (
+      {tab === "docs" ? (
         <section className="tp-card overflow-hidden">
           <div className="border-b border-[var(--tp-line)] px-4 py-3">
             <h2 className="text-sm font-semibold text-[var(--tp-navy)]">Document checklist</h2>
@@ -210,7 +302,7 @@ export function CaseWorkbench({ caseId }: { caseId: string }) {
         </section>
       ) : null}
 
-      {tab === "Reconciliation" ? (
+      {tab === "compare" ? (
         <section className="space-y-3">
           {reconBanner ? (
             <div className="rounded-lg border border-sky-200 bg-sky-50 px-4 py-3 text-sm text-sky-950">
@@ -218,6 +310,14 @@ export function CaseWorkbench({ caseId }: { caseId: string }) {
             </div>
           ) : null}
           <div className="tp-card overflow-x-auto">
+            <div className="border-b border-[var(--tp-line)] px-4 py-3">
+              <h2 className="text-sm font-semibold text-[var(--tp-navy)]">
+                Invoice vs bill of lading
+              </h2>
+              <p className="mt-1 text-xs text-[var(--tp-muted)]">
+                Side-by-side field compare. Mismatches need a human — they are not proof of fraud.
+              </p>
+            </div>
             <table className="min-w-full text-sm">
               <thead className="bg-slate-50 text-xs uppercase text-[var(--tp-muted)]">
                 <tr>
@@ -232,7 +332,7 @@ export function CaseWorkbench({ caseId }: { caseId: string }) {
                 {live.recon.length === 0 ? (
                   <tr>
                     <td colSpan={5} className="px-3 py-6 text-[var(--tp-muted)]">
-                      No reconciliation rows yet.
+                      No comparison rows yet.
                     </td>
                   </tr>
                 ) : (
@@ -263,7 +363,7 @@ export function CaseWorkbench({ caseId }: { caseId: string }) {
         </section>
       ) : null}
 
-      {tab === "Identity" ? (
+      {tab === "party" ? (
         <section className="tp-card grid gap-6 p-5 md:grid-cols-2">
           <div>
             <h2 className="text-sm font-semibold text-[var(--tp-navy)]">Document party</h2>
@@ -281,6 +381,10 @@ export function CaseWorkbench({ caseId }: { caseId: string }) {
                 <dd className="mt-0.5 font-mono text-xs">
                   {live.identity.leiOnDocument ?? "Not provided"}
                 </dd>
+                <p className="mt-1 text-xs leading-relaxed text-[var(--tp-muted)]">
+                  LEI is a 20-character Legal Entity Identifier. When the invoice LEI matches a
+                  GLEIF registry record, that is strong identity evidence — not a sanctions clear.
+                </p>
               </div>
               {live.identity.candidateName ? (
                 <div>
@@ -310,17 +414,22 @@ export function CaseWorkbench({ caseId }: { caseId: string }) {
               <div>
                 <dt className="text-xs uppercase tracking-wide text-[var(--tp-muted)]">vLEI</dt>
                 <dd className="mt-0.5 text-[var(--tp-muted)]">{live.identity.vlei}</dd>
+                <p className="mt-1 text-xs leading-relaxed text-[var(--tp-muted)]">
+                  vLEI is a verifiable credential for role/authority. A plain LEI string is not a
+                  vLEI. Fixture demos must stay labeled synthetic.
+                </p>
               </div>
             </dl>
           </div>
         </section>
       ) : null}
 
-      {tab === "Agent trace" ? (
+      {tab === "how-checked" ? (
         <section className="tp-card p-5">
-          <p className="mb-4 text-sm text-[var(--tp-muted)]">
-            Bounded document-intelligence steps (max 3 rounds). Claims and challenges are stored —
-            private chain-of-thought is not. Agent consensus is never a compliance approval.
+          <h2 className="text-sm font-semibold text-[var(--tp-navy)]">How we checked the documents</h2>
+          <p className="mb-4 mt-1 text-sm text-[var(--tp-muted)]">
+            Up to three review rounds. We keep short claims and challenges only — not private model
+            reasoning. Agreement between steps is never a compliance approval.
           </p>
           <ol className="space-y-3">
             {live.agentTrace.map((step, idx) => (
@@ -329,7 +438,9 @@ export function CaseWorkbench({ caseId }: { caseId: string }) {
                 className="rounded-lg border border-[var(--tp-line)] bg-slate-50 px-3 py-2.5"
               >
                 <div className="flex justify-between gap-2">
-                  <span className="text-sm font-semibold text-[var(--tp-navy)]">{step.agent}</span>
+                  <span className="text-sm font-semibold text-[var(--tp-navy)]">
+                    {agentStepTitle(step.agent)}
+                  </span>
                   <span className="text-[11px] font-medium uppercase tracking-wide text-[var(--tp-muted)]">
                     {step.status}
                   </span>
@@ -341,7 +452,7 @@ export function CaseWorkbench({ caseId }: { caseId: string }) {
         </section>
       ) : null}
 
-      {tab === "Decision" ? (
+      {tab === "decide" ? (
         <section className="grid gap-4 lg:grid-cols-2">
           <div className="tp-card p-5">
             <h2 className="text-sm font-semibold text-[var(--tp-navy)]">Maker / checker</h2>

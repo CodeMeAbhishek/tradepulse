@@ -31,11 +31,10 @@ export default function NewCasePage() {
   return (
     <div className="mx-auto max-w-2xl space-y-4">
       <div>
-        <h1 className="text-2xl font-semibold text-[var(--tp-navy)]">New trade case</h1>
+        <h1 className="font-display text-3xl font-semibold text-[var(--tp-navy)]">New trade case</h1>
         <p className="mt-1 text-sm text-[var(--tp-muted)]">
-          {mode === "api"
-            ? "Creates a case on the API, uploads invoice/BoL (your files or synthetic fixtures), then runs process."
-            : "Creates a local demo case (no API)."}
+          Build a documentary packet. Commercial invoice is required; Bill of Lading is needed for
+          post-shipment reconciliation. TradePulse prepares evidence—you decide.
         </p>
       </div>
 
@@ -54,7 +53,7 @@ export default function NewCasePage() {
             invoiceFile,
             bolFile,
           })
-            .then((c) => router.push(`/cases/${c.id}`))
+            .then((c) => router.push(`/workbench/cases/${c.id}`))
             .catch((ex: unknown) => {
               setErr(ex instanceof Error ? ex.message : "Create failed");
             })
@@ -99,10 +98,8 @@ export default function NewCasePage() {
               Document upload
             </legend>
             <p className="text-xs text-[var(--tp-muted)]">
-              Optional. Upload .txt or .pdf from{" "}
-              <code className="text-[11px]">data/fixtures/synthetic-trade-docs/</code>. Leave empty
-              to seed labeled fixtures. Extraction uses Bedrock when{" "}
-              <code className="text-[11px]">LLM_PROVIDER=bedrock</code>.
+              Optional. Upload invoice and/or Bill of Lading (.txt or .pdf). Leave empty to use
+              labeled demo fixtures. Extraction uses the configured document pipeline.
             </p>
             <label className="block text-sm">
               <span className="font-medium text-[var(--tp-navy)]">Commercial invoice</span>
@@ -136,7 +133,8 @@ export default function NewCasePage() {
           <span>
             <span className="font-medium text-[var(--tp-navy)]">Include Bill of Lading</span>
             <span className="mt-0.5 block text-[var(--tp-muted)]">
-              Required for post-shipment. Off on invoice-only → transport recon NOT_AVAILABLE.
+              Needed for post-shipment transport checks. Off for invoice-only — transport
+              reconciliation shows as not available (not a pass).
             </span>
           </span>
         </label>
@@ -153,17 +151,13 @@ export default function NewCasePage() {
                 Seed quantity mismatch (500 vs 350)
               </span>
               <span className="mt-0.5 block text-[var(--tp-muted)]">
-                Demo climax path — review required, not a fraud conclusion.
+                Demo path that forces human review — not a fraud conclusion.
               </span>
             </span>
           </label>
         ) : null}
         {err ? <p className="text-sm text-rose-700">{err}</p> : null}
-        <button
-          type="submit"
-          disabled={busy}
-          className="rounded-lg bg-[var(--tp-navy)] px-4 py-2.5 text-sm font-medium text-white disabled:opacity-50"
-        >
+        <button type="submit" disabled={busy} className="tp-btn-primary disabled:opacity-50">
           {busy ? "Creating & processing…" : "Create case & open workbench"}
         </button>
       </form>

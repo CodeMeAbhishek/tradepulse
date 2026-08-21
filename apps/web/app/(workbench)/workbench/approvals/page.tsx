@@ -16,23 +16,17 @@ export default function ApprovalsPage() {
   return (
     <div className="space-y-5">
       <div>
-        <h1 className="text-2xl font-semibold text-[var(--tp-navy)]">Approvals inbox</h1>
+        <h1 className="font-display text-3xl font-semibold text-[var(--tp-navy)]">
+          Approvals inbox
+        </h1>
         <p className="mt-1 text-sm text-[var(--tp-muted)]">
-          Checker queue — dual control. Items appear only after maker submission (
-          <a
-            className="text-[var(--tp-accent)] underline"
-            href="https://www.opcito.com/blogs/maker-checker-implementation-guide-for-secure-fintech-systems"
-            target="_blank"
-            rel="noreferrer"
-          >
-            maker-checker pattern
-          </a>
-          ).
+          Checker queue — dual control. Items appear only after maker submission. Checker cannot
+          approve before maker.
         </p>
       </div>
 
       <section className="tp-card overflow-hidden">
-        <div className="border-b border-[var(--tp-line)] px-4 py-3 text-sm font-semibold">
+        <div className="border-b border-[var(--tp-line)] bg-slate-50 px-4 py-3 text-sm font-semibold text-[var(--tp-navy)]">
           Pending checker ({inbox.length})
         </div>
         {inbox.length === 0 ? (
@@ -44,8 +38,8 @@ export default function ApprovalsPage() {
             {inbox.map((c) => (
               <li key={c.id}>
                 <Link
-                  href={`/cases/${c.id}`}
-                  className="flex flex-wrap items-center justify-between gap-3 px-4 py-3 hover:bg-slate-50"
+                  href={`/workbench/cases/${c.id}`}
+                  className="flex flex-wrap items-center justify-between gap-3 px-4 py-3 transition hover:bg-slate-50"
                 >
                   <div>
                     <p className="font-medium text-[var(--tp-navy)]">{c.reference}</p>
@@ -65,7 +59,7 @@ export default function ApprovalsPage() {
       </section>
 
       <section className="tp-card overflow-hidden">
-        <div className="border-b border-[var(--tp-line)] px-4 py-3 text-sm font-semibold">
+        <div className="border-b border-[var(--tp-line)] bg-slate-50 px-4 py-3 text-sm font-semibold text-[var(--tp-navy)]">
           Recent checker decisions
         </div>
         {decided.length === 0 ? (
@@ -74,7 +68,10 @@ export default function ApprovalsPage() {
           <ul className="divide-y divide-[var(--tp-line)]">
             {decided.map((c) => (
               <li key={c.id} className="flex flex-wrap justify-between gap-2 px-4 py-3 text-sm">
-                <Link href={`/cases/${c.id}`} className="font-medium text-[var(--tp-accent)]">
+                <Link
+                  href={`/workbench/cases/${c.id}`}
+                  className="font-medium text-[var(--tp-accent)]"
+                >
                   {c.reference}
                 </Link>
                 <WorkflowChip state={c.workflow} />

@@ -7,7 +7,13 @@ const config: Config = {
     "./lib/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        sans: ["var(--font-ibm-plex-sans)", "IBM Plex Sans", "sans-serif"],
+        mono: ["var(--font-ibm-plex-mono)", "IBM Plex Mono", "monospace"],
+        display: ["var(--font-fraunces)", "Fraunces", "Georgia", "serif"],
+      },
+    },
   },
   plugins: [],
 };

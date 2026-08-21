@@ -2,18 +2,24 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Light-by-default documentary trust tokens (Banking / Trust & Authority; reject dark/purple AI defaults) */
 :root {
-  --tp-bg: #eef2f6;
+  --tp-paper: #f8fafc;
+  --tp-bg: #eef2f7;
+  --tp-elevated: #ffffff;
   --tp-surface: #ffffff;
-  --tp-ink: #0b1220;
-  --tp-muted: #5b6b7c;
+  --tp-ink: #0f172a;
+  --tp-muted: #475569;
   --tp-line: #d7e0ea;
   --tp-navy: #0c2340;
+  --tp-navy-deep: #071628;
   --tp-teal: #0f766e;
-  --tp-accent: #1d4ed8;
+  --tp-teal-soft: #ccfbf1;
+  --tp-accent: #0369a1;
   --tp-warn: #b45309;
   --tp-danger: #b91c1c;
   --tp-ok: #047857;
+  --tp-gold: #a16207;
 }
 
 body {
@@ -21,7 +27,9 @@ body {
   min-height: 100vh;
   color: var(--tp-ink);
   background:
-    linear-gradient(180deg, #f7f9fc 0%, var(--tp-bg) 40%, #e8eef5 100%);
+    radial-gradient(ellipse 80% 50% at 10% -10%, rgba(15, 118, 110, 0.08), transparent 55%),
+    radial-gradient(ellipse 70% 45% at 95% 5%, rgba(12, 35, 64, 0.06), transparent 50%),
+    linear-gradient(180deg, var(--tp-paper) 0%, var(--tp-bg) 55%, #e8eef5 100%);
   font-family: var(--font-ibm-plex-sans), "IBM Plex Sans", "Segoe UI", sans-serif;
 }
 
@@ -34,8 +42,17 @@ a {
   text-decoration: none;
 }
 
+:focus-visible {
+  outline: 2px solid var(--tp-teal);
+  outline-offset: 2px;
+}
+
+.font-display {
+  font-family: var(--font-fraunces), "Fraunces", Georgia, serif;
+}
+
 .tp-card {
-  background: var(--tp-surface);
+  background: var(--tp-elevated);
   border: 1px solid var(--tp-line);
   border-radius: 12px;
   box-shadow: 0 1px 2px rgba(12, 35, 64, 0.04);
@@ -45,7 +62,7 @@ a {
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  border-radius: 999px;
+  border-radius: 6px;
   border: 1px solid var(--tp-line);
   padding: 0.15rem 0.55rem;
   font-size: 0.72rem;
@@ -79,10 +96,55 @@ a {
   color: var(--tp-muted);
 }
 
+.tp-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  background: var(--tp-navy);
+  color: #fff;
+  font-size: 0.875rem;
+  font-weight: 600;
+  padding: 0.65rem 1.15rem;
+  transition: background-color 200ms ease, transform 200ms ease;
+  cursor: pointer;
+}
+.tp-btn-primary:hover {
+  background: var(--tp-navy-deep);
+}
+.tp-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  border: 1px solid var(--tp-line);
+  background: var(--tp-elevated);
+  color: var(--tp-navy);
+  font-size: 0.875rem;
+  font-weight: 600;
+  padding: 0.65rem 1.15rem;
+  transition: border-color 200ms ease, background-color 200ms ease;
+  cursor: pointer;
+}
+.tp-btn-secondary:hover {
+  border-color: #94a3b8;
+  background: #f1f5f9;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
 @keyframes tpFade {
   from {
     opacity: 0;
-    transform: translateY(4px);
+    transform: translateY(6px);
   }
   to {
     opacity: 1;

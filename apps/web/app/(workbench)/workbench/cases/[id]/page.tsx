@@ -1,4 +1,4 @@
-import { CaseWorkbench } from "@/components/case/CaseWorkbench";
+﻿import { CaseWorkbench } from "@/components/case/CaseWorkbench";
 
 export default async function CasePage({
   params,

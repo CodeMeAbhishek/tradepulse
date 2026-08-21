@@ -8,17 +8,17 @@ import { CompletenessSummary } from "./CompletenessSummary";
 export function QueueTable({ cases }: { cases: QueueCase[] }) {
   if (cases.length === 0) {
     return (
-      <p className="rounded border border-slate-700 bg-slate-950/60 px-4 py-8 text-center text-sm text-slate-400">
-        No cases in queue. Mock fixtures are empty.
+      <p className="rounded-lg border border-[var(--tp-line)] bg-white px-4 py-8 text-center text-sm text-[var(--tp-muted)]">
+        No cases in queue.
       </p>
     );
   }
 
   return (
-    <div className="overflow-x-auto rounded border border-slate-700/80">
+    <div className="tp-card overflow-x-auto">
       <table className="min-w-full border-collapse text-left text-sm">
         <caption className="sr-only">Compliance case queue</caption>
-        <thead className="bg-slate-950 text-xs uppercase tracking-wide text-slate-400">
+        <thead className="bg-slate-50 text-xs uppercase tracking-wide text-[var(--tp-muted)]">
           <tr>
             <th scope="col" className="px-3 py-2.5 font-medium">
               Case
@@ -41,19 +41,19 @@ export function QueueTable({ cases }: { cases: QueueCase[] }) {
           {cases.map((row) => (
             <tr
               key={row.id}
-              className="border-t border-slate-800 bg-slate-900/40 hover:bg-slate-900/80"
+              className="border-t border-[var(--tp-line)] bg-white hover:bg-slate-50"
             >
               <td className="px-3 py-3 align-top">
                 <Link
-                  href={`/cases/${row.id}`}
-                  className="font-medium text-sky-300 underline-offset-2 hover:underline"
+                  href={`/workbench/cases/${row.id}`}
+                  className="font-medium text-[var(--tp-accent)] underline-offset-2 hover:underline"
                 >
                   {row.reference}
                 </Link>
-                <p className="mt-1 max-w-[16rem] truncate text-slate-200" title={row.counterparty}>
+                <p className="mt-1 max-w-[16rem] truncate text-[var(--tp-ink)]" title={row.counterparty}>
                   {row.counterparty}
                 </p>
-                <p className="mt-0.5 font-mono text-[11px] text-slate-500">
+                <p className="mt-0.5 font-mono text-[11px] text-[var(--tp-muted)]">
                   {row.corridor} · {row.dataSourceLabel}
                 </p>
               </td>
@@ -69,7 +69,7 @@ export function QueueTable({ cases }: { cases: QueueCase[] }) {
               <td className="px-3 py-3 align-top">
                 <CompletenessSummary items={row.documentCompleteness} />
               </td>
-              <td className="px-3 py-3 align-top whitespace-nowrap text-slate-400">
+              <td className="px-3 py-3 align-top whitespace-nowrap text-[var(--tp-muted)]">
                 {formatTimestamp(row.updatedAt)}
               </td>
             </tr>

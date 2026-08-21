@@ -27,10 +27,10 @@ export default function RegWatchPage() {
   return (
     <div className="space-y-4">
       <div>
-        <h1 className="text-2xl font-semibold text-[var(--tp-navy)]">RegWatch</h1>
+        <h1 className="font-display text-3xl font-semibold text-[var(--tp-navy)]">RegWatch</h1>
         <p className="mt-1 max-w-2xl text-sm text-[var(--tp-muted)]">
-          Source registry and proposal gate. Systems may summarise; humans approve before rule/data
-          activation — aligned with board-owned compliance expectations in GIFT IFSC contexts.
+          Source registry and proposal gate. Systems may summarise; humans approve before rule or
+          data activation. Propose is never the same as activate.
         </p>
       </div>
 
@@ -39,23 +39,33 @@ export default function RegWatchPage() {
           <li key={e.id} className="tp-card p-5">
             <div className="flex flex-wrap items-start justify-between gap-2">
               <h2 className="text-sm font-semibold text-[var(--tp-navy)]">{e.source}</h2>
-              <span className="tp-chip tp-chip-neutral">Approval: {e.state}</span>
+              <span
+                className={
+                  e.state === "PROPOSED" ? "tp-chip tp-chip-review" : "tp-chip tp-chip-ok"
+                }
+              >
+                Approval: {e.state}
+              </span>
             </div>
-            <p className="mt-2 text-sm">{e.summary}</p>
-            <pre className="mt-3 overflow-x-auto rounded-lg bg-slate-900 p-3 text-xs text-slate-100">
+            <p className="mt-2 text-sm text-[var(--tp-ink)]">{e.summary}</p>
+            <pre className="mt-3 overflow-x-auto rounded-lg border border-[var(--tp-line)] bg-slate-50 p-3 font-mono text-xs text-[var(--tp-ink)]">
               {e.diff}
             </pre>
             <div className="mt-3 grid gap-3 text-sm md:grid-cols-2">
               <div>
-                <p className="text-xs uppercase text-[var(--tp-muted)]">Old result version</p>
+                <p className="text-xs uppercase tracking-wide text-[var(--tp-muted)]">
+                  Old result version
+                </p>
                 <p>{e.old}</p>
               </div>
               <div>
-                <p className="text-xs uppercase text-[var(--tp-muted)]">New / proposed</p>
+                <p className="text-xs uppercase tracking-wide text-[var(--tp-muted)]">
+                  New / proposed
+                </p>
                 <p>{e.next}</p>
               </div>
             </div>
-            <p className="mt-3 text-sm font-medium text-amber-800">{e.gate}</p>
+            <p className="mt-3 text-sm font-medium text-amber-900">{e.gate}</p>
           </li>
         ))}
       </ul>

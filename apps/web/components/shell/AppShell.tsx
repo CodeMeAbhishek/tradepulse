@@ -3,13 +3,14 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useDemo } from "@/lib/demo/DemoProvider";
+import { cn } from "@/lib/cn";
 
 const NAV = [
-  { href: "/", label: "Overview" },
-  { href: "/queue", label: "Queue" },
-  { href: "/cases/new", label: "New case" },
-  { href: "/approvals", label: "Approvals" },
-  { href: "/regwatch", label: "RegWatch" },
+  { href: "/workbench", label: "Overview", match: "exact" as const },
+  { href: "/workbench/queue", label: "Queue", match: "prefix" as const },
+  { href: "/workbench/cases/new", label: "New case", match: "prefix" as const },
+  { href: "/workbench/approvals", label: "Approvals", match: "prefix" as const },
+  { href: "/workbench/regwatch", label: "RegWatch", match: "prefix" as const },
 ] as const;
 
 export function AppShell({ children }: { children: React.ReactNode }) {
@@ -19,15 +20,15 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-screen">
-      <div className="border-b border-amber-200 bg-amber-50 px-4 py-2 text-sm text-amber-950">
+      <div className="border-b border-amber-200/80 bg-amber-50 px-4 py-2.5 text-sm text-amber-950">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-x-3 gap-y-1">
-          <span className="font-semibold">SYNTHETIC DATA</span>
-          <span className="rounded border border-amber-300 bg-white/70 px-1.5 py-0.5 text-[11px] font-semibold uppercase tracking-wide">
+          <span className="font-semibold tracking-wide">SYNTHETIC DATA</span>
+          <span className="rounded border border-amber-300/80 bg-white/80 px-1.5 py-0.5 text-[11px] font-semibold uppercase tracking-wide">
             {mode === "api" ? "Live API" : "Local demo"}
             {mode === "api" && apiOnline === true ? " · connected" : null}
             {mode === "api" && apiOnline === false ? " · offline" : null}
           </span>
-          <span className="text-amber-900/80">
+          <span className="text-amber-900/85">
             Decision support for bank & GIFT IFSC trade-house officers — not a Customs portal,
             payment engine, or autonomous approver.
           </span>
@@ -39,36 +40,37 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         ) : null}
       </div>
 
-      <header className="border-b border-[var(--tp-line)] bg-[var(--tp-navy)] text-white">
+      <header className="border-b border-[var(--tp-line)] bg-[var(--tp-elevated)]/90 backdrop-blur-sm">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-4 py-3">
-          <div>
-            <p className="text-[11px] uppercase tracking-[0.16em] text-slate-300">
-              TradePulse · Documentary compliance
-            </p>
-            <Link href="/" className="text-lg font-semibold tracking-tight">
-              Trade Trust Workbench
+          <div className="min-w-0">
+            <Link href="/" className="font-display text-lg font-semibold tracking-tight text-[var(--tp-navy)]">
+              TradePulse
             </Link>
+            <p className="text-[11px] uppercase tracking-[0.14em] text-[var(--tp-muted)]">
+              Officer workbench
+            </p>
           </div>
           <nav className="flex flex-wrap gap-1" aria-label="Primary">
             {NAV.map((item) => {
               const active =
-                item.href === "/"
-                  ? pathname === "/"
+                item.match === "exact"
+                  ? pathname === item.href
                   : pathname === item.href || pathname.startsWith(`${item.href}/`);
               return (
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={
+                  className={cn(
+                    "cursor-pointer rounded-md px-3 py-1.5 text-sm font-medium transition-colors duration-200",
                     active
-                      ? "rounded-md bg-white/15 px-3 py-1.5 text-sm font-medium"
-                      : "rounded-md px-3 py-1.5 text-sm text-slate-200 hover:bg-white/10"
-                  }
+                      ? "bg-[var(--tp-navy)] text-white"
+                      : "text-[var(--tp-muted)] hover:bg-slate-100 hover:text-[var(--tp-navy)]",
+                  )}
                   aria-current={active ? "page" : undefined}
                 >
                   {item.label}
-                  {item.href === "/approvals" && ready && pendingChecker > 0 ? (
-                    <span className="ml-1.5 rounded-full bg-teal-400 px-1.5 text-[10px] font-bold text-slate-900">
+                  {item.href === "/workbench/approvals" && ready && pendingChecker > 0 ? (
+                    <span className="ml-1.5 rounded bg-teal-100 px-1.5 text-[10px] font-bold text-teal-900">
                       {pendingChecker}
                     </span>
                   ) : null}
@@ -80,7 +82,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <button
               type="button"
               onClick={() => void refresh()}
-              className="rounded-md border border-white/20 px-3 py-1.5 text-xs text-slate-200 hover:bg-white/10"
+              className="cursor-pointer rounded-md border border-[var(--tp-line)] px-3 py-1.5 text-xs font-medium text-[var(--tp-muted)] transition hover:bg-slate-50"
             >
               Refresh
             </button>
@@ -88,7 +90,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               <button
                 type="button"
                 onClick={() => void seedSamples()}
-                className="rounded-md border border-teal-300/40 bg-teal-500/20 px-3 py-1.5 text-xs text-teal-50 hover:bg-teal-500/30"
+                className="cursor-pointer rounded-md border border-teal-700/30 bg-teal-50 px-3 py-1.5 text-xs font-medium text-teal-900 transition hover:bg-teal-100"
               >
                 Seed API samples
               </button>
@@ -96,7 +98,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               <button
                 type="button"
                 onClick={() => void reset()}
-                className="rounded-md border border-white/20 px-3 py-1.5 text-xs text-slate-200 hover:bg-white/10"
+                className="cursor-pointer rounded-md border border-[var(--tp-line)] px-3 py-1.5 text-xs font-medium text-[var(--tp-muted)] transition hover:bg-slate-50"
               >
                 Reset demo data
               </button>

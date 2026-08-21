@@ -1,12 +1,6 @@
-import { PrototypeBanner } from "@/components/PrototypeBanner";
-import { AppNav } from "@/components/AppShell";
+import { AppShell } from "@/components/shell/AppShell";
 
+/** @deprecated Prefer AppShell via workbench layout; kept for any residual imports. */
 export function WorkbenchShell({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="flex min-h-screen flex-col">
-      <PrototypeBanner />
-      <AppNav />
-      <div className="flex-1">{children}</div>
-    </div>
-  );
+  return <AppShell>{children}</AppShell>;
 }
