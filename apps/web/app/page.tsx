@@ -1,24 +1,25 @@
-import Link from "next/link";
+import { QueueTable } from "@/components/queue/QueueView";
+import { getMockQueueCases } from "@/lib/mock/queue";
 
 /**
- * Empty dashboard route — queue/workbench UI comes in Ansh A1+.
+ * Compliance queue — bank / trade-house case intake surface (A1).
  */
-export default function DashboardPage() {
+export default function QueuePage() {
+  const cases = getMockQueueCases();
+
   return (
-    <main className="mx-auto flex max-w-3xl flex-col gap-4 px-6 py-16">
-      <p className="text-sm uppercase tracking-wide text-[var(--tp-muted)]">
-        TradePulse · Prototype skeleton
-      </p>
-      <h1 className="text-3xl font-semibold tracking-tight">Compliance workbench</h1>
-      <p className="text-[var(--tp-muted)]">
-        Dashboard placeholder. No case queue, document policy, or findings UI yet.
-      </p>
-      <Link
-        className="w-fit text-[var(--tp-accent)] underline-offset-4 hover:underline"
-        href="/cases/demo"
-      >
-        Open sample case route
-      </Link>
+    <main className="mx-auto max-w-6xl px-4 py-8">
+      <div className="mb-6 flex flex-col gap-2">
+        <h1 className="text-2xl font-semibold tracking-tight text-slate-50">
+          Compliance queue
+        </h1>
+        <p className="max-w-2xl text-sm text-slate-400">
+          Review documentary trade cases routed for human decision support. Status and
+          readiness labels come from the case record — this screen does not approve,
+          reject, or clear transactions.
+        </p>
+      </div>
+      <QueueTable cases={cases} />
     </main>
   );
 }
