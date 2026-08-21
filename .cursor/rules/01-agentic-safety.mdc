@@ -1,0 +1,27 @@
+---
+description: Document intelligence swarm roles, debate bounds and untrusted LLM validation
+alwaysApply: true
+---
+
+# Agentic Safety Rules
+
+The document intelligence swarm has bounded roles:
+- Extractor: proposes structured fields from document evidence.
+- Validator: independently checks extraction against source evidence.
+- Challenger: identifies potential errors, alternate interpretations and missing evidence.
+- Arbiter: resolves only through evidence and deterministic checks.
+- Cross-document checker: compares validated facts across documents.
+
+The swarm may never decide whether a transaction is legal, fraudulent, sanctioned, approved or rejected.
+
+Agent consensus is a confidence signal, not legal certainty.
+
+Debate protocol:
+- Maximum 3 rounds.
+- Every proposed correction must cite source evidence.
+- If unresolved, return REVIEW_REQUIRED.
+- Never average conflicting values.
+- Never hide disagreement.
+- Never let the arbiter invent data not present in evidence.
+
+LLM responses are untrusted input. Validate every response with Pydantic before persistence or policy evaluation.
