@@ -1,70 +1,97 @@
 # TradePulse AI
-## Product Requirements Document — Comprehensive Hackathon Edition
+## Product Requirements Document — Agentic Hackathon Edition
 
-**Product:** TradePulse AI — Cross-Border Trade Compliance Decisioning Platform  
+**Product:** TradePulse AI — Agentic Cross-Border Trade Compliance Decisioning Platform  
 **Program:** GIFT IFIH Young Builders’ Program Hackathon 2026  
 **Theme:** Agentic AI in Financial Services  
 **Focus area:** Fraud, Risk & Compliance  
-**Version:** 3.0 — role-corrected consolidated PRD  
-**Document owner:** TradePulse team  
-**Product & Compliance Workbench Engineer:** Ansh  
-**Platform & Intelligence Engineer:** Abhishek  
-**QA / release gatekeeper:** Shivansh  
+**Version:** 4.0 — agentic refactor  
+**Team:** Abhishek, Ansh, Atharva, Shivansh  
 **Target build:** 22-hour hackathon prototype  
 **Document classification:** Sensitive compliance software requirements; prototype only  
 
-> **Critical disclaimer:** This prototype is not authorised to approve transactions, release funds, block customers, make definitive sanctions determinations, provide legal advice, or replace regulated compliance staff. It uses synthetic trade cases and selected public reference data. Every adverse or uncertain result is a human-review recommendation.
+> **Critical disclaimer:** This prototype is not authorised to approve transactions, release funds, block customers, make definitive sanctions determinations, provide legal advice, or replace regulated compliance staff. It uses synthetic trade cases and selected public reference data. Every adverse or uncertain result is a human-review recommendation. Agent consensus is not legal certainty.
 
 ---
 
 # 1. Executive Summary
 
-TradePulse AI is an API-first trade-compliance decisioning workbench for banks, trade houses and exporters operating through cross-border corridors connected to GIFT IFSC.
+TradePulse AI is an **agentic trade-compliance decisioning platform** for banks, trade houses and exporters operating through cross-border corridors connected to GIFT IFSC.
 
-A trade-finance presentation commonly contains an invoice, bill of lading, packing list and sometimes a letter of credit. A compliance officer must establish that the parties are real and correctly identified, the documents agree with one another, the goods and shipment are permissible, the declared prices are plausible, and no party or vessel appears on relevant sanctions or export-control lists.
+A trade-finance presentation commonly contains an invoice, bill of lading, packing list and sometimes letter-of-credit terms. A compliance officer must establish that the parties are real and correctly identified, the documents agree with one another, the goods and shipment are permissible, the declared prices are plausible, and no party or vessel appears on relevant sanctions or export-control lists.
 
-Today, this work is fragmented and document-heavy. TradePulse creates a structured, evidence-backed case from those documents. Its three core product phases are:
+TradePulse is designed as an **agentic product**, not a single-model OCR tool. Multiple specialised agents inspect the same case from different perspectives, compare their findings, challenge one another’s assumptions, and produce a consensus case file that a human reviewer can trust faster.
 
-1. **Document Intelligence Extraction** — turn unstructured documents into validated fields with confidence and page-level provenance.
-2. **Compliance Decision Engine** — apply versioned rules for identity, sanctions, document consistency, TBML price indicators, goods, duplicate presentations and LC requirements.
-3. **RegWatch Change Engine** — monitor authoritative data and regulatory sources, detect changes, propose versioned rule updates, require human approval, and replay affected cases.
+The product’s core phases are:
 
-The important product distinction is that TradePulse is **not an AI PDF parser**. It is a controlled decision-support platform with:
+1. **Document Intelligence Swarm** — multiple extraction and validation agents read the same document, compare outputs, and resolve disagreements into a provenance-rich case object.
+2. **Compliance Decision Engine** — deterministic rules, entity resolution, sanctions screening, document consistency, TBML price indicators, goods screening, duplicate-presentation checks and LC-lite requirements.
+3. **RegWatch Change Engine** — source monitoring, change detection, human-approved rule updates, versioned deployment and selective replay.
 
-- A compliance workbench rather than a generic dashboard.
-- A rules-as-data engine rather than hidden prompt logic.
-- Entity resolution rather than exact-name matching.
-- Evidence and provenance rather than unexplained scores.
-- Maker-checker workflow rather than autonomous approval.
-- Versioned public data snapshots rather than unverifiable live lookups.
-- Regulatory change management rather than a point-in-time check.
+The central product idea is:
 
-### Product thesis
-
-> **TradePulse makes the needle glow: it helps a compliance officer find, understand and defend the important discrepancies without pretending that an AI model is the decision-maker.**
+> **TradePulse does not merely read documents. It orchestrates a controlled debate between specialised agents, converts their disagreement into evidence, and routes the result to a human reviewer with full provenance.**
 
 ---
 
-# 2. Hackathon Context and Constraints
+# 2. Agentic Product Thesis
+
+## 2.1 Why a single model is not enough
+
+A single model can misread a table, hallucinate a missing field, confuse a buyer with a consignee, or treat a similar company name as the same legal entity. In a compliance workflow, those mistakes are not cosmetic—they can delay capital, create false positives, or miss material risk.
+
+## 2.2 The agentic answer
+
+TradePulse uses a **multi-agent consensus pipeline**:
+
+- One agent extracts.
+- One agent independently extracts or validates.
+- One agent challenges the result against the source document.
+- One agent checks arithmetic, dates and cross-document consistency.
+- One agent resolves disagreements using evidence, not confidence theatre.
+- Deterministic code performs final policy checks.
+
+The agents do not “vote” on whether a company is sanctioned or whether a transaction is legal. They converge on **what the document says**, **what evidence exists**, and **which fields remain uncertain**.
+
+## 2.3 What agentic means here
+
+Agentic does not mean uncontrolled autonomy. It means:
+
+- Specialised agents with explicit roles.
+- Shared typed case state.
+- Tool access limited to approved parsers, registries and snapshots.
+- Evidence-based disagreement.
+- Bounded retries and convergence limits.
+- A deterministic arbiter and human review for unresolved or high-risk outcomes.
+
+## 2.4 The demo phrase
+
+> “One model can read a document. TradePulse makes multiple agents read it, challenge it, and prove it.”
+
+---
+
+# 3. Hackathon Context and Constraints
 
 The event brief states that the project is a 22-hour build sprint beginning at 2:00 PM on Friday, 21 August 2026, with judging based on technical execution and architecture (30%), founder/venture assessment (30%), problem depth and regulatory realism (20%), and honesty/roadmap credibility (20%). It also states that no real banking data will be supplied and teams must arrive with a synthetic-data strategy. [file:167]
 
 The brief further states that code must start clean at the event kickoff and that pre-built repositories are not permitted; therefore, reusable preparation should consist of architecture, specifications, environment setup, source research and data-generation plans rather than a pre-built application repository. [file:167]
 
-### 2.1 Hard constraints
+## 3.1 Hard constraints
 
 - 22 hours of implementation time.
-- **Ansh:** Product and Compliance Workbench Engineer.
-- **Abhishek:** Platform and Intelligence Engineer.
-- **Shivansh:** Independent QA and Release Engineer.
-- Cursor and coding agents will be used by all team members.
+- Four-person team:
+  - **Abhishek — Main Engineer**
+  - **Ansh — Main Engineer**
+  - **Atharva — Engineer + UI/UX + Testing**
+  - **Shivansh — Main Testing + UI**
+- Cursor/Claude Code and coding agents will be used by all team members.
 - Public reference data may be downloaded where permitted.
 - Trade documents and banking workflow records must be synthetic.
 - The product must remain demonstrable if internet or an external model fails.
-- Every pushed increment must be tested by Shivansh.
+- Every pushed increment must be tested by Shivansh, with Atharva supporting UI and functional testing.
 - Every release must be reversible to a known-good commit.
 
-### 2.2 Implications
+## 3.2 Implications
 
 - Build a modular monolith, not distributed microservices.
 - Freeze API and domain contracts early.
@@ -73,32 +100,34 @@ The brief further states that code must start clean at the event kickoff and tha
 - Use real public sources for credibility, but cache snapshots for reliability.
 - Label live, cached, synthetic, planned and unavailable data distinctly.
 - Keep AI agent autonomy bounded by explicit file scopes and acceptance tests.
+- Keep agent debate bounded: maximum rounds, deterministic arbiter, no infinite loops.
 
 ---
 
-# 3. Vision, Mission and Positioning
+# 4. Vision, Mission and Positioning
 
-## 3.1 Vision
+## 4.1 Vision
 
-TradePulse becomes the trusted compliance middleware through which cross-border trade presentations are examined before a regulated institution makes a human decision.
+TradePulse becomes the trusted agentic compliance middleware through which cross-border trade presentations are examined before a regulated institution makes a human decision.
 
-## 3.2 Mission
+## 4.2 Mission
 
 Reduce avoidable manual effort and working-capital delays while improving the quality, consistency and auditability of trade-compliance review.
 
-## 3.3 One-sentence pitch
+## 4.3 One-sentence pitch
 
-> TradePulse is an explainable trade-compliance workbench that reads a complete trade presentation, resolves counterparties, checks documents and prices against versioned reference data, and routes evidence-backed discrepancies to the right human reviewer.
+> TradePulse is an agentic trade-compliance workbench that uses multiple specialised AI agents to read, challenge and reconcile trade documents, then applies versioned rules and public reference data to route evidence-backed discrepancies to the right human reviewer.
 
-## 3.4 Layman explanation
+## 4.4 Layman explanation
 
-> International trade works on paperwork. An exporter gives a bank an invoice saying what was sold, a shipping document saying what was carried, and other forms describing the transaction. The bank has to check whether all those papers agree and whether the buyer, seller and price look legitimate. TradePulse is like spell-check for those documents: it does not accuse anyone or make the final decision, but it finds inconsistencies and shows the officer exactly where to look.
+> International trade works on paperwork. An exporter gives a bank an invoice saying what was sold, a shipping document saying what was carried, and other forms describing the transaction. The bank has to check whether all those papers agree and whether the buyer, seller and price look legitimate. TradePulse is like a team of reviewers who each read the same file, argue about what it means, and then show the human officer exactly where the important disagreement or risk is.
 
-## 3.5 Position against generic OCR
+## 4.5 Position against generic OCR
 
 | Generic OCR tool | TradePulse |
 |---|---|
 | Extracts text | Extracts facts with confidence, coordinates and evidence |
+| One model output | Multi-agent consensus with disagreement trail |
 | Returns a document | Creates a compliance case |
 | Exact string search | Multi-attribute entity resolution |
 | One-time processing | Versioned rules and reference data |
@@ -109,13 +138,13 @@ Reduce avoidable manual effort and working-capital delays while improving the qu
 
 ---
 
-# 4. Problem Definition
+# 5. Problem Definition
 
-## 4.1 Primary problem
+## 5.1 Primary problem
 
 Trade-compliance teams must make high-consequence decisions using fragmented, scanned or unstructured documents and multiple changing external data sources. Manual review is slow, inconsistent and difficult to audit at scale.
 
-## 4.2 Problem examples
+## 5.2 Problem examples
 
 ### Example A — Similar counterparty names
 
@@ -145,7 +174,7 @@ The invoice says USD 42/kg while a benchmark is USD 11/kg. That may be a TBML ri
 
 A shipment may have passed under yesterday’s data or rule pack. A new sanctions-list entry, export restriction or DGFT notification may change its review requirements. RegWatch should identify affected cases and preserve both the old and new results.
 
-## 4.3 Who experiences the problem
+## 5.3 Who experiences the problem
 
 - Bank IBUs and trade-finance operations teams.
 - Trade houses and compliance departments.
@@ -153,7 +182,7 @@ A shipment may have passed under yesterday’s data or rule pack. A new sanction
 - Regulatory and policy teams maintaining internal controls.
 - Operations leaders responsible for review SLAs and audit readiness.
 
-## 4.4 Why it matters
+## 5.4 Why it matters
 
 - Errors can lead to financial loss, regulatory exposure and reputational damage.
 - Delays freeze exporter working capital and reduce trade throughput.
@@ -161,7 +190,7 @@ A shipment may have passed under yesterday’s data or rule pack. A new sanction
 - Rule and data changes can make an earlier result stale.
 - Institutions need to explain not only what decision was made, but which evidence and rules supported it.
 
-## 4.5 Existing alternatives and gap
+## 5.5 Existing alternatives and gap
 
 - Manual document review and spreadsheets.
 - Generic OCR/document-management tools.
@@ -173,9 +202,9 @@ TradePulse’s proposed wedge is an API-first, GIFT IFSC-oriented compliance dec
 
 ---
 
-# 5. Goals and Non-Goals
+# 6. Goals and Non-Goals
 
-## 5.1 Hackathon goals
+## 6.1 Hackathon goals
 
 1. Demonstrate a working end-to-end case flow using synthetic trade documents.
 2. Extract structured facts with visible source evidence.
@@ -186,8 +215,9 @@ TradePulse’s proposed wedge is an API-first, GIFT IFSC-oriented compliance dec
 7. Demonstrate one RegWatch event leading to a human-approved update and replay.
 8. Work through cached data when external connectivity fails.
 9. Keep all outputs explainable and honest.
+10. Demonstrate a multi-agent consensus path for at least one document type.
 
-## 5.2 Post-hackathon goals
+## 6.2 Post-hackathon goals
 
 - Validate workflows with GIFT IFSC banks, IBUs, trade houses or fintech partners.
 - Replace fixtures with licensed or approved production data providers.
@@ -195,7 +225,7 @@ TradePulse’s proposed wedge is an API-first, GIFT IFSC-oriented compliance dec
 - Establish model-risk, security, data-retention and operational controls.
 - Apply for the relevant IFSCA sandbox pathway when product and regulatory readiness permit.
 
-## 5.3 Non-goals for the prototype
+## 6.3 Non-goals for the prototype
 
 - Autonomous approval, rejection, payment release or account blocking.
 - Definitive legal or sanctions determinations from fuzzy matching.
@@ -206,46 +236,47 @@ TradePulse’s proposed wedge is an API-first, GIFT IFSC-oriented compliance dec
 - Circumventing CAPTCHA, access controls, licensing or website terms.
 - Fake claims that every source is live or current.
 - Microservice infrastructure that adds more failure modes than value.
+- Unbounded agent debate or self-modifying rules.
 
 ---
 
-# 6. Users and Personas
+# 7. Users and Personas
 
-## 6.1 Maker — compliance analyst
+## 7.1 Maker — compliance analyst
 
 **Primary job:** Review an incoming trade presentation and prepare a recommendation.  
 **Pain:** Too many documents, repetitive checks, inconsistent spelling and pressure to meet SLAs.  
 **Needs:** Evidence, candidate entities, source freshness, clear next actions and easy case notes.
 
-## 6.2 Checker — senior compliance officer
+## 7.2 Checker — senior compliance officer
 
 **Primary job:** Independently review the maker’s recommendation.  
 **Pain:** Decisions may be poorly documented or difficult to reconstruct.  
 **Needs:** Maker rationale, unresolved discrepancies, rule versions, source snapshots and immutable audit history.
 
-## 6.3 Regulatory analyst
+## 7.3 Regulatory analyst
 
 **Primary job:** Decide whether a new external update should change an internal control or rule pack.  
 **Needs:** Official source, diff, effective date, affected scope, proposed rule change and impact analysis.
 
-## 6.4 Operations manager
+## 7.4 Operations manager
 
 **Primary job:** Monitor throughput, SLA risk and review bottlenecks.  
 **Needs:** Queue, case ownership, turnaround time, review reasons and operational KPIs.
 
-## 6.5 Exporter/MSME
+## 7.5 Exporter/MSME
 
 **Primary job:** Receive financing or settlement with minimal avoidable delay.  
 **Needs:** Not necessarily direct access; benefits from faster and more predictable review.
 
-## 6.6 Administrator
+## 7.6 Administrator
 
 **Primary job:** Maintain sources, rule packs, policies and access.  
 **Needs:** Versioning, configuration history, health status and controlled publishing.
 
 ---
 
-# 7. Product Principles
+# 8. Product Principles
 
 1. **Human accountable:** AI recommends and explains; authorised humans decide.
 2. **Evidence first:** Every meaningful result links to source facts, page/coordinates and reference data.
@@ -257,17 +288,20 @@ TradePulse’s proposed wedge is an API-first, GIFT IFSC-oriented compliance dec
 8. **Least surprise:** A reviewer should understand why a case needs attention within seconds.
 9. **Reproducibility:** The same input, model/prompt version and source versions should reproduce the same result.
 10. **Reversibility:** Every engineering increment and regulatory deployment can be rolled back.
+11. **Bounded autonomy:** Agent debate has a maximum number of rounds and a deterministic arbiter.
+12. **Consensus is not certainty:** Agent agreement improves confidence; it does not create legal truth.
 
 ---
 
-# 8. Product Scope and Priorities
+# 9. Product Scope and Priorities
 
-## 8.1 MoSCoW scope
+## 9.1 MoSCoW scope
 
 | Priority | Capability | Hackathon requirement |
 |---|---|---|
 | Must | Synthetic case/document intake | Upload invoice and BoL; optional packing list |
 | Must | Document intelligence | Structured extraction and provenance |
+| Must | Multi-agent consensus | At least one document type with agent disagreement trail |
 | Must | Cross-document checks | Parties, quantities, dates, ports and goods |
 | Must | Price anomaly check | Benchmark, variance, calculation and limitations |
 | Must | Entity resolution | GLEIF-first or clearly-labelled fixture path |
@@ -287,7 +321,7 @@ TradePulse’s proposed wedge is an API-first, GIFT IFSC-oriented compliance dec
 | Won’t v1 | Autonomous adverse action | Explicitly prohibited |
 | Won’t v1 | Full global legal coverage | Source registry and roadmap only |
 
-## 8.2 Feature prioritisation rule
+## 9.2 Feature prioritisation rule
 
 If time is lost, protect this order:
 
@@ -300,9 +334,9 @@ If time is lost, protect this order:
 
 ---
 
-# 9. Product Architecture Requirements
+# 10. Product Architecture Requirements
 
-## 9.1 Logical architecture
+## 10.1 Logical architecture
 
 ```mermaid
 flowchart LR
@@ -312,7 +346,7 @@ flowchart LR
     API --> REGWATCH[RegWatch Domain]
     CASE --> DB[(SQLite prototype / PostgreSQL production)]
     CASE --> STORE[Object storage / local fixture store]
-    WORKFLOW --> DI[Document Intelligence]
+    WORKFLOW --> DI[Document Intelligence Swarm]
     WORKFLOW --> ENTITY[Entity Resolution]
     WORKFLOW --> SCREEN[Screening]
     WORKFLOW --> RULES[Compliance Rule Engine]
@@ -330,7 +364,7 @@ flowchart LR
     CASE --> AUDIT[Hash-chained audit log]
 ```
 
-## 9.2 Deployment choice
+## 10.2 Deployment choice
 
 For the hackathon, use a modular monolith:
 
@@ -344,7 +378,7 @@ For the hackathon, use a modular monolith:
 
 Post-hackathon, evaluate PostgreSQL, object storage, managed queues, workers, secrets management, observability and tenant isolation.
 
-## 9.3 Technology requirements
+## 10.3 Technology requirements
 
 - Frontend: Next.js App Router, TypeScript, Tailwind, shadcn/ui, react-pdf, Recharts.
 - Backend: Python 3.12 preferred, FastAPI, Pydantic v2, SQLAlchemy, pytest, Ruff.
@@ -356,17 +390,17 @@ Post-hackathon, evaluate PostgreSQL, object storage, managed queues, workers, se
 
 ---
 
-# 10. Phase 1 Requirements — Document Intelligence Extraction
+# 11. Agentic Document Intelligence Swarm
 
-## 10.1 Objective
+## 11.1 Objective
 
-Transform a document presentation into validated structured facts while preserving the relationship between each fact and its source location.
+Transform a document presentation into validated structured facts while preserving the relationship between each fact and its source location, and while exposing disagreement between agents.
 
-## 10.2 User story
+## 11.2 User story
 
 > As a maker, I want to upload a trade presentation and see what the system extracted, where it found each value, and which fields need confirmation, so that I do not have to manually retype or hunt through every page.
 
-## 10.3 Supported documents
+## 11.3 Supported documents
 
 ### Commercial invoice
 
@@ -404,7 +438,53 @@ Transform a document presentation into validated structured facts while preservi
 - Required documents.
 - Selected Field 46A-style requirements.
 
-## 10.4 Functional requirements
+## 11.4 Agent roles
+
+### Agent 1 — Extractor
+
+- Reads the document.
+- Produces structured fields.
+- Must preserve raw values.
+- Must not infer missing values.
+
+### Agent 2 — Validator
+
+- Independently checks the extracted fields against the document.
+- Looks for contradictions, missing fields and suspicious arithmetic.
+- May propose corrections with evidence.
+
+### Agent 3 — Challenger
+
+- Attempts to disprove the extraction.
+- Looks for alternate interpretations, table misreads, date confusion and entity-role confusion.
+- Produces a disagreement list.
+
+### Agent 4 — Arbiter
+
+- Compares Extractor, Validator and Challenger outputs.
+- Resolves disagreements using evidence and deterministic rules.
+- Produces the final structured case object.
+- Records the disagreement trail.
+
+### Agent 5 — Cross-document checker
+
+- Compares invoice, BoL and packing list.
+- Produces mismatch evidence.
+- Does not decide legal meaning.
+
+## 11.5 Consensus rules
+
+- Maximum 3 debate rounds.
+- If agents agree, the result is accepted with provenance.
+- If agents disagree, the arbiter resolves using:
+  - Source text evidence.
+  - Deterministic arithmetic.
+  - Field-level confidence.
+  - Cross-document consistency.
+- If the arbiter cannot resolve, the field is marked `REVIEW_REQUIRED`.
+- The system must never average away a critical discrepancy.
+
+## 11.6 Functional requirements
 
 | ID | Requirement | Priority |
 |---|---|---|
@@ -421,8 +501,10 @@ Transform a document presentation into validated structured facts while preservi
 | DI-011 | Cache result by file hash + model + prompt + schema version | Must |
 | DI-012 | Never infer absent values; return null/unknown | Must |
 | DI-013 | Display extraction status and errors to user | Must |
+| DI-014 | Record agent disagreement trail | Must |
+| DI-015 | Support multi-agent consensus for at least one document type | Must |
 
-## 10.5 Extraction contract
+## 11.7 Extraction contract
 
 ```json
 {
@@ -450,11 +532,18 @@ Transform a document presentation into validated structured facts while preservi
   "validation": {
     "status": "PASS | REVIEW_REQUIRED | INVALID",
     "errors": []
+  },
+  "agent_trace": {
+    "extractor": "…",
+    "validator": "…",
+    "challenger": "…",
+    "arbiter": "…",
+    "disagreements": []
   }
 }
 ```
 
-## 10.6 AI configuration requirements
+## 11.8 AI configuration requirements
 
 - The LLM must receive a document-specific extraction prompt.
 - The output format must be constrained to a Pydantic/JSON schema.
@@ -465,7 +554,7 @@ Transform a document presentation into validated structured facts while preservi
 - The frontend must never call the LLM directly.
 - All outputs must be validated before persistence or downstream checks.
 
-## 10.7 Phase 1 acceptance criteria
+## 11.9 Phase 1 acceptance criteria
 
 - 12 synthetic documents process into valid output or explicit review/error state.
 - At least one digital PDF and one scanned/noisy document are tested.
@@ -473,20 +562,21 @@ Transform a document presentation into validated structured facts while preservi
 - Every displayed discrepancy field links to a page; coordinate highlights are used where available.
 - Cached hero results load with network disabled.
 - Invalid JSON never becomes a compliance pass.
+- At least one document type shows an agent disagreement trail.
 
 ---
 
-# 11. Phase 2 Requirements — Compliance Decision Engine
+# 12. Phase 2 Requirements — Compliance Decision Engine
 
-## 11.1 Objective
+## 12.1 Objective
 
 Evaluate validated facts against explicit, versioned and explainable rule packs and produce a review route with evidence.
 
-## 11.2 User story
+## 12.2 User story
 
 > As a compliance officer, I want to see why a presentation is routed for review, which source and rule version produced that result, and what action I should take, so that I can make and defend a decision quickly.
 
-## 11.3 Required checks
+## 12.3 Required checks
 
 ### A. Entity resolution
 
@@ -617,7 +707,7 @@ Check whether:
 
 Do not claim complete UCP 600 or ISBP legal coverage in the prototype.
 
-## 11.4 Rule packs as data
+## 12.4 Rule packs as data
 
 Rule packs must be JSON-schema validated and versioned.
 
@@ -645,7 +735,7 @@ Rule packs must be JSON-schema validated and versioned.
 
 Rules must not be hidden only inside prompts or source-code branches.
 
-## 11.5 Standard RuleResult contract
+## 12.5 Standard RuleResult contract
 
 ```json
 {
@@ -673,7 +763,7 @@ Allowed status values:
 
 `DATA_UNAVAILABLE` must never silently become `PASS`.
 
-## 11.6 Risk routing
+## 12.6 Risk routing
 
 ```mermaid
 flowchart TD
@@ -696,7 +786,7 @@ The composite score must not replace the reason breakdown. Display:
 - Reference-data snapshot.
 - Recommended human action.
 
-## 11.7 Maker-checker workflow
+## 12.7 Maker-checker workflow
 
 States:
 
@@ -715,7 +805,7 @@ Requirements:
 - Automated checks cannot produce final checker approval.
 - A reassessment after replay creates a new version, not an overwritten history.
 
-## 11.8 Phase 2 acceptance criteria
+## 12.8 Phase 2 acceptance criteria
 
 - Similar-name fixture routes to review without a stable identifier.
 - Exact identifier fixture can reach verified status subject to source/status policy.
@@ -728,17 +818,17 @@ Requirements:
 
 ---
 
-# 12. Phase 3 Requirements — RegWatch Change Engine
+# 13. Phase 3 Requirements — RegWatch Change Engine
 
-## 12.1 Objective
+## 13.1 Objective
 
 Keep reference data and compliance controls current through monitored source updates, human-reviewed proposals, versioned deployment and selective replay.
 
-## 12.2 Product promise
+## 13.2 Product promise
 
 > Rules change faster than people can read them. RegWatch shows what changed, what it may affect, who approved the internal interpretation and which existing cases must be checked again.
 
-## 12.3 Source registry
+## 13.3 Source registry
 
 Each source record must contain:
 
@@ -775,7 +865,7 @@ Initial registry categories:
 
 The prototype must not show planned sources as live.
 
-## 12.4 Regulatory event lifecycle
+## 13.4 Regulatory event lifecycle
 
 ```mermaid
 stateDiagram-v2
@@ -791,7 +881,7 @@ stateDiagram-v2
     REPLAYING --> REPLAY_FAILED
 ```
 
-## 12.5 Event requirements
+## 13.5 Event requirements
 
 - Detect new notification, list snapshot or modified source record.
 - Validate source URL and retrieve metadata.
@@ -807,7 +897,7 @@ stateDiagram-v2
 - Replay only affected checks.
 - Preserve prior and new outputs.
 
-## 12.6 LLM boundary
+## 13.6 LLM boundary
 
 The LLM may:
 
@@ -824,7 +914,7 @@ The LLM may not:
 - Automatically block or clear a case.
 - Replace review of the original official source.
 
-## 12.7 Replay example
+## 13.7 Replay example
 
 ```text
 OFAC snapshot v2026.08.21 arrives
@@ -837,7 +927,7 @@ OFAC snapshot v2026.08.21 arrives
   → audit event records old/new snapshot and rule versions
 ```
 
-## 12.8 Phase 3 hackathon slice
+## 13.8 Phase 3 hackathon slice
 
 - Implement one sanctions snapshot/diff path and one DGFT event path.
 - Use cached official source metadata when live access is unavailable.
@@ -845,7 +935,7 @@ OFAC snapshot v2026.08.21 arrives
 - Build event review UI with source, summary, proposed diff and approval.
 - Keep other jurisdictions in the source registry as `PLANNED` or `CACHED`.
 
-## 12.9 Phase 3 acceptance criteria
+## 13.9 Phase 3 acceptance criteria
 
 - Duplicate snapshot checksum does not create duplicate event.
 - Rule/data proposal cannot become active without analyst approval.
@@ -856,16 +946,16 @@ OFAC snapshot v2026.08.21 arrives
 
 ---
 
-# 13. Authoritative and Synthetic Data Strategy
+# 14. Authoritative and Synthetic Data Strategy
 
-## 13.1 Data-source hierarchy
+## 14.1 Data-source hierarchy
 
 1. Official regulator, registry or intergovernmental source.
 2. Official machine-readable API/download.
 3. Credible aggregator with source attribution and coverage limits.
 4. Synthetic fixture where no usable public source exists.
 
-## 13.2 Public data to use where permitted
+## 14.2 Public data to use where permitted
 
 - GLEIF legal-entity records/API.
 - OFAC sanctions snapshots.
@@ -879,7 +969,7 @@ OFAC snapshot v2026.08.21 arrives
 
 The GLEIF API and global index provide standardized legal-entity reference data, while official sanctions publishers provide list downloads or structured formats. [web:169][web:171][web:99][web:200]
 
-## 13.3 Synthetic data to create
+## 14.3 Synthetic data to create
 
 - Invoices.
 - Bills of lading.
@@ -894,7 +984,7 @@ The GLEIF API and global index provide standardized legal-entity reference data,
 - Duplicate presentation cases.
 - Synthetic regulatory event used only when clearly labelled.
 
-## 13.4 Synthetic case matrix
+## 14.4 Synthetic case matrix
 
 | Case | Expected result | Purpose |
 |---|---|---|
@@ -908,7 +998,7 @@ The GLEIF API and global index provide standardized legal-entity reference data,
 | TP-REPLAY-001 | Green → amber | RegWatch replay |
 | TP-MALFORMED-001 | Processing failure | Upload safety |
 
-## 13.5 Provenance requirements
+## 14.5 Provenance requirements
 
 Every imported record requires:
 
@@ -924,9 +1014,9 @@ Every imported record requires:
 
 ---
 
-# 14. User Experience Requirements
+# 15. User Experience Requirements
 
-## 14.1 Compliance workbench queue
+## 15.1 Compliance workbench queue
 
 Must show:
 
@@ -941,7 +1031,7 @@ Must show:
 - Reference-data freshness.
 - Synthetic/live/cached label.
 
-## 14.2 Case review view
+## 15.2 Case review view
 
 Three-column or split-screen layout:
 
@@ -956,7 +1046,7 @@ Interactions:
 - Click a rule result → show rule-pack version and source data.
 - Click a RegWatch replay → show old/new result comparison.
 
-## 14.3 RegWatch workbench
+## 15.3 RegWatch workbench
 
 Must show:
 
@@ -971,7 +1061,7 @@ Must show:
 - Approval/rejection controls.
 - Replay count and result.
 
-## 14.4 Safety language
+## 15.4 Safety language
 
 Use:
 
@@ -990,7 +1080,7 @@ Do not use:
 
 ---
 
-# 15. API Requirements
+# 16. API Requirements
 
 All endpoints are under `/api/v1`.
 
@@ -1024,9 +1114,9 @@ Requirements:
 
 ---
 
-# 16. Security and Reliability Requirements
+# 17. Security and Reliability Requirements
 
-## 16.1 Prototype controls
+## 17.1 Prototype controls
 
 - No real banking/customer data.
 - File size/type/page validation.
@@ -1041,7 +1131,7 @@ Requirements:
 - Explicit stale-data indicators.
 - Safe errors without stack traces.
 
-## 16.2 Failure behaviors
+## 17.2 Failure behaviors
 
 | Failure | Required behavior |
 |---|---|
@@ -1053,7 +1143,7 @@ Requirements:
 | RegWatch adapter fails | Preserve current active pack; show degraded source |
 | Database unavailable | Readiness fails; state-changing actions rejected |
 
-## 16.3 Production requirements deferred
+## 17.3 Production requirements deferred
 
 - Encryption at rest and in transit.
 - Key management and rotation.
@@ -1068,9 +1158,9 @@ Requirements:
 
 ---
 
-# 17. Metrics and Success Criteria
+# 18. Metrics and Success Criteria
 
-## 17.1 Hackathon product metrics
+## 18.1 Hackathon product metrics
 
 - Golden path completes successfully three times.
 - Median cached processing time under 5 seconds; live path target under 30 seconds.
@@ -1081,8 +1171,9 @@ Requirements:
 - 0 missing-source checks silently marked pass.
 - Entity ambiguity fixture routes to review.
 - RegWatch replay changes the expected seeded case.
+- At least one document type shows a multi-agent disagreement trail.
 
-## 17.2 Evaluation metrics
+## 18.2 Evaluation metrics
 
 - Can a judge understand the problem in 30 seconds?
 - Can the team explain one complete customer workflow?
@@ -1091,7 +1182,7 @@ Requirements:
 - Is GIFT IFSC relevance clear?
 - Does the team distinguish prototype, cached data, synthetic data and production roadmap?
 
-## 17.3 Post-hackathon metrics
+## 18.3 Post-hackathon metrics
 
 - Median review time versus manual baseline.
 - False-positive rate by rule.
@@ -1106,11 +1197,39 @@ Requirements:
 
 ---
 
-# 18. Engineering Team Model
+# 19. Engineering Team Model
 
-## 18.1 Ownership boundaries
+## 19.1 Ownership boundaries
 
-### Ansh — Product and Compliance Workbench Engineer
+### Abhishek — Main Engineer
+
+Owns:
+
+- Backend modular monolith foundation.
+- Database models, migrations and repositories.
+- Backend Pydantic schemas and OpenAPI endpoints.
+- Document upload validation, hashing and storage abstraction.
+- Document extraction provider interface, parsing, validation and cache.
+- Entity normalisation, GLEIF adapter and candidate scoring.
+- Local sanctions snapshot ingestion, versioning and matching.
+- Compliance rule-pack loader and deterministic checks.
+- Price benchmark lookup, unit/currency normalization and calculation.
+- Cross-document consistency and duplicate-presentation checks.
+- Risk aggregation and routing policy.
+- Server-side maker-checker enforcement.
+- Hash-chained audit log implementation.
+- RegWatch source registry, snapshots, diffs, proposal storage, approval backend and selective replay.
+- Backend deployment, environment configuration, health checks and operational logs.
+
+Abhishek must coordinate with Ansh before changing:
+
+- Shared frontend-facing response schemas.
+- UI status vocabulary.
+- User-visible policy language.
+- Demo fixture assumptions.
+- Product workflow sequence.
+
+### Ansh — Main Engineer
 
 Owns:
 
@@ -1139,35 +1258,24 @@ Ansh must coordinate with Abhishek before changing:
 - Source metadata schema.
 - Database-driven view assumptions.
 
-### Abhishek — Platform and Intelligence Engineer
+### Atharva — Engineer + UI/UX + Testing
 
 Owns:
 
-- FastAPI modular-monolith foundation.
-- Database models, migrations and repositories.
-- Backend Pydantic schemas and OpenAPI endpoints.
-- Document upload validation, hashing and storage abstraction.
-- Document extraction provider interface, parsing, schema validation and cache.
-- Entity normalisation, GLEIF adapter and candidate scoring.
-- Local sanctions snapshot ingestion, versioning and matching.
-- Compliance rule-pack loader and deterministic checks.
-- Price benchmark lookup, unit/currency normalization and calculation.
-- Cross-document consistency and duplicate-presentation checks.
-- Risk aggregation/routing policy.
-- Maker-checker enforcement server-side.
-- Hash-chained audit log implementation.
-- RegWatch source registry, snapshots, diffs, proposal storage, approval backend and selective replay.
-- Backend deployment, environment configuration, health checks and operational logs.
+- UI/UX polish and accessibility.
+- Frontend component quality and responsive behavior.
+- Supporting engineering tasks that unblock Ansh.
+- UI-level testing and visual regression checks.
+- Demo flow polish and presentation assets.
+- Secondary testing support for Shivansh.
 
-Abhishek must coordinate with Ansh before changing:
+Atharva must coordinate with Ansh before changing:
 
-- Shared frontend-facing response schemas.
-- UI status vocabulary.
-- User-visible policy language.
-- Demo fixture assumptions.
-- Product workflow sequence.
+- Core page structure or workflow semantics.
+- API client shape.
+- Product copy that affects compliance meaning.
 
-### Shivansh — Independent QA and Release Engineer
+### Shivansh — Main Testing + UI
 
 Owns:
 
@@ -1182,10 +1290,11 @@ Owns:
 - Performance smoke tests.
 - QA defect reporting, severity and release status.
 - Golden demo rehearsal, offline fallback verification and rollback validation.
+- UI testing support and final visual QA.
 
 Shivansh should not become the default feature implementer. Independent verification protects the quality and credibility of a sensitive compliance product.
 
-## 18.2 No-clash file ownership
+## 19.2 No-clash file ownership
 
 | Area | Primary owner | QA reviewer |
 |---|---|---|
@@ -1217,9 +1326,9 @@ Any change to `packages/contracts` requires:
 
 ---
 
-# 19. Cursor and Agentic Development Protocol
+# 20. Cursor and Agentic Development Protocol
 
-## 19.1 Repository AI context
+## 20.1 Repository AI context
 
 The repo should contain:
 
@@ -1232,7 +1341,7 @@ The repo should contain:
 
 Every coding agent must read the applicable PRD and system-design sections before changing code.
 
-## 19.2 Agent roles
+## 20.2 Agent roles
 
 | Cursor agent | Scope | Output |
 |---|---|---|
@@ -1242,13 +1351,13 @@ Every coding agent must read the applicable PRD and system-design sections befor
 | Reviewer | Read-only diff analysis | Contract/security/correctness findings |
 | Documentation agent | Docs/runbooks only | Documentation diff |
 
-## 19.3 Mandatory agent prompt template
+## 20.3 Mandatory agent prompt template
 
 ```text
 Read PRD.md, tradepulse-system-design.md, and relevant ADRs first.
 
 Task: [one bounded feature]
-Owner: [Ansh or Abhishek]
+Owner: [Abhishek or Ansh]
 Allowed files: [explicit list]
 Do not modify: [protected files]
 Contract: [endpoint/schema/rule contract]
@@ -1264,7 +1373,7 @@ Do not commit, deploy, alter secrets or expand scope.
 Return changed files, tests run, failures, assumptions and risks.
 ```
 
-## 19.4 Agent safety rules
+## 20.4 Agent safety rules
 
 - Human reviews every diff.
 - Cursor agents never receive production credentials.
@@ -1277,7 +1386,7 @@ Return changed files, tests run, failures, assumptions and risks.
 
 ---
 
-# 20. Sprint Plan and Assignments
+# 21. Sprint Plan and Assignments
 
 The following plan maximises parallel work without file conflicts. Shivansh tests each merge before the next checkpoint is accepted.
 
@@ -1285,7 +1394,15 @@ The following plan maximises parallel work without file conflicts. Shivansh test
 
 **Objective:** Arrive able to start cleanly and immediately.
 
-### Ansh — Product and Workbench
+### Abhishek — Main Engineer
+
+- Install and verify Python, uv/venv, Docker, Git and Cursor.
+- Prepare backend module map and data contracts outside the event repository.
+- Validate permitted access to GLEIF, sanctions snapshots, commodity sources and any LLM provider.
+- Prepare source/fixture loaders and environment-variable checklist without creating a prohibited pre-built application repository.
+- Prepare clean FastAPI/bootstrap commands to execute only after kickoff.
+
+### Ansh — Main Engineer
 
 - Finalize user journeys, screen map and error/empty/loading states.
 - Prepare UI wireframes in Figma or Markdown outside the code repository.
@@ -1294,15 +1411,14 @@ The following plan maximises parallel work without file conflicts. Shivansh test
 - Prepare demo narrative and screen sequence.
 - Define user-visible wording for potential matches, TBML indicators and unavailable data.
 
-### Abhishek — Platform and Intelligence
+### Atharva — Engineer + UI/UX + Testing
 
-- Install and verify Python, uv/venv, Docker, Git and Cursor.
-- Prepare backend module map and data contracts outside the event repository.
-- Validate permitted access to GLEIF, sanctions snapshots, commodity sources and any LLM provider.
-- Prepare source/fixture loaders and environment-variable checklist without creating a prohibited pre-built application repository.
-- Prepare clean FastAPI/bootstrap commands to execute only after kickoff.
+- Prepare UI polish checklist and accessibility checklist.
+- Prepare visual regression checklist.
+- Prepare demo screenshots and presentation assets.
+- Support Ansh with component inventory and mock data review.
 
-### Shivansh — QA
+### Shivansh — Main Testing + UI
 
 - Prepare QA matrix, defect severity definitions and release checklist.
 - Prepare synthetic fixture specifications and expected outcomes.
@@ -1311,25 +1427,31 @@ The following plan maximises parallel work without file conflicts. Shivansh test
 
 ### Exit condition
 
-All three understand the scope, source labels, ownership boundaries and kickoff procedure. No prohibited pre-built repository is used. [file:167]
+All four understand the scope, source labels, ownership boundaries and kickoff procedure. No prohibited pre-built repository is used. [file:167]
 
 ## Sprint 1 — H0 to H2: Clean bootstrap and contracts
 
-### Ansh — Product and Workbench
-
-- Create Next.js workbench shell after official kickoff.
-- Implement navigation, prototype/synthetic-data banner and mock queue route.
-- Implement typed mock case rendering against frozen sample response.
-- Commit `feat(workbench): initialize compliance workbench shell`.
-
-### Abhishek — Platform and Intelligence
+### Abhishek — Main Engineer
 
 - Create backend skeleton after official kickoff.
 - Add FastAPI health/readiness endpoints, database bootstrap and Pydantic domain contracts.
 - Add shared error, rule-result and case response contracts.
 - Commit `feat(platform): initialize backend contracts and health checks`.
 
-### Shivansh — QA
+### Ansh — Main Engineer
+
+- Create Next.js workbench shell after official kickoff.
+- Implement navigation, prototype/synthetic-data banner and mock queue route.
+- Implement typed mock case rendering against frozen sample response.
+- Commit `feat(workbench): initialize compliance workbench shell`.
+
+### Atharva — Engineer + UI/UX + Testing
+
+- Review the shell for accessibility and layout consistency.
+- Add visual polish notes and component inventory alignment.
+- Support Ansh with quick UI fixes.
+
+### Shivansh — Main Testing + UI
 
 - Pull both branches.
 - Run clean installation and health checks.
@@ -1349,7 +1471,15 @@ Must work:
 
 ## Sprint 2 — H2 to H6: Document intelligence
 
-### Ansh — Product and Workbench
+### Abhishek — Main Engineer
+
+- Implement upload validation, hashing and metadata persistence.
+- Implement text-first parser, LLM provider interface and extraction schemas.
+- Implement schema validation, arithmetic validation and extraction cache.
+- Add invoice and BoL pipeline tests.
+- Commit `feat(intelligence): add validated document extraction pipeline`.
+
+### Ansh — Main Engineer
 
 - Implement upload interface.
 - Implement processing, failed, extraction-review and completed states.
@@ -1358,15 +1488,13 @@ Must work:
 - Implement field-click evidence navigation.
 - Commit `feat(workbench): add document review and extraction states`.
 
-### Abhishek — Platform and Intelligence
+### Atharva — Engineer + UI/UX + Testing
 
-- Implement upload validation, hashing and metadata persistence.
-- Implement text-first parser, LLM provider interface and extraction schemas.
-- Implement schema validation, arithmetic validation and extraction cache.
-- Add invoice and BoL pipeline tests.
-- Commit `feat(intelligence): add validated document extraction pipeline`.
+- Polish upload and review UI.
+- Add accessibility and responsive checks.
+- Support Shivansh with UI-level test cases.
 
-### Shivansh — QA
+### Shivansh — Main Testing + UI
 
 - Test valid/invalid files, oversized files and malformed PDFs.
 - Test low-confidence and invalid-schema behavior.
@@ -1386,15 +1514,7 @@ Must work:
 
 ## Sprint 3 — H6 to H10: Entity resolution and screening
 
-### Ansh — Product and Workbench
-
-- Build entity candidate drawer.
-- Build name/address/country/identifier score-dimension display.
-- Build source freshness, coverage and data-unavailable labels.
-- Build potential-match review action and recommended next-step UI.
-- Commit `feat(workbench): add entity and screening evidence views`.
-
-### Abhishek — Platform and Intelligence
+### Abhishek — Main Engineer
 
 - Implement normaliser preserving raw values.
 - Implement GLEIF adapter and response cache.
@@ -1404,7 +1524,20 @@ Must work:
 - Add candidate and source-evidence contracts.
 - Commit `feat(intelligence): add source-backed entity resolution and screening`.
 
-### Shivansh — QA
+### Ansh — Main Engineer
+
+- Build entity candidate drawer.
+- Build name/address/country/identifier score-dimension display.
+- Build source freshness, coverage and data-unavailable labels.
+- Build potential-match review action and recommended next-step UI.
+- Commit `feat(workbench): add entity and screening evidence views`.
+
+### Atharva — Engineer + UI/UX + Testing
+
+- Polish candidate drawer and evidence layout.
+- Support Shivansh with UI regression checks.
+
+### Shivansh — Main Testing + UI
 
 - Test `Amit TRD Co.` ambiguity.
 - Test exact identifier path.
@@ -1424,16 +1557,7 @@ Must work:
 
 ## Sprint 4 — H10 to H14: Compliance decision engine
 
-### Ansh — Product and Workbench
-
-- Build discrepancy cards.
-- Build calculation/evidence panel.
-- Build risk-route summary and recommended-action surfaces.
-- Build maker/checker controls and override-rationale flow.
-- Build source/rule version display.
-- Commit `feat(workbench): add explainable review and maker-checker workflow`.
-
-### Abhishek — Platform and Intelligence
+### Abhishek — Main Engineer
 
 - Implement rules-as-data loader.
 - Implement document consistency checks.
@@ -1443,7 +1567,21 @@ Must work:
 - Implement maker/checker backend state machine.
 - Commit `feat(platform): add versioned compliance decision engine`.
 
-### Shivansh — QA
+### Ansh — Main Engineer
+
+- Build discrepancy cards.
+- Build calculation/evidence panel.
+- Build risk-route summary and recommended-action surfaces.
+- Build maker/checker controls and override-rationale flow.
+- Build source/rule version display.
+- Commit `feat(workbench): add explainable review and maker-checker workflow`.
+
+### Atharva — Engineer + UI/UX + Testing
+
+- Polish discrepancy cards and evidence panels.
+- Support Shivansh with UI regression checks.
+
+### Shivansh — Main Testing + UI
 
 - Test clean case does not over-flag.
 - Test price anomaly math.
@@ -1465,16 +1603,7 @@ Must work:
 
 ## Sprint 5 — H14 to H17: RegWatch and replay
 
-### Ansh — Product and Workbench
-
-- Build source health view.
-- Build event list and event detail view.
-- Build official source/proposed-diff comparison.
-- Build approval/rejection UI.
-- Build old/new case-result comparison.
-- Commit `feat(workbench): add RegWatch review and replay views`.
-
-### Abhishek — Platform and Intelligence
+### Abhishek — Main Engineer
 
 - Implement source registry model.
 - Implement snapshot checksum/diff service.
@@ -1484,7 +1613,21 @@ Must work:
 - Implement selective replay backend.
 - Commit `feat(platform): add RegWatch approval and selective replay`.
 
-### Shivansh — QA
+### Ansh — Main Engineer
+
+- Build source health view.
+- Build event list and event detail view.
+- Build official source/proposed-diff comparison.
+- Build approval/rejection UI.
+- Build old/new case-result comparison.
+- Commit `feat(workbench): add RegWatch review and replay views`.
+
+### Atharva — Engineer + UI/UX + Testing
+
+- Polish RegWatch UI and replay comparison.
+- Support Shivansh with UI regression checks.
+
+### Shivansh — Main Testing + UI
 
 - Test duplicate snapshot handling.
 - Test unapproved proposal cannot deploy.
@@ -1505,15 +1648,7 @@ Must work:
 
 ## Sprint 6 — H17 to H19: Integration and hardening
 
-### Ansh — Product and Workbench
-
-- Polish loading, error and empty states.
-- Remove unsupported claims.
-- Ensure every important UI item has evidence/source label.
-- Finalize demo navigation and fallback screens.
-- Review user-facing product language for compliance safety.
-
-### Abhishek — Platform and Intelligence
+### Abhishek — Main Engineer
 
 - Stabilise backend and integration points.
 - Add idempotency and error handling for demo-critical endpoints.
@@ -1521,7 +1656,21 @@ Must work:
 - Fix S0/S1 issues only.
 - Tag `v0.6-integration` after QA approval.
 
-### Shivansh — QA
+### Ansh — Main Engineer
+
+- Polish loading, error and empty states.
+- Remove unsupported claims.
+- Ensure every important UI item has evidence/source label.
+- Finalize demo navigation and fallback screens.
+- Review user-facing product language for compliance safety.
+
+### Atharva — Engineer + UI/UX + Testing
+
+- Final visual polish.
+- Accessibility and responsive checks.
+- Support Shivansh with UI regression checks.
+
+### Shivansh — Main Testing + UI
 
 - Pull exact integration commit.
 - Run complete smoke test.
@@ -1550,19 +1699,24 @@ Must work:
 
 ## Sprint 8 — H20 to H22: Pitch and recovery buffer
 
-### Ansh — Product and Workbench
-
-- Drive the product narrative and live workbench demo.
-- Explain user journey, maker-checker flow, evidence UX and business relevance.
-- Handle buyer persona, GIFT IFSC and product-roadmap questions.
-
-### Abhishek — Platform and Intelligence
+### Abhishek — Main Engineer
 
 - Explain architecture, source/data provenance, decision-engine boundaries and RegWatch replay.
 - Handle technical questions about extraction, fuzzy matching, reference data and offline fallback.
 - Keep local backend recovery path ready.
 
-### Shivansh — QA
+### Ansh — Main Engineer
+
+- Drive the product narrative and live workbench demo.
+- Explain user journey, maker-checker flow, evidence UX and business relevance.
+- Handle buyer persona, GIFT IFSC and product-roadmap questions.
+
+### Atharva — Engineer + UI/UX + Testing
+
+- Support the demo with visuals and polish.
+- Handle UI/UX questions and presentation assets.
+
+### Shivansh — Main Testing + UI
 
 - Watch for regressions during rehearsal.
 - Operate fallback/backup video if required.
@@ -1570,9 +1724,9 @@ Must work:
 
 ---
 
-# 21. QA and Release Protocol
+# 22. QA and Release Protocol
 
-## 21.1 Every change cycle
+## 22.1 Every change cycle
 
 ```mermaid
 flowchart LR
@@ -1587,7 +1741,7 @@ flowchart LR
     FIX --> QA
 ```
 
-## 21.2 Mandatory PR contents
+## 22.2 Mandatory PR contents
 
 - Summary.
 - Scope and non-scope.
@@ -1600,12 +1754,12 @@ flowchart LR
 - Known limitations.
 - Rollback commit/tag.
 
-## 21.3 Required commands
+## 22.3 Required commands
 
 ```bash
 # Backend
 ruff check .
-mypy app
+mypy apps/api/app
 pytest -q
 
 # Frontend
@@ -1618,7 +1772,7 @@ pip-audit
 pnpm audit
 ```
 
-## 21.4 QA regression checklist
+## 22.4 QA regression checklist
 
 - [ ] Clean case renders.
 - [ ] Over-invoice case renders.
@@ -1632,8 +1786,9 @@ pnpm audit
 - [ ] RegWatch approval/replay works.
 - [ ] Network-off cached path works.
 - [ ] No secrets or raw sensitive files are committed.
+- [ ] Multi-agent disagreement trail is visible for at least one document type.
 
-## 21.5 Severity
+## 22.5 Severity
 
 | Severity | Description | Action |
 |---|---|---|
@@ -1644,9 +1799,9 @@ pnpm audit
 
 ---
 
-# 22. Git and Rollback Strategy
+# 23. Git and Rollback Strategy
 
-## 22.1 Branches
+## 23.1 Branches
 
 - `main`: known-good deployable branch.
 - `feat/workbench-*`: Ansh product/frontend features.
@@ -1654,7 +1809,7 @@ pnpm audit
 - `test/*`: Shivansh test-only branches when needed.
 - `recovery/*`: temporary rollback branches.
 
-## 22.2 Tags
+## 23.2 Tags
 
 - `v0.1-skeleton`.
 - `v0.2-doc-intel`.
@@ -1665,7 +1820,7 @@ pnpm audit
 - `v0.7-demo-freeze`.
 - `demo-safe`.
 
-## 22.3 Commit format
+## 23.3 Commit format
 
 ```text
 feat(workbench): add source evidence drawer
@@ -1675,7 +1830,7 @@ fix(workflow): block checker approval before maker approval
 docs(regwatch): document source freshness behavior
 ```
 
-## 22.4 Rollback
+## 23.4 Rollback
 
 ```bash
 git fetch --tags
@@ -1687,9 +1842,9 @@ Do not force-push or destructively rewrite `main` during the hackathon. Deploy t
 
 ---
 
-# 23. Demo Story and Acceptance Flow
+# 24. Demo Story and Acceptance Flow
 
-## 23.1 Three-minute demo
+## 24.1 Three-minute demo
 
 1. Introduce the exporter problem and document burden.
 2. Open the compliance queue.
@@ -1707,19 +1862,19 @@ Do not force-push or destructively rewrite `main` during the hackathon. Deploy t
 14. Replay affected case; green changes to amber.
 15. Close: “The shipment was compliant under the previous version. The system found that the decision needed to be revisited after the approved change.”
 
-## 23.2 One-minute pitch
+## 24.2 One-minute pitch
 
-> Trade finance still depends on people manually comparing invoices, shipping documents and compliance lists. That creates delays and leaves room for missed mismatches, suspicious pricing and similar-name counterparties. TradePulse is a trade-compliance decisioning workbench: document intelligence extracts facts, versioned rules compare the presentation against public reference data, and an evidence panel shows a human officer exactly why a case needs review. Our RegWatch engine keeps the controls current and replays affected cases when approved regulatory or sanctions data changes. We are not replacing compliance officers or claiming to detect crime automatically. We are making the needle glow — with traceable evidence, human approval and a reproducible audit trail.
+> Trade finance still depends on people manually comparing invoices, shipping documents and compliance lists. That creates delays and leaves room for missed mismatches, suspicious pricing and similar-name counterparties. TradePulse is an agentic trade-compliance decisioning workbench: multiple specialised AI agents read, challenge and reconcile trade documents, then versioned rules compare the presentation against public reference data, and an evidence panel shows a human officer exactly why a case needs review. Our RegWatch engine keeps the controls current and replays affected cases when approved regulatory or sanctions data changes. We are not replacing compliance officers or claiming to detect crime automatically. We are making the needle glow — with traceable evidence, human approval and a reproducible audit trail.
 
 ---
 
-# 24. Business and GIFT IFSC Relevance
+# 25. Business and GIFT IFSC Relevance
 
-## 24.1 Target buyer
+## 25.1 Target buyer
 
 Initial buyer: compliance and trade-operations leadership at banks/IBUs and trade houses serving cross-border transactions through GIFT IFSC.
 
-## 24.2 Buyer value
+## 25.2 Buyer value
 
 - Reduce manual review time.
 - Improve consistency across analysts.
@@ -1728,7 +1883,7 @@ Initial buyer: compliance and trade-operations leadership at banks/IBUs and trad
 - Create better audit evidence.
 - Reduce the operational cost of maintaining changing controls.
 
-## 24.3 Initial commercial model
+## 25.3 Initial commercial model
 
 Post-validation options:
 
@@ -1740,7 +1895,7 @@ Post-validation options:
 
 Do not present pricing as validated until customer interviews confirm willingness to pay.
 
-## 24.4 GIFT IFSC fit
+## 25.4 GIFT IFSC fit
 
 - Cross-border finance is central to the target environment.
 - GIFT IFSC offers a relevant setting for regulated innovation.
@@ -1749,7 +1904,7 @@ Do not present pricing as validated until customer interviews confirm willingnes
 
 ---
 
-# 25. Roadmap After the Hackathon
+# 26. Roadmap After the Hackathon
 
 ## 0–2 months: validation
 
@@ -1788,7 +1943,7 @@ Do not present pricing as validated until customer interviews confirm willingnes
 
 ---
 
-# 26. Key Risks and Mitigations
+# 27. Key Risks and Mitigations
 
 | Risk | Consequence | Mitigation |
 |---|---|---|
@@ -1806,7 +1961,7 @@ Do not present pricing as validated until customer interviews confirm willingnes
 
 ---
 
-# 27. Final Definition of Done
+# 28. Final Definition of Done
 
 TradePulse is ready for judging only when:
 
@@ -1826,6 +1981,7 @@ TradePulse is ready for judging only when:
 - [ ] Network-off fallback works.
 - [ ] Demo claims match actual implementation.
 - [ ] Backup video and rollback build are available.
+- [ ] At least one document type shows a multi-agent disagreement trail.
 
 ---
 
@@ -1883,4 +2039,4 @@ tradepulse/
 
 # Appendix C — Final Engineering Standard
 
-> TradePulse should never appear more certain than its evidence. The product is successful when a reviewer can answer: What did the document say? What did the source say? Which rule version was applied? Why was this case routed? What does the human need to do next? Who approved it? And can we reproduce the result later?
+> TradePulse should never appear more certain than its evidence. The product is successful when a reviewer can answer: What did the document say? What did the source say? Which model, parser, rule pack and data snapshot were used? Why was this case routed? What does the human need to do next? Who made and checked the decision? What changed after replay? And can we reproduce or roll back the result?
