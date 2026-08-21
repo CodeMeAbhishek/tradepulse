@@ -12,30 +12,44 @@ from app.domain.document_policy import (
 )
 from app.domain.enums import DocumentType, TradeProfile
 from app.schemas.document_policy import DocumentPolicyEvaluation, DocumentRequirement
-from app.services.document_policy.profiles import PROFILE_REQUIREMENTS, RequirementTemplate
+from app.services.document_policy.profiles import (
+    PRE_SHIPMENT,
+    PROFILE_REQUIREMENTS,
+    RequirementTemplate,
+    build_profile_requirements,
+)
+from tradepulse_contracts.enums import ShipmentMode
 
 
-def get_profile_templates(profile: TradeProfile | str) -> tuple[RequirementTemplate, ...]:
+def get_profile_templates(
+    profile: TradeProfile | str,
+    *,
+    shipment_mode: ShipmentMode = ShipmentMode.UNKNOWN,
+) -> tuple[RequirementTemplate, ...]:
     resolved = resolve_trade_profile(profile)
-    templates = PROFILE_REQUIREMENTS.get(resolved)
-    if templates is None:
-        raise KeyError(f"No document policy configured for profile {resolved}")
-    return templates
+    if shipment_mode is ShipmentMode.UNKNOWN:
+        templates = PROFILE_REQUIREMENTS.get(resolved)
+        if templates is None:
+            raise KeyError(f"No document policy configured for profile {resolved}")
+        return templates
+    return build_profile_requirements(resolved, shipment_mode=shipment_mode)
 
 
 def evaluate_document_pack(
     profile: TradeProfile | str,
     provided_documents: Iterable[DocumentType],
+    *,
+    shipment_mode: ShipmentMode = ShipmentMode.UNKNOWN,
 ) -> DocumentPolicyEvaluation:
     """
     Compare provided document types to the profile checklist.
 
     Missing REQUIRED (blocker) documents yield DOCUMENT_PACK_INCOMPLETE.
-    DATA/availability labels are preserved; missing never becomes PASS.
+    AWB ≠ BoL. Missing never becomes PASS.
     """
     resolved = resolve_trade_profile(profile)
     provided = set(provided_documents)
-    templates = get_profile_templates(resolved)
+    templates = get_profile_templates(resolved, shipment_mode=shipment_mode)
 
     requirements: list[DocumentRequirement] = []
     missing_blockers: list[DocumentType] = []
@@ -83,7 +97,7 @@ def evaluate_document_pack(
         if missing_blockers
         else PackCompletenessStatus.COMPLETE
     )
-    transport = _transport_status(resolved, provided)
+    transport = _transport_status(resolved, provided, shipment_mode=shipment_mode)
 
     return DocumentPolicyEvaluation(
         profile=resolved,
@@ -95,10 +109,17 @@ def evaluate_document_pack(
 
 
 def _transport_status(
-    profile: TradeProfile, provided: set[DocumentType]
+    profile: TradeProfile,
+    provided: set[DocumentType],
+    *,
+    shipment_mode: ShipmentMode,
 ) -> TransportReconciliationStatus:
-    if profile is TradeProfile.INVOICE_ONLY_PRE_REVIEW:
+    if profile in PRE_SHIPMENT:
         return TransportReconciliationStatus.NOT_AVAILABLE
-    if DocumentType.BILL_OF_LADING in provided:
+    if shipment_mode is ShipmentMode.AIR:
+        if DocumentType.AIR_WAYBILL in provided:
+            return TransportReconciliationStatus.AVAILABLE
+        return TransportReconciliationStatus.NOT_AVAILABLE
+    if DocumentType.BILL_OF_LADING in provided or DocumentType.AIR_WAYBILL in provided:
         return TransportReconciliationStatus.AVAILABLE
     return TransportReconciliationStatus.NOT_AVAILABLE

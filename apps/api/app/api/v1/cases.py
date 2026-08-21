@@ -19,6 +19,7 @@ from app.services.case_service import (
     process_case,
     to_case_record,
     to_case_summary,
+    workbench_payload,
 )
 from app.services.regwatch import ReplayService
 
@@ -36,6 +37,8 @@ def create_case_endpoint(body: CreateCaseRequest) -> CaseRecord:
         corridor=body.corridor,
         assignee=body.assignee,
         data_label=body.data_label,
+        shipment_mode=body.shipment_mode,
+        transaction_stage=body.transaction_stage,
         state=_state(),
     )
     return to_case_record(case)
@@ -49,6 +52,12 @@ def list_cases_endpoint() -> list[CaseSummary]:
 @router.get("/cases/{case_id}", response_model=CaseRecord)
 def get_case_endpoint(case_id: str) -> CaseRecord:
     return to_case_record(_state().cases.require(case_id))
+
+
+@router.get("/cases/{case_id}/workbench", dependencies=[Depends(require_database_ready)])
+def get_case_workbench_endpoint(case_id: str) -> dict:
+    """Workbench bundle: case, docs, policy, extraction, agent trace, findings, audit."""
+    return workbench_payload(case_id, state=_state())
 
 
 @router.post(

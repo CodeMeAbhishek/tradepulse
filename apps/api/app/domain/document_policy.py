@@ -24,19 +24,32 @@ class PackCompletenessStatus(StrEnum):
 
 
 class TransportReconciliationStatus(StrEnum):
-    """Invoice-only profiles do not run transport reconciliation."""
+    """Pre-shipment profiles do not run transport reconciliation."""
 
     AVAILABLE = "AVAILABLE"
     NOT_AVAILABLE = "NOT_AVAILABLE"
 
 
-# Master-prompt short names → canonical TradeProfile (system design / PRD).
+# Short aliases and retired literals → canonical application-led TradeProfile.
 PROFILE_ALIASES: dict[str, TradeProfile] = {
-    "INVOICE_ONLY": TradeProfile.INVOICE_ONLY_PRE_REVIEW,
-    "POST_SHIPMENT": TradeProfile.POST_SHIPMENT_DOCUMENT_REVIEW,
-    "LC": TradeProfile.LC_DOCUMENT_REVIEW,
-    "COLLECTION": TradeProfile.DOCUMENTARY_COLLECTION_REVIEW,
-    "ENHANCED": TradeProfile.ENHANCED_TRADE_HOUSE_REVIEW,
+    "PRE_SHIPMENT": TradeProfile.PRE_SHIPMENT_TRADE_FINANCE,
+    "PRE_SHIPMENT_FINANCE": TradeProfile.PRE_SHIPMENT_TRADE_FINANCE,
+    "INVOICE_ONLY": TradeProfile.PRE_SHIPMENT_TRADE_FINANCE,
+    "INVOICE_ONLY_PRE_REVIEW": TradeProfile.PRE_SHIPMENT_TRADE_FINANCE,
+    "LC_ISSUANCE": TradeProfile.LC_ISSUANCE_AMENDMENT,
+    "LC": TradeProfile.LC_ISSUANCE_AMENDMENT,
+    "LC_DOCUMENT_REVIEW": TradeProfile.LC_ISSUANCE_AMENDMENT,
+    "LC_PRESENTATION": TradeProfile.POST_SHIPMENT_LC_PRESENTATION,
+    "POST_SHIPMENT_LC": TradeProfile.POST_SHIPMENT_LC_PRESENTATION,
+    "POST_SHIPMENT": TradeProfile.POST_SHIPMENT_LC_PRESENTATION,
+    "POST_SHIPMENT_DOCUMENT_REVIEW": TradeProfile.POST_SHIPMENT_LC_PRESENTATION,
+    "COLLECTION": TradeProfile.DOCUMENTARY_COLLECTION,
+    "DOCUMENTARY_COLLECTION_REVIEW": TradeProfile.DOCUMENTARY_COLLECTION,
+    "FACTORING": TradeProfile.TRADE_CREDIT_FACTORING,
+    "TRADE_HOUSE": TradeProfile.TRADE_HOUSE_COMPLIANCE_REVIEW,
+    "ENHANCED": TradeProfile.TRADE_HOUSE_COMPLIANCE_REVIEW,
+    "ENHANCED_TRADE_HOUSE_REVIEW": TradeProfile.TRADE_HOUSE_COMPLIANCE_REVIEW,
+    "DOMESTIC_INDIA_GOODS_MOVEMENT": TradeProfile.TRADE_HOUSE_COMPLIANCE_REVIEW,
 }
 
 

@@ -7,7 +7,14 @@ from typing import Any
 
 from pydantic import BaseModel, Field
 
-from tradepulse_contracts.enums import CaseState, DataLabel, TradeProfile
+from tradepulse_contracts.enums import (
+    CaseState,
+    DataLabel,
+    ReviewRole,
+    ShipmentMode,
+    TradeProfile,
+    TransactionStage,
+)
 from tradepulse_contracts.identity import IdentityEvidence
 
 
@@ -41,3 +48,7 @@ class CaseRecord(BaseModel):
     version: int = Field(1, ge=1, description="Increments on replay/reassessment; history is not overwritten")
     identities: list[IdentityEvidence] = Field(default_factory=list)
     metadata: dict[str, Any] = Field(default_factory=dict)
+    shipment_mode: ShipmentMode = ShipmentMode.UNKNOWN
+    transaction_stage: TransactionStage | None = None
+    current_review_role: ReviewRole | None = None
+    last_maker_actor: str | None = None

@@ -178,18 +178,30 @@ def reconcile_invoice_bol(
     profile: TradeProfile | str,
     invoice: InvoiceExtraction,
     bol: BolExtraction | None,
+    shipment_mode: ShipmentMode | str | None = None,
 ) -> InvoiceBolReconciliationResult:
     """
     Deterministic cross-document comparison.
 
-    Invoice-only profile with no BoL → NOT_AVAILABLE (transport reconciliation skipped).
+    Pre-shipment profiles with no transport doc → NOT_AVAILABLE.
+    When mode is AIR, AWB (BolExtraction with AIR_WAYBILL kind) is accepted.
     """
-    resolved = TradeProfile(profile) if not isinstance(profile, TradeProfile) else profile
+    from tradepulse_contracts.enums import ShipmentMode
+
+    from app.domain.document_policy import resolve_trade_profile
+    from app.services.document_policy.profiles import PRE_SHIPMENT
+
+    resolved = resolve_trade_profile(profile)
+    mode = (
+        ShipmentMode(shipment_mode)
+        if isinstance(shipment_mode, str)
+        else (shipment_mode or ShipmentMode.UNKNOWN)
+    )
 
     if bol is None:
         reason = (
-            "No BoL/AWB under invoice-only profile; transport reconciliation is NOT_AVAILABLE."
-            if resolved is TradeProfile.INVOICE_ONLY_PRE_REVIEW
+            "No BoL/AWB under pre-shipment profile; transport reconciliation is NOT_AVAILABLE."
+            if resolved in PRE_SHIPMENT
             else "BoL/AWB not provided; invoice-vs-transport comparison is NOT_AVAILABLE."
         )
         return InvoiceBolReconciliationResult(
@@ -198,9 +210,14 @@ def reconcile_invoice_bol(
             comparisons=[],
             reason=reason,
             recommended_action=(
-                "Continue invoice checks; do not treat as PASS for transport facts."
-                if resolved is TradeProfile.INVOICE_ONLY_PRE_REVIEW
-                else "Upload BoL/AWB when required by profile, or accept NOT_AVAILABLE."
+                "Continue application/invoice checks; do not treat as PASS for transport facts."
+                if resolved in PRE_SHIPMENT
+                else (
+                    "Upload AWB when mode is AIR, or BoL for ocean/post-shipment, "
+                    "or accept NOT_AVAILABLE."
+                    if mode is ShipmentMode.AIR
+                    else "Upload BoL/AWB when required by profile, or accept NOT_AVAILABLE."
+                )
             ),
         )
 

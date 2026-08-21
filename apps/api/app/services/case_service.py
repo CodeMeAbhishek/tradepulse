@@ -12,14 +12,17 @@ from tradepulse_contracts.enums import (
     DocumentProcessingState,
     DocumentType,
     IdentityPartyRole,
+    ReviewRole,
+    ShipmentMode,
+    TransactionStage,
 )
 
 from app.adapters.pdf import sha256_hex
 from app.adapters.screening import ScreeningSubject
-from app.domain.document_policy import PackCompletenessStatus
+from app.domain.document_policy import PackCompletenessStatus, resolve_trade_profile
 from app.domain.enums import TradeProfile
 from app.repositories.case_store import CaseAggregate, CaseStore
-from app.schemas.bol import BolExtraction
+from app.schemas.bol import BolExtraction, TransportDocumentKind
 from app.schemas.case import CaseRecord, CaseSummary
 from app.schemas.document import DocumentMetadata
 from app.schemas.document_policy import DocumentPolicyEvaluation
@@ -33,6 +36,7 @@ from app.services.compliance import (
 )
 from app.services.document_intelligence import InvoiceExtractionService, reconcile_invoice_bol
 from app.services.document_policy import evaluate_document_pack
+from app.services.document_policy.profiles import PRE_SHIPMENT
 from app.services.entity_resolution import EntityResolutionService, PartyIdentityInput
 from app.services.regwatch import RegWatchService, ReplayService, SourceRegistry, seed_demo_registry
 from app.services.regwatch.replay import CaseResultVersion
@@ -89,6 +93,8 @@ def to_case_summary(case: CaseAggregate) -> CaseSummary:
 
 
 def to_case_record(case: CaseAggregate) -> CaseRecord:
+    stage_raw = case.metadata.get("transaction_stage")
+    stage = TransactionStage(stage_raw) if isinstance(stage_raw, str) else None
     return CaseRecord(
         case_id=case.case_id,
         transaction_profile=case.transaction_profile,
@@ -102,6 +108,10 @@ def to_case_record(case: CaseAggregate) -> CaseRecord:
         version=case.version,
         identities=case.identities,
         metadata=case.metadata,
+        shipment_mode=case.shipment_mode,
+        transaction_stage=stage,
+        current_review_role=case.current_review_role,
+        last_maker_actor=case.last_maker_actor,
     )
 
 
@@ -111,32 +121,44 @@ def create_case(
     corridor: str | None = None,
     assignee: str | None = None,
     data_label: DataLabel = DataLabel.SYNTHETIC,
+    shipment_mode: ShipmentMode = ShipmentMode.UNKNOWN,
+    transaction_stage: TransactionStage | None = None,
     state: PlatformState | None = None,
 ) -> CaseAggregate:
     platform = state or get_platform_state()
     profile = (
         transaction_profile
         if isinstance(transaction_profile, TradeProfile)
-        else TradeProfile(transaction_profile)
+        else resolve_trade_profile(transaction_profile)
     )
     now = _now()
+    meta: dict[str, Any] = {}
+    if transaction_stage is not None:
+        meta["transaction_stage"] = transaction_stage.value
     case = CaseAggregate(
         case_id=f"CASE-{uuid.uuid4().hex[:8].upper()}",
         transaction_profile=profile,
-        state=CaseState.INGESTED,
+        state=CaseState.DRAFT,
         created_at=now,
         updated_at=now,
         corridor=corridor,
         assignee=assignee,
         data_label=data_label,
+        shipment_mode=shipment_mode,
+        metadata=meta,
+        current_review_role=ReviewRole.SCRUTINY,
     )
-    case.workflow = CaseWorkflow(case_id=case.case_id, state=CaseState.INGESTED, audit=platform.audit)
+    case.workflow = CaseWorkflow(case_id=case.case_id, state=CaseState.DRAFT, audit=platform.audit)
     platform.cases.add(case)
     platform.audit.append(
         event_type="CASE_CREATED",
         actor="system",
         case_id=case.case_id,
-        payload={"transaction_profile": profile.value, "data_label": data_label.value},
+        payload={
+            "transaction_profile": profile.value,
+            "data_label": data_label.value,
+            "shipment_mode": shipment_mode.value,
+        },
     )
     return case
 
@@ -168,6 +190,33 @@ def add_document(
     )
     case.documents.append(meta)
     case.document_bytes[document_id] = content
+    if case.workflow.state is CaseState.DRAFT:
+        try:
+            case.workflow.transition(
+                to_state=CaseState.SCRUTINY_IN_PROGRESS,
+                actor="system",
+                actor_role="system",
+            )
+        except WorkflowTransitionError:
+            case.workflow.state = CaseState.SCRUTINY_IN_PROGRESS
+    elif case.workflow.state is CaseState.DOCUMENT_PACK_INCOMPLETE:
+        try:
+            case.workflow.transition(
+                to_state=CaseState.SCRUTINY_IN_PROGRESS,
+                actor="system",
+                actor_role="system",
+            )
+        except WorkflowTransitionError:
+            pass
+    elif case.workflow.state is CaseState.INFORMATION_REQUESTED:
+        try:
+            case.workflow.transition(
+                to_state=CaseState.SCRUTINY_IN_PROGRESS,
+                actor="system",
+                actor_role="system",
+            )
+        except WorkflowTransitionError:
+            pass
     case.touch()
     platform.audit.append(
         event_type="DOCUMENT_UPLOADED",
@@ -187,7 +236,11 @@ def evaluate_case_policy(
 ) -> DocumentPolicyEvaluation:
     platform = state or get_platform_state()
     case = platform.cases.require(case_id)
-    return evaluate_document_pack(case.transaction_profile, case.provided_document_types())
+    return evaluate_document_pack(
+        case.transaction_profile,
+        case.provided_document_types(),
+        shipment_mode=case.shipment_mode,
+    )
 
 
 def process_case(case_id: str, *, state: PlatformState | None = None) -> dict[str, Any]:
@@ -195,18 +248,37 @@ def process_case(case_id: str, *, state: PlatformState | None = None) -> dict[st
     case = platform.cases.require(case_id)
 
     try:
-        if case.workflow.state is CaseState.INGESTED:
+        if case.workflow.state is CaseState.DRAFT:
             case.workflow.transition(
-                to_state=CaseState.PROCESSING,
+                to_state=CaseState.SCRUTINY_IN_PROGRESS,
                 actor="system",
                 actor_role="system",
             )
     except WorkflowTransitionError:
-        if case.workflow.state not in {CaseState.PROCESSING, CaseState.PENDING_MAKER}:
-            case.workflow.state = CaseState.PROCESSING
+        if case.workflow.state not in {
+            CaseState.SCRUTINY_IN_PROGRESS,
+            CaseState.DOCUMENT_PACK_INCOMPLETE,
+            CaseState.MAKER_REVIEW,
+        }:
+            case.workflow.state = CaseState.SCRUTINY_IN_PROGRESS
 
-    policy = evaluate_document_pack(case.transaction_profile, case.provided_document_types())
+    policy = evaluate_document_pack(
+        case.transaction_profile,
+        case.provided_document_types(),
+        shipment_mode=case.shipment_mode,
+    )
     pack_incomplete = policy.pack_status is PackCompletenessStatus.DOCUMENT_PACK_INCOMPLETE
+
+    if pack_incomplete and case.workflow.state is CaseState.SCRUTINY_IN_PROGRESS:
+        try:
+            case.workflow.transition(
+                to_state=CaseState.DOCUMENT_PACK_INCOMPLETE,
+                actor="system",
+                actor_role="system",
+                note="Required documents missing",
+            )
+        except WorkflowTransitionError:
+            case.workflow.state = CaseState.DOCUMENT_PACK_INCOMPLETE
 
     invoice_doc = next(
         (d for d in case.documents if d.document_type is DocumentType.COMMERCIAL_INVOICE),
@@ -221,17 +293,45 @@ def process_case(case_id: str, *, state: PlatformState | None = None) -> dict[st
             content_type=invoice_doc.content_type,
         )
         case.invoice_extraction = pipeline.extraction
+        case.agent_trace = [item.model_dump(mode="json") for item in pipeline.agent_trace]
+        case.debate_rounds_used = pipeline.debate_rounds_used
 
-    # Optional structured BoL may be supplied via metadata for prototype.
+    transport_doc = None
+    transport_kind = TransportDocumentKind.BILL_OF_LADING
+    if case.shipment_mode is ShipmentMode.AIR:
+        transport_doc = next(
+            (d for d in case.documents if d.document_type is DocumentType.AIR_WAYBILL),
+            None,
+        )
+        transport_kind = TransportDocumentKind.AIR_WAYBILL
+    else:
+        transport_doc = next(
+            (d for d in case.documents if d.document_type is DocumentType.BILL_OF_LADING),
+            None,
+        )
+        if transport_doc is None:
+            transport_doc = next(
+                (d for d in case.documents if d.document_type is DocumentType.AIR_WAYBILL),
+                None,
+            )
+            if transport_doc is not None:
+                transport_kind = TransportDocumentKind.AIR_WAYBILL
+
     bol_meta = case.metadata.get("bol_extraction")
     if isinstance(bol_meta, dict):
         case.bol_extraction = BolExtraction.model_validate(bol_meta)
+    elif transport_doc:
+        transport_text = case.document_bytes[transport_doc.document_id].decode(
+            "utf-8", errors="replace"
+        )
+        case.bol_extraction = _parse_labeled_transport(transport_text, kind=transport_kind)
 
     if case.invoice_extraction is not None:
         case.reconciliation = reconcile_invoice_bol(
             profile=case.transaction_profile,
             invoice=case.invoice_extraction,
             bol=case.bol_extraction,
+            shipment_mode=case.shipment_mode,
         )
 
         seller = case.invoice_extraction.seller
@@ -311,15 +411,36 @@ def process_case(case_id: str, *, state: PlatformState | None = None) -> dict[st
         )
         case.version = prior.version + 1
 
-    try:
-        if case.workflow.state is CaseState.PROCESSING:
+    # Processing complete: stay incomplete, or mark scrutiny complete → maker review.
+    if not pack_incomplete and case.workflow.state in {
+        CaseState.SCRUTINY_IN_PROGRESS,
+        CaseState.DOCUMENT_PACK_INCOMPLETE,
+    }:
+        if case.workflow.state is CaseState.DOCUMENT_PACK_INCOMPLETE:
+            try:
+                case.workflow.transition(
+                    to_state=CaseState.SCRUTINY_IN_PROGRESS,
+                    actor="system",
+                    actor_role="system",
+                )
+            except WorkflowTransitionError:
+                case.workflow.state = CaseState.SCRUTINY_IN_PROGRESS
+        try:
             case.workflow.transition(
-                to_state=CaseState.PENDING_MAKER,
+                to_state=CaseState.SCRUTINY_COMPLETE,
+                actor="system",
+                actor_role="system",
+                note="Extraction and checks complete",
+            )
+            case.workflow.transition(
+                to_state=CaseState.MAKER_REVIEW,
                 actor="system",
                 actor_role="system",
             )
-    except WorkflowTransitionError:
-        pass
+            case.current_review_role = ReviewRole.MAKER
+        except WorkflowTransitionError:
+            case.workflow.state = CaseState.MAKER_REVIEW
+            case.current_review_role = ReviewRole.MAKER
 
     case.touch()
     platform.audit.append(
@@ -328,16 +449,98 @@ def process_case(case_id: str, *, state: PlatformState | None = None) -> dict[st
         case_id=case.case_id,
         payload={"risk_route": case.risk_route, "finding_count": len(case.findings)},
     )
+    return workbench_payload(case_id, state=platform)
+
+
+def workbench_payload(case_id: str, *, state: PlatformState | None = None) -> dict[str, Any]:
+    """Full workbench bundle for UI — case + policy + extraction + findings + audit."""
+    platform = state or get_platform_state()
+    case = platform.cases.require(case_id)
+    policy = evaluate_document_pack(
+        case.transaction_profile,
+        case.provided_document_types(),
+        shipment_mode=case.shipment_mode,
+    )
     return {
         "case": to_case_record(case),
+        "documents": [d.model_dump(mode="json") for d in case.documents],
         "policy": policy.model_dump(mode="json"),
+        "invoice_extraction": (
+            case.invoice_extraction.model_dump(mode="json") if case.invoice_extraction else None
+        ),
+        "bol_extraction": (
+            case.bol_extraction.model_dump(mode="json") if case.bol_extraction else None
+        ),
+        "agent_trace": case.agent_trace,
+        "debate_rounds_used": case.debate_rounds_used,
         "findings": [f.model_dump(mode="json") for f in case.findings],
         "risk_route": case.risk_route,
         "reconciliation": (
             case.reconciliation.model_dump(mode="json") if case.reconciliation else None
         ),
         "identities": [i.model_dump(mode="json") for i in case.identities],
+        "audit": [e.model_dump(mode="json") for e in platform.audit.for_case(case_id)],
     }
+
+
+def _parse_labeled_transport(
+    document_text: str, *, kind: TransportDocumentKind
+) -> BolExtraction:
+    """Minimal labeled-text BoL/AWB parse for prototype uploads (no LLM)."""
+    import re
+
+    from app.schemas.bol import BolCargoItem, BolParty
+
+    labels: dict[str, str] = {}
+    for match in re.finditer(
+        r"^(?P<key>[A-Za-z][A-Za-z0-9_.\s/()-]*?)\s*[:=]\s*(?P<value>.+?)\s*$",
+        document_text,
+        re.MULTILINE,
+    ):
+        key = re.sub(r"\s+", "_", match.group("key").strip().lower())
+        labels[key] = match.group("value").strip()
+
+    def get(*keys: str) -> str | None:
+        for key in keys:
+            if labels.get(key):
+                return labels[key]
+        return None
+
+    def to_float(raw: str | None) -> float | None:
+        if raw is None:
+            return None
+        try:
+            return float(raw.replace(",", "").split()[0])
+        except ValueError:
+            return None
+
+    qty = to_float(get("quantity", "qty"))
+    unit = get("unit")
+    description = get("description", "goods_description", "goods")
+    shipper_name = get("shipper", "shipper_name", "seller")
+    return BolExtraction(
+        transport_document_kind=kind,
+        bl_or_awb_number=get(
+            "bl_number",
+            "bol_number",
+            "bl_or_awb_number",
+            "awb_number",
+            "air_waybill_number",
+        ),
+        shipper=BolParty(legal_name=shipper_name) if shipper_name else None,
+        port_of_loading=get("port_of_loading", "pol", "airport_of_departure"),
+        port_of_discharge=get("port_of_discharge", "pod", "airport_of_destination"),
+        invoice_reference=get("invoice_reference", "invoice_number"),
+        vessel_or_flight=get("vessel", "flight", "vessel_or_flight"),
+        goods_description=description,
+        quantity=qty,
+        unit=unit,
+        items=[
+            BolCargoItem(description=description, quantity=qty, unit=unit, hs_code=get("hs_code"))
+        ]
+        if description or qty is not None
+        else [],
+    )
 
 
 def apply_case_action(
@@ -351,11 +554,17 @@ def apply_case_action(
 ) -> CaseRecord:
     platform = state or get_platform_state()
     case = platform.cases.require(case_id)
-    action_map = {
-        "maker_approve": CaseState.MAKER_APPROVED,
-        "maker_investigate": CaseState.INVESTIGATION_REQUIRED,
+    action_map: dict[str, CaseState] = {
+        "scrutiny_complete": CaseState.SCRUTINY_COMPLETE,
+        "maker_recommend": CaseState.MAKER_RECOMMENDED,
+        "maker_approve": CaseState.MAKER_RECOMMENDED,
+        "maker_request_info": CaseState.INFORMATION_REQUESTED,
+        "maker_investigate": CaseState.INFORMATION_REQUESTED,
         "checker_approve": CaseState.CHECKER_APPROVED,
-        "checker_reject": CaseState.CHECKER_REJECTED,
+        "checker_return": CaseState.RETURNED_TO_MAKER,
+        "checker_reject": CaseState.RETURNED_TO_MAKER,
+        "checker_escalate": CaseState.ESCALATED,
+        "maker_escalate": CaseState.ESCALATED,
     }
     to_state = action_map.get(action)
     if to_state is None:
@@ -371,6 +580,27 @@ def apply_case_action(
             actor_role=actor_role,
             note=note,
         )
+        # Auto-route system edges after human actions.
+        if to_state is CaseState.SCRUTINY_COMPLETE:
+            case.workflow.transition(
+                to_state=CaseState.MAKER_REVIEW,
+                actor="system",
+                actor_role="system",
+            )
+            case.current_review_role = ReviewRole.MAKER
+        elif to_state is CaseState.MAKER_RECOMMENDED:
+            case.workflow.transition(
+                to_state=CaseState.CHECKER_REVIEW,
+                actor="system",
+                actor_role="system",
+            )
+            case.current_review_role = ReviewRole.CHECKER
+        elif to_state is CaseState.RETURNED_TO_MAKER:
+            case.current_review_role = ReviewRole.MAKER
+        elif to_state is CaseState.INFORMATION_REQUESTED:
+            case.current_review_role = ReviewRole.SCRUTINY
+        elif to_state is CaseState.CHECKER_APPROVED:
+            case.current_review_role = ReviewRole.CHECKER
     except WorkflowTransitionError as exc:
         raise ApiError(
             code=exc.code,

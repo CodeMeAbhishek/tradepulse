@@ -4,6 +4,13 @@ from __future__ import annotations
 
 from fastapi.testclient import TestClient
 
+SAMPLE_APPLICATION = """
+application_number: APP-1001
+applicant: Amit Trading Co.
+requested_amount: 10000
+currency: USD
+""".strip()
+
 SAMPLE_INVOICE = """
 invoice_number: INV-1001
 invoice_date: 2026-03-01
@@ -26,11 +33,16 @@ port_of_discharge: AEJEA
 def test_create_list_get_case(client: TestClient) -> None:
     created = client.post(
         "/api/v1/cases",
-        json={"transaction_profile": "INVOICE_ONLY_PRE_REVIEW", "corridor": "IN-AE"},
+        json={
+            "transaction_profile": "PRE_SHIPMENT_TRADE_FINANCE",
+            "corridor": "IN-AE",
+            "shipment_mode": "UNKNOWN",
+        },
     )
     assert created.status_code == 200
     body = created.json()
-    assert body["transaction_profile"] == "INVOICE_ONLY_PRE_REVIEW"
+    assert body["transaction_profile"] == "PRE_SHIPMENT_TRADE_FINANCE"
+    assert body["state"] == "DRAFT"
     case_id = body["case_id"]
 
     listed = client.get("/api/v1/cases")
@@ -45,21 +57,25 @@ def test_create_list_get_case(client: TestClient) -> None:
 def test_upload_process_and_audit_flow(client: TestClient) -> None:
     case_id = client.post(
         "/api/v1/cases",
-        json={"transaction_profile": "INVOICE_ONLY_PRE_REVIEW"},
+        json={"transaction_profile": "PRE_SHIPMENT_TRADE_FINANCE"},
     ).json()["case_id"]
 
-    upload = client.post(
-        f"/api/v1/cases/{case_id}/documents",
-        files={"file": ("invoice.txt", SAMPLE_INVOICE.encode("utf-8"), "text/plain")},
-        data={"document_type": "commercial_invoice"},
-    )
-    assert upload.status_code == 200
-    assert upload.json()["document_type"] == "commercial_invoice"
+    for filename, content, doc_type in (
+        ("app.txt", SAMPLE_APPLICATION, "trade_finance_application"),
+        ("invoice.txt", SAMPLE_INVOICE, "commercial_invoice"),
+    ):
+        upload = client.post(
+            f"/api/v1/cases/{case_id}/documents",
+            files={"file": (filename, content.encode("utf-8"), "text/plain")},
+            data={"document_type": doc_type},
+        )
+        assert upload.status_code == 200
+        assert upload.json()["document_type"] == doc_type
 
     processed = client.post(f"/api/v1/cases/{case_id}/process")
     assert processed.status_code == 200
     payload = processed.json()
-    assert payload["case"]["state"] == "PENDING_MAKER"
+    assert payload["case"]["state"] == "MAKER_REVIEW"
     assert payload["risk_route"] is not None
     assert payload["policy"]["pack_status"] == "COMPLETE"
 
@@ -74,8 +90,18 @@ def test_upload_process_and_audit_flow(client: TestClient) -> None:
 def test_checker_before_maker_blocked_via_api(client: TestClient) -> None:
     case_id = client.post(
         "/api/v1/cases",
-        json={"transaction_profile": "INVOICE_ONLY_PRE_REVIEW"},
+        json={"transaction_profile": "PRE_SHIPMENT_TRADE_FINANCE"},
     ).json()["case_id"]
+    client.post(
+        f"/api/v1/cases/{case_id}/documents",
+        files={"file": ("app.txt", SAMPLE_APPLICATION.encode(), "text/plain")},
+        data={"document_type": "trade_finance_application"},
+    )
+    client.post(
+        f"/api/v1/cases/{case_id}/documents",
+        files={"file": ("inv.txt", SAMPLE_INVOICE.encode(), "text/plain")},
+        data={"document_type": "commercial_invoice"},
+    )
     client.post(f"/api/v1/cases/{case_id}/process")
 
     blocked = client.post(
@@ -92,13 +118,24 @@ def test_checker_before_maker_blocked_via_api(client: TestClient) -> None:
     maker = client.post(
         f"/api/v1/cases/{case_id}/actions",
         json={
-            "action": "maker_approve",
+            "action": "maker_recommend",
             "actor": "maker-1",
             "actor_role": "maker",
         },
     )
     assert maker.status_code == 200
-    assert maker.json()["state"] == "MAKER_APPROVED"
+    assert maker.json()["state"] == "CHECKER_REVIEW"
+
+    approved = client.post(
+        f"/api/v1/cases/{case_id}/actions",
+        json={
+            "action": "checker_approve",
+            "actor": "checker-1",
+            "actor_role": "checker",
+        },
+    )
+    assert approved.status_code == 200
+    assert approved.json()["state"] == "CHECKER_APPROVED"
 
 
 def test_document_policies_and_sources(client: TestClient) -> None:

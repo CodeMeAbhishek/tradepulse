@@ -18,7 +18,7 @@ class Settings(BaseSettings):
     app_name: str = "tradepulse-api"
     app_version: str = "0.1.0"
     database_url: str = "sqlite:///./tradepulse.db"
-    cors_origins: str = "http://localhost:3000"
+    cors_origins: str = "http://localhost:3000,http://127.0.0.1:3000"
 
 
 @lru_cache

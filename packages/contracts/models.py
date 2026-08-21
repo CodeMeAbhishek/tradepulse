@@ -19,8 +19,11 @@ from .enums import (
     LEIStatus,
     ReadinessRoute,
     ResultTrigger,
+    ReviewRole,
+    ShipmentMode,
     SourceMode,
     TradeProfile,
+    TransactionStage,
     VLEIVerificationStatus,
 )
 
@@ -131,3 +134,8 @@ class TradeCase(TradePulseModel):
     created_at: datetime
     updated_at: datetime
     result_trigger: ResultTrigger = ResultTrigger.INITIAL
+    shipment_mode: ShipmentMode | None = None
+    transaction_stage: TransactionStage | None = None
+    current_review_role: ReviewRole | None = None
+    maker_rationale: str | None = None
+    last_maker_actor: str | None = None

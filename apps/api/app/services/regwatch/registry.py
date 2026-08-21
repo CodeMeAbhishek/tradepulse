@@ -63,4 +63,102 @@ def seed_demo_registry(registry: SourceRegistry) -> SourceRegistry:
             last_snapshot_id="gleif-fixture@1.0.0",
         )
     )
+    registry.upsert(
+        SourceRegistryEntry(
+            source_id="ifsca-banking-handbook",
+            publisher="IFSCA",
+            domain="ifsc-banking",
+            official_url="https://ifsca.gov.in",
+            access_type=SourceAccessType.MANUAL_REVIEW,
+            cadence="manual-index",
+            status=SourceRegistryStatus.PLANNED,
+            coverage_note="GIFT IFSC banking regulations/handbook index — not live certainty; not a decision.",
+            last_snapshot_id=None,
+            jurisdiction="IN-GIFT-IFSC",
+        )
+    )
+    registry.upsert(
+        SourceRegistryEntry(
+            source_id="ifsca-conduct-of-business",
+            publisher="IFSCA",
+            domain="conduct",
+            official_url="https://ifsca.gov.in",
+            access_type=SourceAccessType.MANUAL_REVIEW,
+            cadence="manual-index",
+            status=SourceRegistryStatus.PLANNED,
+            coverage_note="IFSCA Conduct of Business Directions — source card only.",
+            last_snapshot_id=None,
+            jurisdiction="IN-GIFT-IFSC",
+        )
+    )
+    registry.upsert(
+        SourceRegistryEntry(
+            source_id="ifsca-fintech-sandbox-framework",
+            publisher="IFSCA",
+            domain="sandbox",
+            official_url="https://ifsca.gov.in",
+            access_type=SourceAccessType.MANUAL_REVIEW,
+            cadence="manual-index",
+            status=SourceRegistryStatus.PLANNED,
+            coverage_note="IFSCA FinTech Sandbox Framework 2026 is a future validation path, not permission to process real bank data.",
+            last_snapshot_id=None,
+            jurisdiction="IN-GIFT-IFSC",
+        )
+    )
+    registry.upsert(
+        SourceRegistryEntry(
+            source_id="dgft-ftp",
+            publisher="DGFT",
+            domain="foreign-trade-policy",
+            official_url="https://www.dgft.gov.in",
+            access_type=SourceAccessType.DOWNLOAD,
+            cadence="manual-index",
+            status=SourceRegistryStatus.PLANNED,
+            coverage_note="DGFT FTP / notifications / public notices — index only.",
+            last_snapshot_id=None,
+            jurisdiction="IN",
+        )
+    )
+    registry.upsert(
+        SourceRegistryEntry(
+            source_id="rbi-fema-export-realisation",
+            publisher="Reserve Bank of India",
+            domain="fema",
+            official_url="https://www.rbi.org.in",
+            access_type=SourceAccessType.MANUAL_REVIEW,
+            cadence="manual-index",
+            status=SourceRegistryStatus.PLANNED,
+            coverage_note="RBI FEMA / export-realisation directions — index only.",
+            last_snapshot_id=None,
+            jurisdiction="IN",
+        )
+    )
+    registry.upsert(
+        SourceRegistryEntry(
+            source_id="icc-ucp-600",
+            publisher="ICC",
+            domain="documentary-credit-practice",
+            official_url="https://iccwbo.org",
+            access_type=SourceAccessType.MANUAL_REVIEW,
+            cadence="reference",
+            status=SourceRegistryStatus.PLANNED,
+            coverage_note="UCP 600 / ISBP practice references — not a substitute for the bank’s LC examination.",
+            last_snapshot_id=None,
+            jurisdiction=None,
+        )
+    )
+    registry.upsert(
+        SourceRegistryEntry(
+            source_id="fatf-tbml-guidance",
+            publisher="FATF",
+            domain="tbml",
+            official_url="https://www.fatf-gafi.org",
+            access_type=SourceAccessType.MANUAL_REVIEW,
+            cadence="manual-index",
+            status=SourceRegistryStatus.PLANNED,
+            coverage_note="FATF TBML guidance — risk-indicator context only.",
+            last_snapshot_id=None,
+            jurisdiction=None,
+        )
+    )
     return registry

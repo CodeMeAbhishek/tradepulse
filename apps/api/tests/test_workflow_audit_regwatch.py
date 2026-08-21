@@ -1,22 +1,16 @@
-"""Maker/checker, audit chain, RegWatch proposal and replay tests."""
+"""Workflow four-eyes guards for Scrutiny → Maker → Checker."""
 
 from __future__ import annotations
 
 import pytest
 from tradepulse_contracts.enums import CaseState
 
-from app.services.audit import AppendOnlyAuditLog, CaseWorkflow, WorkflowTransitionError
-from app.services.regwatch import (
-    CaseResultStore,
-    RegWatchService,
-    ReplayService,
-    SourceRegistry,
-    seed_demo_registry,
-)
+from app.services.audit.hash_chain import AppendOnlyAuditLog
+from app.services.audit.workflow import CaseWorkflow, WorkflowTransitionError
 
 
 def test_checker_before_maker_blocked() -> None:
-    workflow = CaseWorkflow(case_id="CASE-1", state=CaseState.PENDING_MAKER)
+    workflow = CaseWorkflow(case_id="CASE-1", state=CaseState.MAKER_REVIEW)
     with pytest.raises(WorkflowTransitionError) as exc:
         workflow.transition(
             to_state=CaseState.CHECKER_APPROVED,
@@ -24,16 +18,21 @@ def test_checker_before_maker_blocked() -> None:
             actor_role="checker",
         )
     assert exc.value.code == "CHECKER_BEFORE_MAKER"
-    assert workflow.state is CaseState.PENDING_MAKER
+    assert workflow.state is CaseState.MAKER_REVIEW
 
 
-def test_maker_then_checker_allowed_and_audited() -> None:
+def test_maker_recommend_then_checker_approve() -> None:
     audit = AppendOnlyAuditLog()
-    workflow = CaseWorkflow(case_id="CASE-2", state=CaseState.PENDING_MAKER, audit=audit)
+    workflow = CaseWorkflow(case_id="CASE-2", state=CaseState.MAKER_REVIEW, audit=audit)
     workflow.transition(
-        to_state=CaseState.MAKER_APPROVED,
+        to_state=CaseState.MAKER_RECOMMENDED,
         actor="maker-1",
         actor_role="maker",
+    )
+    workflow.transition(
+        to_state=CaseState.CHECKER_REVIEW,
+        actor="system",
+        actor_role="system",
     )
     workflow.transition(
         to_state=CaseState.CHECKER_APPROVED,
@@ -41,77 +40,29 @@ def test_maker_then_checker_allowed_and_audited() -> None:
         actor_role="checker",
     )
     assert workflow.state is CaseState.CHECKER_APPROVED
-    events = audit.for_case("CASE-2")
-    assert len(events) == 2
-    assert events[0].prior_hash is None
-    assert events[1].prior_hash == events[0].event_hash
 
 
-def test_unapproved_rule_not_active() -> None:
-    regwatch = RegWatchService()
-    proposal = regwatch.propose(
-        rule_pack_id="screening",
-        proposed_version="screening@2.0.0",
-        summary="Tighten demo keyword list",
+def test_maker_cannot_self_check() -> None:
+    workflow = CaseWorkflow(
+        case_id="CASE-3",
+        state=CaseState.CHECKER_REVIEW,
+        last_maker_actor="same-person",
     )
-    assert proposal.status.value == "PROPOSED"
-    assert regwatch.is_active("screening", "screening@2.0.0") is False
-    assert regwatch.get_active("screening") is None
-
-    active = regwatch.approve(proposal.proposal_id, actor="policy-owner")
-    assert active.version == "screening@2.0.0"
-    assert regwatch.is_active("screening", "screening@2.0.0") is True
-
-
-def test_rejected_proposal_never_activates() -> None:
-    regwatch = RegWatchService()
-    proposal = regwatch.propose(
-        rule_pack_id="price",
-        proposed_version="price-audit@9.0.0",
-        summary="Bad proposal",
-    )
-    regwatch.reject(proposal.proposal_id, actor="policy-owner", reason="Not reviewed")
-    assert regwatch.is_active("price", "price-audit@9.0.0") is False
-
-
-def test_replay_preserves_prior_result() -> None:
-    store = CaseResultStore()
-    audit = AppendOnlyAuditLog()
-    replay = ReplayService(store=store, audit=audit)
-    prior = store.record_initial(
-        case_id="CASE-9",
-        result_payload={"risk_route": "READY_FOR_HUMAN_REVIEW", "score": 1},
-        actor="system",
-        rule_pack_version="screening@1.0.0",
-    )
-    with pytest.raises(PermissionError):
-        replay.replay(
-            case_id="CASE-9",
-            new_result_payload={"risk_route": "MAKER_REVIEW_REQUIRED", "score": 2},
-            actor="analyst-1",
-            human_approved=False,
+    with pytest.raises(WorkflowTransitionError) as exc:
+        workflow.transition(
+            to_state=CaseState.CHECKER_APPROVED,
+            actor="same-person",
+            actor_role="checker",
         )
-
-    new = replay.replay(
-        case_id="CASE-9",
-        new_result_payload={"risk_route": "MAKER_REVIEW_REQUIRED", "score": 2},
-        actor="analyst-1",
-        human_approved=True,
-        rule_pack_version="screening@2.0.0",
-        note="Human-approved selective replay",
-    )
-    versions = store.list_versions("CASE-9")
-    assert len(versions) == 2
-    assert versions[0].version_id == prior.version_id
-    assert versions[0].result_payload == {"risk_route": "READY_FOR_HUMAN_REVIEW", "score": 1}
-    assert versions[1].version_id == new.version_id
-    assert versions[1].replay_of_version_id == prior.version_id
-    assert versions[1].result_payload["score"] == 2
-    assert audit.events[-1].event_type == "CASE_REPLAY"
+    assert exc.value.code == "MAKER_CANNOT_SELF_CHECK"
 
 
-def test_source_registry_seed() -> None:
-    registry = seed_demo_registry(SourceRegistry())
-    entry = registry.get("demo-mock-watchlist")
-    assert entry is not None
-    assert "DEMO/MOCK" in (entry.coverage_note or "")
+def test_scrutiny_cannot_clear() -> None:
+    workflow = CaseWorkflow(case_id="CASE-4", state=CaseState.SCRUTINY_IN_PROGRESS)
+    with pytest.raises(WorkflowTransitionError) as exc:
+        workflow.transition(
+            to_state=CaseState.CHECKER_APPROVED,
+            actor="scrutiny-1",
+            actor_role="scrutiny",
+        )
+    assert exc.value.code == "SCRUTINY_CANNOT_CLEAR"

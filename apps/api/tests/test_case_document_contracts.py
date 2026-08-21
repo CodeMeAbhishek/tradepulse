@@ -32,38 +32,47 @@ from tradepulse_contracts.document import DocumentProcessingState
 from tradepulse_contracts.enums import ExtractionValidationStatus
 
 
-def test_trade_profile_uses_system_design_names() -> None:
-    assert TradeProfile.INVOICE_ONLY_PRE_REVIEW.value == "INVOICE_ONLY_PRE_REVIEW"
-    assert TradeProfile.POST_SHIPMENT_DOCUMENT_REVIEW in TradeProfile
-    assert TradeProfile.DOMESTIC_INDIA_GOODS_MOVEMENT in TradeProfile
-    assert len(TradeProfile) == 7
+def test_trade_profile_uses_application_led_names() -> None:
+    values = {p.value for p in TradeProfile}
+    assert values == {
+        "PRE_SHIPMENT_TRADE_FINANCE",
+        "LC_ISSUANCE_AMENDMENT",
+        "POST_SHIPMENT_LC_PRESENTATION",
+        "DOCUMENTARY_COLLECTION",
+        "TRADE_CREDIT_FACTORING",
+        "TRADE_HOUSE_COMPLIANCE_REVIEW",
+    }
+    assert len(TradeProfile) == 6
 
 
 def test_case_requires_transaction_profile() -> None:
     with pytest.raises(ValidationError):
         CaseRecord(
             case_id="CASE-1",
-            state=CaseState.INGESTED,
+            state=CaseState.DRAFT,
             created_at=datetime.now(timezone.utc),
             updated_at=datetime.now(timezone.utc),
             version=1,
         )
 
 
-def test_case_state_includes_maker_checker_path() -> None:
-    assert CaseState.INGESTED.value == "INGESTED"
-    assert CaseState.PENDING_MAKER in CaseState
+def test_case_state_includes_scrutiny_maker_checker_path() -> None:
+    assert CaseState.DRAFT.value == "DRAFT"
+    assert CaseState.SCRUTINY_IN_PROGRESS in CaseState
+    assert CaseState.MAKER_REVIEW in CaseState
+    assert CaseState.MAKER_RECOMMENDED in CaseState
+    assert CaseState.CHECKER_REVIEW in CaseState
     assert CaseState.CHECKER_APPROVED in CaseState
     case = CaseRecord(
         case_id="CASE-1",
-        transaction_profile=TradeProfile.INVOICE_ONLY_PRE_REVIEW,
-        state=CaseState.INGESTED,
+        transaction_profile=TradeProfile.PRE_SHIPMENT_TRADE_FINANCE,
+        state=CaseState.DRAFT,
         created_at=datetime.now(timezone.utc),
         updated_at=datetime.now(timezone.utc),
         version=1,
     )
-    assert case.state is CaseState.INGESTED
-    assert case.transaction_profile is TradeProfile.INVOICE_ONLY_PRE_REVIEW
+    assert case.state is CaseState.DRAFT
+    assert case.transaction_profile is TradeProfile.PRE_SHIPMENT_TRADE_FINANCE
     assert case.identities == []
 
 
@@ -88,8 +97,8 @@ def test_case_identity_fields_are_optional_and_typed() -> None:
     )
     case = CaseRecord(
         case_id="CASE-2",
-        transaction_profile=TradeProfile.POST_SHIPMENT_DOCUMENT_REVIEW,
-        state=CaseState.INGESTED,
+        transaction_profile=TradeProfile.POST_SHIPMENT_LC_PRESENTATION,
+        state=CaseState.DRAFT,
         corridor="IN-AE",
         created_at=datetime.now(timezone.utc),
         updated_at=datetime.now(timezone.utc),

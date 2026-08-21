@@ -5,7 +5,7 @@
 **Purpose:** Resolve enum drift, undefined types, state conflation and ownership ambiguity across PRD, System Design and Cursor master prompt.  
 **Applies to:** all future TradePulse implementation, tests, PRD references, system-design references and coding-agent prompts.
 
-**Authority rule:** This document is the sole canonical source for shared type names, enum literals, state transitions and contract ownership. If any older PRD, system-design, README or master-prompt text restates a conflicting literal, **this document wins**. Do not copy literals into prose when an import/reference is possible.
+**Authority rule:** This document is the sole canonical source for shared type names, enum literals, state transitions and contract ownership **except where a later binding ADR in this folder explicitly supersedes a section**. ADR 002 supersedes the two-step Maker → Checker lifecycle and related `CaseStatus` literals. If any older PRD, system-design, README or master-prompt text restates a conflicting literal, **the latest binding ADR + `packages/contracts` win**. Do not copy literals into prose when an import/reference is possible.
 
 ---
 
@@ -54,15 +54,26 @@ Non-normative illustration tables may appear in docs only with:
 
 Normative definitions live in `packages/contracts/enums.py` (`str, Enum`).
 
-Hackathon `TradeProfile` values (only):
+Application-led `TradeProfile` values (only) — see ADR 002. No parallel legacy profile literals:
 
-- `INVOICE_ONLY_PRE_REVIEW`
-- `POST_SHIPMENT_DOCUMENT_REVIEW`
-- `LC_DOCUMENT_REVIEW`
-- `DOCUMENTARY_COLLECTION_REVIEW`
-- `ENHANCED_TRADE_HOUSE_REVIEW`
+- `PRE_SHIPMENT_TRADE_FINANCE`
+- `LC_ISSUANCE_AMENDMENT`
+- `POST_SHIPMENT_LC_PRESENTATION`
+- `DOCUMENTARY_COLLECTION`
+- `TRADE_CREDIT_FACTORING`
+- `TRADE_HOUSE_COMPLIANCE_REVIEW`
 
-`MERCHANT_SHIPMENT_READINESS` is deferred roadmap scope — not in the 22-hour kernel.
+`CaseStatus` three-stage lifecycle (UPPER_SNAKE; runtime `CaseState` shares the same literals):
+
+- `DRAFT`, `SCRUTINY_IN_PROGRESS`, `DOCUMENT_PACK_INCOMPLETE`, `SCRUTINY_COMPLETE`
+- `MAKER_REVIEW`, `INFORMATION_REQUESTED`, `MAKER_RECOMMENDED`
+- `CHECKER_REVIEW`, `RETURNED_TO_MAKER`, `CHECKER_APPROVED`, `ESCALATED`, `PROCESSING_FAILED`
+
+`ReviewRole`: `SCRUTINY` | `MAKER` | `CHECKER` | `SYSTEM`
+
+`ShipmentMode`: `OCEAN` | `AIR` | `MULTIMODAL` | `UNKNOWN` (AWB ≠ BoL)
+
+`DocumentType` includes `TRADE_FINANCE_APPLICATION` and distinct `BILL_OF_LADING` / `AIR_WAYBILL`.
 
 ---
 
@@ -79,6 +90,8 @@ Hackathon `TradeProfile` values (only):
 | Case triage output | `ReadinessRoute` | what happens next |
 
 `DOCUMENT_PACK_INCOMPLETE` is **not** a `DocumentRequirementState`. It is a `CaseStatus` and `ReadinessRoute`.
+
+Do not conflate `AIR_WAYBILL` with `BILL_OF_LADING`. Do not use legacy statuses `PENDING_MAKER_REVIEW` / `MAKER_APPROVED` as primary workflow states.
 
 ### 3.2 VLEI vs identity resolution
 
@@ -125,6 +138,12 @@ demo-safe
 
 ```text
 TRADE_HOUSE_ENHANCED_REVIEW
+INVOICE_ONLY_PRE_REVIEW
+DOCUMENTARY_COLLECTION_REVIEW
+PRE_SHIPMENT_FINANCE
+PENDING_MAKER_REVIEW
+PENDING_MAKER
+MAKER_APPROVED
 MERCHANT_SHIPMENT_READINESS
 RECON
 RECONCILER

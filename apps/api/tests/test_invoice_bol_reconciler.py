@@ -7,6 +7,7 @@ from app.schemas.bol import BolExtraction, BolParty, TransportDocumentKind
 from app.schemas.invoice import InvoiceExtraction, InvoiceLineItem, InvoiceParty
 from app.schemas.reconciliation import ReconciliationStatus
 from app.services.document_intelligence.reconciler import reconcile_invoice_bol
+from tradepulse_contracts.enums import ShipmentMode
 
 
 def _invoice(**overrides: object) -> InvoiceExtraction:
@@ -44,9 +45,19 @@ def _bol(**overrides: object) -> BolExtraction:
     return base.model_copy(update=overrides)
 
 
-def test_invoice_only_without_bol_returns_not_available() -> None:
+def _awb(**overrides: object) -> BolExtraction:
+    return _bol(
+        transport_document_kind=TransportDocumentKind.AIR_WAYBILL,
+        bl_or_awb_number="AWB-7788",
+        container_number=None,
+        seal_number=None,
+        **overrides,
+    )
+
+
+def test_pre_shipment_without_transport_returns_not_available() -> None:
     result = reconcile_invoice_bol(
-        profile=TradeProfile.INVOICE_ONLY_PRE_REVIEW,
+        profile=TradeProfile.PRE_SHIPMENT_TRADE_FINANCE,
         invoice=_invoice(),
         bol=None,
     )
@@ -57,9 +68,10 @@ def test_invoice_only_without_bol_returns_not_available() -> None:
 
 def test_matching_invoice_and_bol_pass() -> None:
     result = reconcile_invoice_bol(
-        profile=TradeProfile.POST_SHIPMENT_DOCUMENT_REVIEW,
+        profile=TradeProfile.POST_SHIPMENT_LC_PRESENTATION,
         invoice=_invoice(),
         bol=_bol(),
+        shipment_mode=ShipmentMode.OCEAN,
     )
     assert result.status is ReconciliationStatus.PASS
     by_path = {c.field_path: c for c in result.comparisons}
@@ -70,9 +82,25 @@ def test_matching_invoice_and_bol_pass() -> None:
     assert by_path["references.container_number"].status is ReconciliationStatus.NOT_APPLICABLE
 
 
+def test_matching_invoice_and_awb_pass_for_air() -> None:
+    result = reconcile_invoice_bol(
+        profile=TradeProfile.TRADE_HOUSE_COMPLIANCE_REVIEW,
+        invoice=_invoice(
+            port_of_loading="BOM",
+            port_of_discharge="DXB",
+        ),
+        bol=_awb(
+            port_of_loading="BOM",
+            port_of_discharge="DXB",
+        ),
+        shipment_mode=ShipmentMode.AIR,
+    )
+    assert result.status is ReconciliationStatus.PASS
+
+
 def test_quantity_mismatch_requires_review() -> None:
     result = reconcile_invoice_bol(
-        profile="POST_SHIPMENT_DOCUMENT_REVIEW",
+        profile=TradeProfile.POST_SHIPMENT_LC_PRESENTATION,
         invoice=_invoice(),
         bol=_bol(quantity=7),
     )
@@ -83,7 +111,7 @@ def test_quantity_mismatch_requires_review() -> None:
 
 def test_party_name_normalization_match() -> None:
     result = reconcile_invoice_bol(
-        profile=TradeProfile.ENHANCED_TRADE_HOUSE_REVIEW,
+        profile=TradeProfile.TRADE_HOUSE_COMPLIANCE_REVIEW,
         invoice=_invoice(seller=InvoiceParty(legal_name="AMIT TRADING CO")),
         bol=_bol(shipper=BolParty(legal_name="Amit Trading Co.")),
     )
@@ -93,7 +121,7 @@ def test_party_name_normalization_match() -> None:
 
 def test_post_shipment_missing_bol_still_not_available_for_reconciler() -> None:
     result = reconcile_invoice_bol(
-        profile=TradeProfile.POST_SHIPMENT_DOCUMENT_REVIEW,
+        profile=TradeProfile.POST_SHIPMENT_LC_PRESENTATION,
         invoice=_invoice(),
         bol=None,
     )
@@ -102,7 +130,7 @@ def test_post_shipment_missing_bol_still_not_available_for_reconciler() -> None:
 
 def test_one_sided_port_is_not_available_field() -> None:
     result = reconcile_invoice_bol(
-        profile=TradeProfile.POST_SHIPMENT_DOCUMENT_REVIEW,
+        profile=TradeProfile.POST_SHIPMENT_LC_PRESENTATION,
         invoice=_invoice(port_of_loading=None),
         bol=_bol(),
     )

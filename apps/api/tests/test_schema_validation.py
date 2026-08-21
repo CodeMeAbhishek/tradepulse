@@ -21,7 +21,7 @@ def test_case_record_requires_transaction_profile() -> None:
     with pytest.raises(ValidationError):
         CaseRecord(
             case_id="CASE-1",
-            state="INGESTED",
+            state="DRAFT",
             created_at=datetime.now(timezone.utc),
             updated_at=datetime.now(timezone.utc),
         )
@@ -30,8 +30,8 @@ def test_case_record_requires_transaction_profile() -> None:
 def test_case_record_accepts_profile_and_identity_slots() -> None:
     case = CaseRecord(
         case_id="CASE-1",
-        transaction_profile=TradeProfile.INVOICE_ONLY_PRE_REVIEW,
-        state="INGESTED",
+        transaction_profile=TradeProfile.PRE_SHIPMENT_TRADE_FINANCE,
+        state="DRAFT",
         created_at=datetime.now(timezone.utc),
         updated_at=datetime.now(timezone.utc),
         identities=[
@@ -43,7 +43,7 @@ def test_case_record_accepts_profile_and_identity_slots() -> None:
             )
         ],
     )
-    assert case.transaction_profile is TradeProfile.INVOICE_ONLY_PRE_REVIEW
+    assert case.transaction_profile is TradeProfile.PRE_SHIPMENT_TRADE_FINANCE
     assert case.identities[0].gstin == "27AABCU9603R1ZM"
 
 

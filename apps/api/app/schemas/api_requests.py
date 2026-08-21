@@ -2,10 +2,17 @@
 
 from __future__ import annotations
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
+from app.domain.document_policy import resolve_trade_profile
 from app.domain.enums import TradeProfile
-from tradepulse_contracts.enums import DataLabel, DocumentType, IdentityPartyRole
+from tradepulse_contracts.enums import (
+    DataLabel,
+    DocumentType,
+    IdentityPartyRole,
+    ShipmentMode,
+    TransactionStage,
+)
 
 
 class CreateCaseRequest(BaseModel):
@@ -13,12 +20,24 @@ class CreateCaseRequest(BaseModel):
     corridor: str | None = None
     assignee: str | None = None
     data_label: DataLabel = DataLabel.SYNTHETIC
+    shipment_mode: ShipmentMode = ShipmentMode.UNKNOWN
+    transaction_stage: TransactionStage | None = None
+
+    @field_validator("transaction_profile", mode="before")
+    @classmethod
+    def _resolve_profile(cls, value: object) -> object:
+        if isinstance(value, str):
+            return resolve_trade_profile(value)
+        return value
 
 
 class CaseActionRequest(BaseModel):
     action: str = Field(
         ...,
-        description="maker_approve | maker_investigate | checker_approve | checker_reject",
+        description=(
+            "scrutiny_complete | maker_recommend | maker_request_info | "
+            "checker_approve | checker_return | checker_escalate"
+        ),
     )
     actor: str
     actor_role: str

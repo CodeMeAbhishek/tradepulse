@@ -6,7 +6,7 @@ from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from typing import Any
 
-from tradepulse_contracts.enums import CaseState, DataLabel, DocumentType
+from tradepulse_contracts.enums import CaseState, DataLabel, DocumentType, ReviewRole, ShipmentMode
 from tradepulse_contracts.identity import IdentityEvidence
 from tradepulse_contracts.rule_result import RuleResult
 
@@ -15,9 +15,7 @@ from app.schemas.bol import BolExtraction
 from app.schemas.document import DocumentMetadata
 from app.schemas.invoice import InvoiceExtraction
 from app.schemas.reconciliation import InvoiceBolReconciliationResult
-from app.services.audit.hash_chain import AppendOnlyAuditLog
 from app.services.audit.workflow import CaseWorkflow
-from app.services.compliance.risk_router import RiskRoute
 from app.services.regwatch.replay import CaseResultStore
 
 
@@ -41,6 +39,11 @@ class CaseAggregate:
     invoice_extraction: InvoiceExtraction | None = None
     bol_extraction: BolExtraction | None = None
     reconciliation: InvoiceBolReconciliationResult | None = None
+    agent_trace: list[dict[str, Any]] = field(default_factory=list)
+    debate_rounds_used: int | None = None
+    shipment_mode: ShipmentMode = ShipmentMode.UNKNOWN
+    last_maker_actor: str | None = None
+    current_review_role: ReviewRole | None = None
     workflow: CaseWorkflow = field(init=False)
     result_store: CaseResultStore = field(default_factory=CaseResultStore)
 
@@ -50,6 +53,7 @@ class CaseAggregate:
     def touch(self) -> None:
         self.updated_at = datetime.now(timezone.utc)
         self.state = self.workflow.state
+        self.last_maker_actor = self.workflow.last_maker_actor
 
     def provided_document_types(self) -> list[DocumentType]:
         return [doc.document_type for doc in self.documents]
