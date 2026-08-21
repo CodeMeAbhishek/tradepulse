@@ -151,34 +151,3 @@
 @utility hairline-b {
   border-bottom: 1px solid var(--rule);
 }
-
-/* ---------------------------------------------------------------------------
-   Keyboard focus inside the workbench plane
-
-   The workbench is a dark surface inside a light site, so the site's
-   ink-coloured ring disappears there. This inverts it and adds a dark halo so
-   the ring reads on the plane and on the slate panels sitting on it.
-
-   Deliberately UNLAYERED. Tailwind resets outline-color to currentColor from a
-   later cascade layer, and a later layer beats an earlier one regardless of
-   specificity -- so the same rule inside `@layer base` loses its colour and the
-   ring silently takes on the colour of whatever text it surrounds. Unlayered
-   declarations outrank every layer, which is the only reliable place for it.
-
-   Universal rather than a tag list: browsers make scroll containers focusable,
-   and the workbench tables scroll horizontally.
-   --------------------------------------------------------------------------- */
-
-[data-plane="dark"] :focus-visible {
-  outline: 2px solid var(--paper);
-  outline-color: var(--paper);
-  outline-offset: 2px;
-  box-shadow: 0 0 0 4px var(--ink);
-}
-
-@media (forced-colors: active) {
-  [data-plane="dark"] :focus-visible {
-    outline: 3px solid Highlight;
-    box-shadow: none;
-  }
-}

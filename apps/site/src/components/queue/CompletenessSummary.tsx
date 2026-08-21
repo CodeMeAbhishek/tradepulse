@@ -3,11 +3,11 @@ import { documentStateLabel } from "@/lib/mock/labels";
 
 export function CompletenessSummary({ items }: { items: DocumentCompletenessItem[] }) {
   return (
-    <ul className="flex flex-col gap-0.5 text-xs text-slate-300">
+    <ul className="flex flex-col gap-0.5 text-xs text-slate">
       {items.map((item) => (
         <li key={item.documentType} className="flex flex-wrap gap-x-1">
-          <span className="text-slate-400">{item.label}:</span>
-          <span className="font-medium text-slate-100">{documentStateLabel(item.state)}</span>
+          <span className="text-slate">{item.label}:</span>
+          <span className="font-medium text-ink">{documentStateLabel(item.state)}</span>
         </li>
       ))}
     </ul>

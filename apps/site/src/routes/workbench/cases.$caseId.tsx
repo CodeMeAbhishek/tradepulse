@@ -25,20 +25,20 @@ function CasePage() {
   return (
     <main className="mx-auto max-w-6xl space-y-6 px-4 py-8">
       <p>
-        <Link to="/workbench" className="text-sm text-sky-300 underline-offset-2 hover:underline">
+        <Link to="/workbench" className="text-sm text-ink underline-offset-2 hover:underline">
           ← Back to compliance queue
         </Link>
       </p>
 
-      <header className="flex flex-col gap-4 border-b border-slate-800 pb-6">
+      <header className="flex flex-col gap-4 border-b border-rule pb-6">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <p className="text-xs uppercase tracking-[0.14em] text-slate-500">Case workbench</p>
-            <h1 className="mt-1 text-2xl font-semibold tracking-tight text-slate-50">
+            <p className="text-xs uppercase tracking-[0.14em] text-slate">Case workbench</p>
+            <h1 className="mt-1 text-2xl font-semibold tracking-tight text-ink">
               {caseRecord.reference}
             </h1>
-            <p className="mt-1 text-slate-300">{caseRecord.counterparty}</p>
-            <p className="mt-1 font-mono text-xs text-slate-500">
+            <p className="mt-1 text-slate">{caseRecord.counterparty}</p>
+            <p className="mt-1 font-mono text-xs text-slate">
               {caseRecord.corridor} · {caseRecord.dataSourceLabel} · Updated{" "}
               {formatTimestamp(caseRecord.updatedAt)}
             </p>
@@ -52,7 +52,7 @@ function CasePage() {
           </div>
         </div>
         <section aria-labelledby="completeness-heading">
-          <h2 id="completeness-heading" className="mb-2 text-sm font-medium text-slate-300">
+          <h2 id="completeness-heading" className="mb-2 text-sm font-medium text-slate">
             Document completeness summary
           </h2>
           <CompletenessSummary items={caseRecord.documentCompleteness} />
@@ -72,9 +72,9 @@ function CasePage() {
         audit={detail.audit}
       />
 
-      <p className="text-sm text-slate-500">
+      <p className="text-sm text-slate">
         RegWatch source registry lives on the{" "}
-        <Link to="/workbench/regwatch" className="text-sky-300 hover:underline">
+        <Link to="/workbench/regwatch" className="text-ink hover:underline">
           RegWatch
         </Link>{" "}
         page (A7).
@@ -86,17 +86,17 @@ function CasePage() {
 function CaseNotFound() {
   return (
     <main className="mx-auto max-w-6xl px-4 py-16">
-      <p className="text-xs uppercase tracking-[0.14em] text-slate-500">Case workbench</p>
-      <h1 className="mt-2 text-2xl font-semibold tracking-tight text-slate-50">
+      <p className="text-xs uppercase tracking-[0.14em] text-slate">Case workbench</p>
+      <h1 className="mt-2 text-2xl font-semibold tracking-tight text-ink">
         No case filed under that reference
       </h1>
-      <p className="mt-2 max-w-2xl text-sm text-slate-400">
+      <p className="mt-2 max-w-2xl text-sm text-slate">
         This prototype serves a fixed set of synthetic demo cases. Pick one from the compliance
         queue.
       </p>
       <Link
         to="/workbench"
-        className="mt-6 inline-block rounded border border-slate-600 px-4 py-2 text-sm text-slate-200 hover:bg-slate-800"
+        className="mt-6 inline-block rounded border border-rule px-4 py-2 text-sm text-slate hover:bg-bench"
       >
         ← Back to compliance queue
       </Link>

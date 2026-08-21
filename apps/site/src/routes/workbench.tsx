@@ -20,11 +20,11 @@ const NAV = [
 
 function WorkbenchLayout() {
   return (
-    <div data-plane="dark" className="bg-ink text-slate-100">
+    <div className="bg-bench">
       <PrototypeBanner />
 
-      <div className="border-b border-slate-700/60">
-        <nav className="mx-auto flex max-w-6xl flex-wrap gap-1 px-4 py-3" aria-label="Workbench">
+      <div className="border-b border-rule">
+        <nav className="mx-auto flex max-w-6xl flex-wrap gap-6 px-4 py-3" aria-label="Workbench">
           {NAV.map((item) => (
             <Link
               key={item.to}
@@ -33,9 +33,11 @@ function WorkbenchLayout() {
               // is on, so an explicit `params={undefined}` is a type error.
               {...("params" in item ? { params: item.params } : {})}
               activeOptions={{ exact: "exact" in item ? item.exact : false }}
-              className="rounded px-3 py-1.5 text-sm text-slate-300 transition-colors hover:bg-slate-800/60 hover:text-slate-50"
+              // Underline-on-hover, matching the site's TopBar rather than the
+              // pill tabs the workbench used as a separate dark application.
+              className="text-label border-b border-transparent pb-1 text-slate transition-colors hover:text-ink"
               activeProps={{
-                className: "rounded px-3 py-1.5 text-sm font-medium bg-slate-800 text-slate-50",
+                className: "text-label border-b border-ink pb-1 text-ink",
                 "aria-current": "page",
               }}
             >

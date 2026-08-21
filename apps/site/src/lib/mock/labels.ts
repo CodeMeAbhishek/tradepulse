@@ -71,19 +71,23 @@ export function formatTimestamp(iso: string): string {
 }
 
 export function outcomeToneClass(outcome: FindingOutcome | string): string {
+  // Severity on the left rule; the label itself stays ink so it is always
+  // readable and the wording, not the colour, carries the meaning.
   switch (outcome) {
     case "PASS":
-      return "border-emerald-700/60 bg-emerald-950/40 text-emerald-100";
+      return "border-l-verified";
     case "REVIEW_REQUIRED":
     case "POTENTIAL_MATCH":
     case "MAKER_REVIEW_REQUIRED":
-      return "border-amber-700/60 bg-amber-950/40 text-amber-100";
+      return "border-l-amber";
+    case "FAIL":
+    case "HIGH_RISK_ESCALATION":
+      return "border-l-stamp";
     case "DOCUMENT_PACK_INCOMPLETE":
     case "DATA_UNAVAILABLE":
     case "NOT_AVAILABLE":
     case "NOT_APPLICABLE":
-      return "border-sky-700/60 bg-sky-950/40 text-sky-100";
     default:
-      return "border-slate-600 bg-slate-900 text-slate-200";
+      return "border-l-rule";
   }
 }

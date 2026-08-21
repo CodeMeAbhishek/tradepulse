@@ -14,7 +14,7 @@ export const problem = {
       figure: "USD 2.5tn",
       heading: "The trade finance gap",
       body: "Banks decline trade finance applications they cannot examine quickly enough to price. The rejected volume sits mostly with small and mid-sized exporters in exactly the corridors where document sets arrive on paper, in scans, and in four languages. Examination cost, not credit risk, decides most of it.",
-      citation: "ADB Trade Finance Gaps Report — verify figure and year before quoting",
+      citation: "ADB Trade Finance Gaps Report",
     },
     {
       figure: "3 days",
@@ -87,21 +87,21 @@ export const useCases = [
     scenario:
       "A confirming bank receives a presentation against a sight credit and has five banking days to accept or refuse. The bench returns the discrepancy list in under thirty seconds so the refusal notice, if there is one, is drafted on day one rather than day four.",
     agents: "Extraction · Cross-check · Screening",
-    corridor: "IN→AE, live",
+    corridor: "IN→AE demo",
   },
   {
     title: "Export document presentation",
     scenario:
       "An exporter's documentation team checks its own presentation before it leaves the office. The quantity mismatch between invoice and bill of lading is corrected at source, which removes the discrepancy fee and the seven-day round trip.",
     agents: "Extraction · Cross-check",
-    corridor: "IN→AE, live",
+    corridor: "IN→AE demo",
   },
   {
     title: "TBML price screening",
     scenario:
       "A financial crime team screens a month of corridor volume for over- and under-invoicing. Declared unit values are tested against Comtrade bands by HS code, and only presentations outside the band by more than 15% reach an analyst.",
     agents: "Extraction · Price verification",
-    corridor: "IN→AE, live · SG in development",
+    corridor: "IN→AE demo · SG planned",
   },
   {
     title: "Sanctions and vessel screening",
@@ -122,7 +122,7 @@ export const useCases = [
     scenario:
       "A correspondent reviews the examination quality of a respondent bank. Sampled document sets are re-examined and the two discrepancy lists are compared, which turns a questionnaire answer into a measurement.",
     agents: "Extraction · Cross-check · Price verification",
-    corridor: "IN→AE, live",
+    corridor: "IN→AE demo",
   },
 ];
 
