@@ -1,0 +1,19 @@
+---
+description: File ownership and shared-contract review rules for Abhishek, Ansh, Atharva
+alwaysApply: true
+---
+
+# Ownership Rules
+
+Abhishek owns apps/api/**, backend contracts, rules, adapters, persistence, audit and deployment.
+Ansh owns apps/web/app/**, frontend product flow, workbench screens and API consumption.
+Atharva owns scoped UI/UX components, visual/accessibility quality, integration support and tests under explicit task assignment.
+
+Shared contracts require:
+1. Dedicated task/issue.
+2. Backend impact documented by Abhishek.
+3. Frontend impact reviewed by Ansh.
+4. Tests/fixture impact reviewed by Atharva.
+5. Dedicated commit.
+
+Do not modify another owner’s protected files without explicit scope and review.

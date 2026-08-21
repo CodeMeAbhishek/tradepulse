@@ -1,0 +1,26 @@
+---
+description: Bounded agentic extraction workflow limits and evidence display rules
+alwaysApply: true
+---
+
+# Agentic Safety Rules
+
+Document intelligence is a bounded workflow, not a free-form autonomous system:
+Extractor → Validator → Challenger → Arbiter → Cross-Document Reconciler → Deterministic Rules.
+
+Agent responsibilities:
+- Extractor: structured extraction from source document.
+- Validator: independent validation of critical fields.
+- Challenger: identify ambiguity, missing evidence, arithmetic or cross-document conflicts.
+- Arbiter: choose only evidence-supported/deterministically supported values; otherwise REVIEW_REQUIRED.
+- Reconciler: compare validated facts across documents.
+
+Rules:
+- Maximum 3 rounds.
+- Every claim/challenge includes evidence when available.
+- Do not average conflicting values.
+- Do not use majority vote as proof.
+- Do not persist/display private chain-of-thought.
+- Display concise reasons, source evidence and disagreement summaries only.
+- Invalid or unresolved extraction cannot reach PASS.
+- Agent consensus is an extraction-confidence signal only, never a legal/compliance/sanctions/approval conclusion.

@@ -1,0 +1,29 @@
+---
+description: LEI, VLEI, and identity evidence safety rules for TradePulse
+alwaysApply: true
+---
+
+# LEI and VLEI Rules
+
+LEI:
+- GLEIF name-search results are candidate entities unless the document has a matching LEI or other compatible authoritative identifier.
+- Exact document LEI plus compatible GLEIF record is strong identity evidence.
+- High name/address similarity without a stable identifier must be REVIEW_REQUIRED.
+- Lapsed LEI is a status warning, not fraud or non-existence proof.
+- GLEIF outage means IDENTITY_SOURCE_UNAVAILABLE; never auto-verify.
+
+VLEI:
+- VLEI is verifiable credential evidence, not merely a LEI string.
+- Accept only trusted verifier adapter results for VERIFIED_LIVE.
+- Prototype fixture can only return VERIFIED_FIXTURE and must be visibly labeled SYNTHETIC_DEMO_CREDENTIAL.
+- NOT_CONFIGURED is a valid state.
+- Do not implement cryptographic VLEI verification from scratch during hackathon.
+- VLEI does not automatically clear sanctions, documents, price or policy checks.
+
+Permitted identity outcomes:
+IDENTITY_VERIFIED_BY_LEI
+IDENTITY_SUPPORTED_BY_VLEI
+POTENTIAL_ENTITY_MATCH_REVIEW
+IDENTITY_UNRESOLVED
+IDENTITY_SOURCE_UNAVAILABLE
+VLEI_NOT_CONFIGURED
