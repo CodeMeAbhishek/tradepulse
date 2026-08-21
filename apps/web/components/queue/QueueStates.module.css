@@ -1,0 +1,60 @@
+.panel {
+  border: 1px dashed var(--line-strong);
+  background: color-mix(in srgb, var(--paper-elevated) 80%, white);
+  padding: 2rem 1.5rem;
+  text-align: left;
+}
+
+.error {
+  border-style: solid;
+  border-color: color-mix(in srgb, var(--danger) 45%, var(--line));
+}
+
+.title {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  margin: 0 0 0.4rem;
+}
+
+.copy {
+  margin: 0;
+  color: var(--ink-soft);
+  max-width: 52ch;
+}
+
+.pulse {
+  width: 2.5rem;
+  height: 0.35rem;
+  margin-bottom: 1rem;
+  background: linear-gradient(
+    90deg,
+    var(--line) 0%,
+    var(--accent) 50%,
+    var(--line) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.2s linear infinite;
+}
+
+.retry {
+  margin-top: 1rem;
+  padding: 0.45rem 0.85rem;
+  border: 1px solid var(--line-strong);
+  background: var(--paper-elevated);
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.retry:hover {
+  border-color: var(--accent);
+  color: var(--accent-deep);
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: -100% 0;
+  }
+}
