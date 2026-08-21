@@ -1,0 +1,104 @@
+"""Shared TradePulse contracts for API and domain boundaries."""
+
+from tradepulse_contracts.agentic import (
+    MAX_DEBATE_ROUNDS,
+    AgentResponse,
+    ArbiterFieldDecision,
+    ArbiterOutput,
+    Evidence,
+    FieldChallenge,
+    FieldClaim,
+    FieldDisagreement,
+    guard_debate_round,
+)
+from tradepulse_contracts.audit import AuditEvent
+from tradepulse_contracts.case import CaseRecord, CaseSummary
+from tradepulse_contracts.document import DocumentMetadata
+from tradepulse_contracts.enums import (
+    AgentName,
+    AgentRunStatus,
+    CaseState,
+    ChallengeType,
+    CheckStatus,
+    DataLabel,
+    DocumentProcessingState,
+    DocumentType,
+    ExtractionValidationStatus,
+    FieldResolutionStatus,
+    FreshnessLabel,
+    Severity,
+    SourceAccessType,
+    SourceRegistryStatus,
+)
+from tradepulse_contracts.error import ApiError, ErrorBody, ErrorResponse
+from tradepulse_contracts.extraction import (
+    BoundingBox,
+    ExtractedField,
+    ExtractionResult,
+    ExtractionValidation,
+    ModelMetadata,
+)
+from tradepulse_contracts.health import HealthResponse, ReadyResponse, ReadyStatus
+from tradepulse_contracts.rule_result import (
+    RuleDataSourceRef,
+    RuleEvidenceItem,
+    RuleResult,
+    assert_not_unavailable_as_pass,
+)
+from tradepulse_contracts.source import (
+    FreshnessInfo,
+    SourceMetadata,
+    SourceRegistryEntry,
+    SourceSnapshot,
+    classify_freshness,
+)
+
+__all__ = [
+    "MAX_DEBATE_ROUNDS",
+    "AgentName",
+    "AgentResponse",
+    "AgentRunStatus",
+    "ApiError",
+    "ArbiterFieldDecision",
+    "ArbiterOutput",
+    "AuditEvent",
+    "BoundingBox",
+    "CaseRecord",
+    "CaseState",
+    "CaseSummary",
+    "ChallengeType",
+    "CheckStatus",
+    "DataLabel",
+    "DocumentMetadata",
+    "DocumentProcessingState",
+    "DocumentType",
+    "ErrorBody",
+    "ErrorResponse",
+    "Evidence",
+    "ExtractedField",
+    "ExtractionResult",
+    "ExtractionValidation",
+    "ExtractionValidationStatus",
+    "FieldChallenge",
+    "FieldClaim",
+    "FieldDisagreement",
+    "FieldResolutionStatus",
+    "FreshnessInfo",
+    "FreshnessLabel",
+    "HealthResponse",
+    "ModelMetadata",
+    "ReadyResponse",
+    "ReadyStatus",
+    "RuleDataSourceRef",
+    "RuleEvidenceItem",
+    "RuleResult",
+    "Severity",
+    "SourceAccessType",
+    "SourceMetadata",
+    "SourceRegistryEntry",
+    "SourceRegistryStatus",
+    "SourceSnapshot",
+    "assert_not_unavailable_as_pass",
+    "classify_freshness",
+    "guard_debate_round",
+]

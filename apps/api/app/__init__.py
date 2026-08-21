@@ -1,0 +1,1 @@
+"""TradePulse API application package."""
