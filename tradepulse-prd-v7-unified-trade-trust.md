@@ -2,7 +2,8 @@
 ## Product Requirements Document — Unified Trade Trust and Compliance Fabric
 
 **Version:** 7.0 — Full-context restoration and identity expansion  
-**Supersedes:** `tradepulse-prd-v5-bank-tradehouse.md`, `tradepulse-prd-v6-lei-vlei.md`, mentor `PRD.md`  
+**Supersedes (historical):** prior bank/tradehouse and LEI/VLEI PRD drafts; mentor `PRD.md`  
+**Contracts:** `docs/adr/001-canonical-contracts-addendum.md` and `packages/contracts/` are binding for shared enums.  
 **Primary users:** Bank compliance officers; GIFT IFSC trade-house compliance/operations analysts  
 **Secondary users / future modules:** Exporters, freight forwarders, customs brokers, logistics partners  
 **Engineering team:** Abhishek, Ansh, Atharva — Main Engineers  
@@ -216,7 +217,7 @@ INVOICE_ONLY_PRE_REVIEW
 POST_SHIPMENT_DOCUMENT_REVIEW
 LC_DOCUMENT_REVIEW
 DOCUMENTARY_COLLECTION_REVIEW
-TRADE_HOUSE_ENHANCED_REVIEW
+ENHANCED_TRADE_HOUSE_REVIEW
 DOMESTIC_INDIA_GOODS_MOVEMENT
 ```
 
@@ -427,7 +428,7 @@ flowchart TD
 ### Sprint 4: Trade trust
 
 - GLEIF/LEI, VLEI fixture boundary, GSTIN/IEC/PAN fields, screening, price and duplicate checks.
-- Tag `v0.4-trade-trust-workbench`.
+- Tag `v0.4-compliance-workbench`.
 
 ### Sprint 5: Regulations and lifecycle
 

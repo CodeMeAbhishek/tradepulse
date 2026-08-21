@@ -4,11 +4,13 @@ LEI/VLEI-enabled documentary trade-compliance workbench for bank and GIFT IFSC t
 
 **Authority docs**
 
-1. `tradepulse-prd-v7-unified-trade-trust.md` — product
-2. `tradepulse-system-design-v4-unified-trade-trust.md` — architecture
-3. `tradepulse-cursor-master-prompt-v2-lei-vlei.md` — execution prompts
+1. `docs/adr/001-canonical-contracts-addendum.md` — binding shared enums/ownership
+2. `packages/contracts/` — executable source of truth
+3. `tradepulse-prd-v7-unified-trade-trust.md` — product
+4. `tradepulse-system-design-v4-unified-trade-trust.md` — architecture
+5. `tradepulse-cursor-master-prompt-v2-lei-vlei.md` — execution prompts
 
-This repository currently contains a **skeleton only**. No business logic, live sanctions, production VLEI verification, ICEGATE, payments, or deployment.
+This repository currently contains a **skeleton + frontend mock workbench + canonical contracts**. No production business logic, live sanctions, production VLEI verification, ICEGATE, payments, or deployment.
 
 ## Layout
 

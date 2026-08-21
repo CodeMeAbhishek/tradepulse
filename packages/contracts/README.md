@@ -1,5 +1,23 @@
-# Shared typed contracts between apps/api and apps/web.
+# Canonical shared contracts for TradePulse.
 
-Changes here require shared review (Abhishek backend impact, Ansh frontend impact, Atharva tests/fixtures).
+**Source of truth:** `enums.py`, `models.py`, `policies.py`  
+**Binding addendum:** `docs/adr/001-canonical-contracts-addendum.md`
 
-Skeleton only — no schemas published yet.
+## Ownership
+
+| Area | Primary | Reviewers |
+|---|---|---|
+| enums / models / policies | Abhishek | Ansh |
+| Contract tests | Atharva | Abhishek + Ansh |
+| types.ts mirror | Abhishek | Ansh |
+
+No application module may independently redeclare these enums.
+
+## Run tests
+
+```bash
+# from repo root
+pip install pydantic pytest
+pytest packages/contracts/tests -q
+python scripts/check_contract_sync.py
+```
