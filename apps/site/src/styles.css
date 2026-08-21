@@ -1,0 +1,184 @@
+@import "tailwindcss" source(none);
+@source "../src";
+
+/*
+ * TradePulse AI — design system.
+ *
+ * Eight colours. Three families. Nine type steps. Nothing else.
+ * Edit a value here and the whole site follows.
+ */
+
+:root {
+  /* the only eight colours in this codebase */
+  --bench: oklch(0.955 0.011 85.8); /* #F4F2ED  page background */
+  --paper: oklch(0.99 0.011 90.5); /* #FFFDF8  document surfaces only */
+  --ink: oklch(0.245 0.031 249.2); /* #12202E  headings, top bar, footer plane */
+  --slate: oklch(0.407 0.031 254.1); /* #3A4A5C  body copy, metadata */
+  --rule: oklch(0.867 0.011 79.6); /* #D9D4CB  every hairline */
+  --stamp: oklch(0.494 0.184 26.5); /* #C1272D  CRITICAL FINDINGS ONLY */
+  --amber: oklch(0.652 0.144 62.9); /* #D68910  needs review */
+  --verified: oklch(0.494 0.089 158.9); /* #2D7D5A  passed checks */
+}
+
+@theme inline {
+  --color-bench: var(--bench);
+  --color-paper: var(--paper);
+  --color-ink: var(--ink);
+  --color-slate: var(--slate);
+  --color-rule: var(--rule);
+  --color-stamp: var(--stamp);
+  --color-amber: var(--amber);
+  --color-verified: var(--verified);
+
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+  --font-sans: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-condensed: "IBM Plex Sans Condensed", "IBM Plex Sans", sans-serif;
+
+  /* the named type scale — no arbitrary sizes anywhere */
+  --text-display: 64px;
+  --text-display--line-height: 1;
+  --text-display--letter-spacing: -0.025em;
+  --text-display--font-weight: 500;
+
+  --text-h1: 46px;
+  --text-h1--line-height: 1.06;
+  --text-h1--letter-spacing: -0.02em;
+  --text-h1--font-weight: 500;
+
+  --text-h2: 32px;
+  --text-h2--line-height: 1.14;
+  --text-h2--letter-spacing: -0.015em;
+  --text-h2--font-weight: 500;
+
+  --text-h3: 21px;
+  --text-h3--line-height: 1.28;
+  --text-h3--letter-spacing: -0.01em;
+  --text-h3--font-weight: 500;
+
+  --text-body-lg: 19px;
+  --text-body-lg--line-height: 1.55;
+  --text-body-lg--font-weight: 400;
+
+  --text-body: 17px;
+  --text-body--line-height: 1.62;
+  --text-body--font-weight: 400;
+
+  --text-small: 15px;
+  --text-small--line-height: 1.5;
+  --text-small--font-weight: 400;
+
+  --text-label: 12px;
+  --text-label--line-height: 1.2;
+  --text-label--letter-spacing: 0.1em;
+  --text-label--font-weight: 600;
+
+  --text-data: 16px;
+  --text-data--line-height: 1.45;
+
+  --radius-hair: 2px;
+}
+
+@layer base {
+  * {
+    border-color: var(--rule);
+  }
+
+  html {
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body {
+    background-color: var(--bench);
+    color: var(--slate);
+    font-family: var(--font-sans);
+    font-size: 17px;
+    line-height: 1.62;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-mono);
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--ink);
+    outline-offset: 3px;
+  }
+
+  ::selection {
+    background: var(--ink);
+    color: var(--paper);
+  }
+}
+
+/* mono data always sits on tabular figures */
+@utility font-mono {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+@utility text-label {
+  font-family: var(--font-condensed);
+  font-size: var(--text-label);
+  line-height: var(--text-label--line-height);
+  letter-spacing: var(--text-label--letter-spacing);
+  font-weight: var(--text-label--font-weight);
+  text-transform: uppercase;
+}
+
+@utility text-data {
+  font-family: var(--font-mono);
+  font-size: var(--text-data);
+  line-height: var(--text-data--line-height);
+  font-variant-numeric: tabular-nums;
+}
+
+/* the ledger grid */
+@utility ledger-grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: 32px;
+}
+
+@utility hairline-t {
+  border-top: 1px solid var(--rule);
+}
+
+@utility hairline-b {
+  border-bottom: 1px solid var(--rule);
+}
+
+/* ---------------------------------------------------------------------------
+   Keyboard focus inside the workbench plane
+
+   The workbench is a dark surface inside a light site, so the site's
+   ink-coloured ring disappears there. This inverts it and adds a dark halo so
+   the ring reads on the plane and on the slate panels sitting on it.
+
+   Deliberately UNLAYERED. Tailwind resets outline-color to currentColor from a
+   later cascade layer, and a later layer beats an earlier one regardless of
+   specificity -- so the same rule inside `@layer base` loses its colour and the
+   ring silently takes on the colour of whatever text it surrounds. Unlayered
+   declarations outrank every layer, which is the only reliable place for it.
+
+   Universal rather than a tag list: browsers make scroll containers focusable,
+   and the workbench tables scroll horizontally.
+   --------------------------------------------------------------------------- */
+
+[data-plane="dark"] :focus-visible {
+  outline: 2px solid var(--paper);
+  outline-color: var(--paper);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px var(--ink);
+}
+
+@media (forced-colors: active) {
+  [data-plane="dark"] :focus-visible {
+    outline: 3px solid Highlight;
+    box-shadow: none;
+  }
+}

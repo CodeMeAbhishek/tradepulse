@@ -1,0 +1,19 @@
+# Normalise line endings.
+#
+# Without this, a Windows checkout with core.autocrlf=true writes CRLF into the
+# working tree while git stores LF. Prettier then reports every line of every
+# file as `Delete ␍` -- ~1,470 phantom errors that do not exist in CI, which
+# trains everyone to ignore `npm run lint`.
+#
+# `eol=lf` makes the working copy match what is stored, on every platform.
+* text=auto eol=lf
+
+# Binary assets must never be touched.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.pdf binary
