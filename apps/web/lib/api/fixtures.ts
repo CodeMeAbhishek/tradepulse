@@ -7,12 +7,14 @@ export function buildInvoiceFixture(opts: {
   unit?: string;
   unitPrice?: number;
   invoiceNumber?: string;
+  kgPerUnit?: number;
+  netWeightKg?: number;
 }): string {
   const qty = opts.quantity ?? 500;
   const unit = opts.unit ?? "MT";
   const unitPrice = opts.unitPrice ?? 2500;
   const total = qty * unitPrice;
-  return [
+  const lines = [
     `invoice_number: ${opts.invoiceNumber ?? "INV-TP-1001"}`,
     "invoice_date: 2026-03-01",
     "currency: USD",
@@ -23,12 +25,21 @@ export function buildInvoiceFixture(opts: {
     `quantity: ${qty}`,
     `unit: ${unit}`,
     `unit_price: ${unitPrice}`,
+  ];
+  if (opts.kgPerUnit != null) {
+    lines.push(`kg_per_unit: ${opts.kgPerUnit}`);
+  }
+  if (opts.netWeightKg != null) {
+    lines.push(`net_weight_kg: ${opts.netWeightKg}`);
+  }
+  lines.push(
     `line_total: ${total}`,
     `total_amount: ${total}`,
     "hs_code: 740311",
     "port_of_loading: Mundra, IN",
     "port_of_discharge: Jebel Ali, AE",
-  ].join("\n");
+  );
+  return lines.join("\n");
 }
 
 export function buildBolFixture(opts: {

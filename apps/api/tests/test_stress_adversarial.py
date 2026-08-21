@@ -457,11 +457,18 @@ class TestPriceAudit:
         assert result.status is not CheckStatus.PASS
 
     def test_unit_mismatch_data_unavailable(self) -> None:
-        """KG vs MT reference => DATA_UNAVAILABLE."""
+        """Unsupported pack unit without weight => DATA_UNAVAILABLE (never invent)."""
         result = audit_unit_price(
-            unit_price=950.0, currency="USD", unit="KG", hs_code="100630",
+            unit_price=950.0, currency="USD", unit="cartons", hs_code="100630",
         )
         assert result.status is CheckStatus.DATA_UNAVAILABLE
+
+    def test_kg_converts_and_audits(self) -> None:
+        """KG converts to USD/MT then audits (0.95/kg == 950/MT)."""
+        result = audit_unit_price(
+            unit_price=0.95, currency="USD", unit="KG", hs_code="100630",
+        )
+        assert result.status is CheckStatus.PASS
 
     def test_unmapped_commodity_data_unavailable_not_pass(self) -> None:
         """No reference for 'Unknown Commodity' => DATA_UNAVAILABLE, not PASS."""

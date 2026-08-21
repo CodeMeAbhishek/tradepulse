@@ -172,6 +172,8 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
                 lei: FIXTURE_LEI,
                 quantity: 500,
                 unit: "cartons",
+                unitPrice: 55,
+                kgPerUnit: 25,
                 invoiceNumber: "INV-MISMATCH-01",
               }),
             ],
@@ -231,6 +233,9 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
                   lei: FIXTURE_LEI,
                   quantity: invQty,
                   unit,
+                  ...(input.mismatchQty
+                    ? { unitPrice: 55, kgPerUnit: 25 }
+                    : {}),
                 }),
               ],
               { type: "text/plain" },

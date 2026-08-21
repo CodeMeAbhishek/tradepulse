@@ -103,6 +103,12 @@ class FixtureLLMAdapter:
                     "unit_price": unit_price,
                     "line_total": line_total,
                     "hs_code": _get(labels, "hs_code", "hscode"),
+                    "kg_per_unit": _to_float(
+                        _get(labels, "kg_per_unit", "kg_per_carton", "weight_per_unit_kg")
+                    ),
+                    "net_weight_kg": _to_float(
+                        _get(labels, "net_weight_kg", "net_weight", "total_net_weight_kg")
+                    ),
                 }
             )
 

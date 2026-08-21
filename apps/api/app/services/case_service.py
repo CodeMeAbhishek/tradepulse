@@ -291,6 +291,9 @@ def process_case(case_id: str, *, state: PlatformState | None = None) -> dict[st
             unit=item.unit if item else None,
             hs_code=item.hs_code if item else None,
             description=item.description if item else None,
+            quantity=item.quantity if item else None,
+            kg_per_unit=item.kg_per_unit if item else None,
+            net_weight_kg=item.net_weight_kg if item else None,
         )
         dup = check_duplicate_submission(
             case_id=case.case_id,

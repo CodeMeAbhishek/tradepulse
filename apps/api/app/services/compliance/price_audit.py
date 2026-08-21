@@ -8,6 +8,11 @@ from tradepulse_contracts.rule_result import RuleDataSourceRef, RuleEvidenceItem
 from app.adapters.price.base import LivePriceAdapter, LivePriceQuote
 from app.adapters.price.factory import get_live_price_adapter
 from app.config import get_settings
+from app.services.compliance.price_units import (
+    NormalizeFailure,
+    NormalizedUnitPrice,
+    normalize_invoice_price_to_usd_per_mt,
+)
 
 RULE_PACK = "price-audit@1.0.0"
 STATIC_SOURCE_ID = "static-synthetic-demo-price"
@@ -241,6 +246,38 @@ def _audit_static(
     )
 
 
+def _unavailable_unit_conversion(
+    *,
+    check_id: str,
+    detail: str,
+    unit: str | None,
+    unit_price: float,
+) -> RuleResult:
+    return RuleResult(
+        check_id=check_id,
+        rule_pack_version=RULE_PACK,
+        status=CheckStatus.DATA_UNAVAILABLE,
+        severity=Severity.MEDIUM,
+        reason=f"{detail} Price check is DATA_UNAVAILABLE (not PASS).",
+        rule_reference="price.unit_conversion.unavailable",
+        evidence=[
+            RuleEvidenceItem(field="unit", value=unit),
+            RuleEvidenceItem(field="unit_price", value=unit_price),
+        ],
+        data_sources=[
+            RuleDataSourceRef(
+                source_id="price-audit",
+                version="unit-normalize@1.0.0",
+                snapshot_id="none",
+            )
+        ],
+        recommended_action=(
+            "Provide MT pricing or pack weight (kg_per_unit / net_weight_kg); "
+            "do not treat missing conversion as PASS."
+        ),
+    )
+
+
 def audit_unit_price(
     *,
     unit_price: float | None,
@@ -248,6 +285,9 @@ def audit_unit_price(
     unit: str | None,
     hs_code: str | None = None,
     description: str | None = None,
+    quantity: float | None = None,
+    kg_per_unit: float | None = None,
+    net_weight_kg: float | None = None,
     variance_ratio: float = DEFAULT_VARIANCE_RATIO,
     check_id: str = "PRICE-001",
     adapter: LivePriceAdapter | None = None,
@@ -270,38 +310,71 @@ def audit_unit_price(
             recommended_action="Provide unit price when available.",
         )
 
+    normalized = normalize_invoice_price_to_usd_per_mt(
+        unit_price=unit_price,
+        unit=unit,
+        quantity=quantity,
+        kg_per_unit=kg_per_unit,
+        net_weight_kg=net_weight_kg,
+    )
+    if isinstance(normalized, NormalizeFailure):
+        return _unavailable_unit_conversion(
+            check_id=check_id,
+            detail=normalized.detail,
+            unit=unit,
+            unit_price=unit_price,
+        )
+
+    assert isinstance(normalized, NormalizedUnitPrice)
+    conversion_evidence = [
+        RuleEvidenceItem(field="original_unit", value=normalized.original_unit),
+        RuleEvidenceItem(field="original_unit_price", value=normalized.original_unit_price),
+        RuleEvidenceItem(field="unit_price_usd_per_mt", value=round(normalized.usd_per_mt, 4)),
+        RuleEvidenceItem(field="unit_conversion", value=normalized.conversion_note),
+    ]
+
     # Explicit adapter always uses the live path (tests / DI).
     if adapter is not None:
-        return _audit_live(
-            unit_price=unit_price,
+        result = _audit_live(
+            unit_price=normalized.usd_per_mt,
             currency=currency,
-            unit=unit,
+            unit="MT",
             hs_code=hs_code,
             description=description,
             variance_ratio=variance_ratio,
             check_id=check_id,
             adapter=adapter,
         )
+        return _with_conversion_evidence(result, conversion_evidence)
 
     mode = (get_settings().price_source_mode or "live").strip().lower()
     if mode in {"static", "static_demo", "synthetic"}:
-        return _audit_static(
-            unit_price=unit_price,
+        result = _audit_static(
+            unit_price=normalized.usd_per_mt,
             currency=currency,
-            unit=unit,
+            unit="MT",
             hs_code=hs_code,
             description=description,
             variance_ratio=variance_ratio,
             check_id=check_id,
         )
+        return _with_conversion_evidence(result, conversion_evidence)
 
-    return _audit_live(
-        unit_price=unit_price,
+    result = _audit_live(
+        unit_price=normalized.usd_per_mt,
         currency=currency,
-        unit=unit,
+        unit="MT",
         hs_code=hs_code,
         description=description,
         variance_ratio=variance_ratio,
         check_id=check_id,
         adapter=get_live_price_adapter(),
     )
+    return _with_conversion_evidence(result, conversion_evidence)
+
+
+def _with_conversion_evidence(
+    result: RuleResult,
+    conversion_evidence: list[RuleEvidenceItem],
+) -> RuleResult:
+    return result.model_copy(update={"evidence": [*conversion_evidence, *result.evidence]})

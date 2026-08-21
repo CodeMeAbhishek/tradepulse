@@ -24,6 +24,9 @@ class InvoiceLineItem(BaseModel):
     unit_price: float | None = None
     line_total: float | None = None
     hs_code: str | None = None
+    # Weight evidence for pack→MT conversion (never invent these).
+    kg_per_unit: float | None = None
+    net_weight_kg: float | None = None
 
 
 class InvoiceExtraction(BaseModel):
