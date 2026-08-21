@@ -1,0 +1,2203 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`case components > BolReconciliationPanel with BoL absent 1`] = `
+<section
+  aria-labelledby="recon-heading"
+  class="rounded border border-slate-700/80 bg-slate-950/40 p-4"
+>
+  <div
+    class="flex flex-wrap items-start justify-between gap-3"
+  >
+    <div>
+      <h2
+        class="text-lg font-semibold text-slate-50"
+        id="recon-heading"
+      >
+        Cross-document reconciliation (Invoice ↔ BoL)
+      </h2>
+      <p
+        class="mt-1 text-sm text-slate-400"
+      >
+        BoL/AWB is not present under the invoice-only profile. Transport reconciliation is NOT_AVAILABLE — this is not a passing check.
+      </p>
+    </div>
+    <span
+      class="inline-flex rounded border px-2 py-0.5 text-xs font-medium border-sky-700/60 bg-sky-950/40 text-sky-100"
+    >
+      NOT AVAILABLE
+    </span>
+  </div>
+  <p
+    class="mt-4 rounded border border-sky-800/60 bg-sky-950/30 px-3 py-3 text-sm text-sky-100"
+  >
+    BoL/AWB absent — outcome is explicitly
+     
+    <strong>
+      NOT AVAILABLE
+    </strong>
+    , never PASS.
+  </p>
+</section>
+`;
+
+exports[`case components > BolReconciliationPanel with BoL present 1`] = `
+<section
+  aria-labelledby="recon-heading"
+  class="rounded border border-slate-700/80 bg-slate-950/40 p-4"
+>
+  <div
+    class="flex flex-wrap items-start justify-between gap-3"
+  >
+    <div>
+      <h2
+        class="text-lg font-semibold text-slate-50"
+        id="recon-heading"
+      >
+        Cross-document reconciliation (Invoice ↔ BoL)
+      </h2>
+      <p
+        class="mt-1 text-sm text-slate-400"
+      >
+        Invoice and BoL disagree on quantity — human review required.
+      </p>
+    </div>
+    <span
+      class="inline-flex rounded border px-2 py-0.5 text-xs font-medium border-amber-700/60 bg-amber-950/40 text-amber-100"
+    >
+      REVIEW REQUIRED
+    </span>
+  </div>
+  <div
+    class="mt-4 overflow-x-auto"
+  >
+    <table
+      class="min-w-full text-left text-sm"
+    >
+      <thead
+        class="text-xs uppercase tracking-wide text-slate-500"
+      >
+        <tr>
+          <th
+            class="py-2 pr-3"
+          >
+            Field
+          </th>
+          <th
+            class="py-2 pr-3"
+          >
+            Invoice
+          </th>
+          <th
+            class="py-2 pr-3"
+          >
+            BoL / AWB
+          </th>
+          <th
+            class="py-2 pr-3"
+          >
+            Outcome
+          </th>
+          <th
+            class="py-2"
+          >
+            Note
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr
+          class="border-t border-slate-800 align-top"
+        >
+          <td
+            class="py-2.5 pr-3 text-slate-200"
+          >
+            Seller / Shipper
+          </td>
+          <td
+            class="py-2.5 pr-3 text-slate-300"
+          >
+            Sahara Metals FZE
+          </td>
+          <td
+            class="py-2.5 pr-3 text-slate-300"
+          >
+            Sahara Metals FZE
+          </td>
+          <td
+            class="py-2.5 pr-3"
+          >
+            <span
+              class="inline-flex rounded border px-2 py-0.5 text-[11px] font-medium border-emerald-700/60 bg-emerald-950/40 text-emerald-100"
+            >
+              PASS
+            </span>
+          </td>
+          <td
+            class="py-2.5 text-slate-400"
+          >
+            Names align on documents.
+          </td>
+        </tr>
+        <tr
+          class="border-t border-slate-800 align-top"
+        >
+          <td
+            class="py-2.5 pr-3 text-slate-200"
+          >
+            Goods
+          </td>
+          <td
+            class="py-2.5 pr-3 text-slate-300"
+          >
+            Copper cathodes, Grade A
+          </td>
+          <td
+            class="py-2.5 pr-3 text-slate-300"
+          >
+            Copper cathodes Grade A
+          </td>
+          <td
+            class="py-2.5 pr-3"
+          >
+            <span
+              class="inline-flex rounded border px-2 py-0.5 text-[11px] font-medium border-emerald-700/60 bg-emerald-950/40 text-emerald-100"
+            >
+              PASS
+            </span>
+          </td>
+          <td
+            class="py-2.5 text-slate-400"
+          >
+            Description compatible.
+          </td>
+        </tr>
+        <tr
+          class="border-t border-slate-800 align-top"
+        >
+          <td
+            class="py-2.5 pr-3 text-slate-200"
+          >
+            Quantity
+          </td>
+          <td
+            class="py-2.5 pr-3 text-slate-300"
+          >
+            250 MT
+          </td>
+          <td
+            class="py-2.5 pr-3 text-slate-300"
+          >
+            245 MT
+          </td>
+          <td
+            class="py-2.5 pr-3"
+          >
+            <span
+              class="inline-flex rounded border px-2 py-0.5 text-[11px] font-medium border-amber-700/60 bg-amber-950/40 text-amber-100"
+            >
+              REVIEW REQUIRED
+            </span>
+          </td>
+          <td
+            class="py-2.5 text-slate-400"
+          >
+            Cross-document quantity mismatch.
+          </td>
+        </tr>
+        <tr
+          class="border-t border-slate-800 align-top"
+        >
+          <td
+            class="py-2.5 pr-3 text-slate-200"
+          >
+            Port of loading
+          </td>
+          <td
+            class="py-2.5 pr-3 text-slate-300"
+          >
+            Jebel Ali, AE
+          </td>
+          <td
+            class="py-2.5 pr-3 text-slate-300"
+          >
+            Jebel Ali
+          </td>
+          <td
+            class="py-2.5 pr-3"
+          >
+            <span
+              class="inline-flex rounded border px-2 py-0.5 text-[11px] font-medium border-emerald-700/60 bg-emerald-950/40 text-emerald-100"
+            >
+              PASS
+            </span>
+          </td>
+          <td
+            class="py-2.5 text-slate-400"
+          >
+            Compatible port references.
+          </td>
+        </tr>
+        <tr
+          class="border-t border-slate-800 align-top"
+        >
+          <td
+            class="py-2.5 pr-3 text-slate-200"
+          >
+            Reference
+          </td>
+          <td
+            class="py-2.5 pr-3 text-slate-300"
+          >
+            INV-SM-88421
+          </td>
+          <td
+            class="py-2.5 pr-3 text-slate-300"
+          >
+            BL-SM-44109
+          </td>
+          <td
+            class="py-2.5 pr-3"
+          >
+            <span
+              class="inline-flex rounded border px-2 py-0.5 text-[11px] font-medium border-emerald-700/60 bg-emerald-950/40 text-emerald-100"
+            >
+              PASS
+            </span>
+          </td>
+          <td
+            class="py-2.5 text-slate-400"
+          >
+            Distinct document references — expected.
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+`;
+
+exports[`case components > FindingsWorkflowPanel 1`] = `
+<section
+  aria-labelledby="findings-heading"
+  class="space-y-4"
+>
+  <div
+    class="rounded border border-slate-700/80 bg-slate-950/40 p-4"
+  >
+    <h2
+      class="text-lg font-semibold text-slate-50"
+      id="findings-heading"
+    >
+      Findings — price, screening, duplicate
+    </h2>
+    <p
+      class="mt-1 text-sm text-slate-400"
+    >
+      Use outcome text labels. Potential matches are not confirmations. Unavailable data is not PASS. Duplicate is a signal, not proof of fraud or duplicate financing.
+    </p>
+    <div
+      class="mt-4 grid gap-3 md:grid-cols-3"
+    >
+      <article
+        class="rounded border border-slate-800 bg-slate-900/50 p-3"
+      >
+        <div
+          class="flex items-start justify-between gap-2"
+        >
+          <h3
+            class="text-sm font-medium text-slate-100"
+          >
+            Cross-document quantity
+          </h3>
+          <span
+            class="shrink-0 rounded border px-2 py-0.5 text-[11px] font-medium border-amber-700/60 bg-amber-950/40 text-amber-100"
+          >
+            REVIEW REQUIRED
+          </span>
+        </div>
+        <p
+          class="mt-2 text-sm text-slate-300"
+        >
+          Invoice 250 MT vs BoL 245 MT.
+        </p>
+        <p
+          class="mt-2 text-xs text-slate-500"
+        >
+          Evidence retained on both documents.
+        </p>
+        <p
+          class="mt-2 font-mono text-[11px] text-slate-500"
+        >
+          Source: 
+          RECONCILER_FIXTURE
+           · Rule: RECON-QTY
+        </p>
+      </article>
+      <article
+        class="rounded border border-slate-800 bg-slate-900/50 p-3"
+      >
+        <div
+          class="flex items-start justify-between gap-2"
+        >
+          <h3
+            class="text-sm font-medium text-slate-100"
+          >
+            Price plausibility
+          </h3>
+          <span
+            class="shrink-0 rounded border px-2 py-0.5 text-[11px] font-medium border-amber-700/60 bg-amber-950/40 text-amber-100"
+          >
+            REVIEW REQUIRED
+          </span>
+        </div>
+        <p
+          class="mt-2 text-sm text-slate-300"
+        >
+          Unit price variance vs static demo benchmark exceeds threshold.
+        </p>
+        <p
+          class="mt-2 text-xs text-slate-500"
+        >
+          Risk indicator only — not a fraud conclusion.
+        </p>
+        <p
+          class="mt-2 font-mono text-[11px] text-slate-500"
+        >
+          Source: 
+          STATIC_DEMO_PRICE_REF
+           · Snapshot: price-snap-demo-01
+           · Rule: PRICE-VAR
+        </p>
+      </article>
+    </div>
+  </div>
+  <div
+    class="grid gap-4 lg:grid-cols-2"
+  >
+    <div
+      class="rounded border border-slate-700/80 bg-slate-950/40 p-4"
+    >
+      <h3
+        class="text-base font-semibold text-slate-50"
+      >
+        Maker / checker
+      </h3>
+      <p
+        class="mt-1 text-sm text-slate-400"
+      >
+        Human decision support only — UI does not claim AI approved or cleared the case.
+      </p>
+      <dl
+        class="mt-3 space-y-2 text-sm"
+      >
+        <div>
+          <dt
+            class="text-slate-500"
+          >
+            Maker decision
+          </dt>
+          <dd
+            class="text-slate-200"
+          >
+            Not recorded
+          </dd>
+        </div>
+        <div>
+          <dt
+            class="text-slate-500"
+          >
+            Checker decision
+          </dt>
+          <dd
+            class="text-slate-200"
+          >
+            Not recorded
+          </dd>
+        </div>
+      </dl>
+      <ul
+        class="mt-3 flex flex-wrap gap-2"
+      >
+        <li
+          class="rounded border border-slate-600 px-2 py-1 text-xs text-slate-300"
+        >
+          Continue review
+        </li>
+        <li
+          class="rounded border border-slate-600 px-2 py-1 text-xs text-slate-300"
+        >
+          Request explanation
+        </li>
+        <li
+          class="rounded border border-slate-600 px-2 py-1 text-xs text-slate-300"
+        >
+          Escalate
+        </li>
+      </ul>
+    </div>
+    <div
+      class="rounded border border-slate-700/80 bg-slate-950/40 p-4"
+    >
+      <h3
+        class="text-base font-semibold text-slate-50"
+      >
+        Audit timeline
+      </h3>
+      <ol
+        class="mt-3 space-y-3 border-l border-slate-700 pl-4"
+      >
+        <li
+          class="relative text-sm"
+        >
+          <span
+            class="absolute -left-[1.28rem] top-1 h-2 w-2 rounded-full bg-sky-400"
+          />
+          <p
+            class="font-mono text-[11px] text-slate-500"
+          >
+            21 Aug 2026, 13:10
+             · 
+            system
+          </p>
+          <p
+            class="text-slate-200"
+          >
+            RECONCILIATION_COMPLETE
+          </p>
+          <p
+            class="text-slate-400"
+          >
+            Quantity mismatch flagged REVIEW_REQUIRED
+          </p>
+        </li>
+      </ol>
+    </div>
+  </div>
+</section>
+`;
+
+exports[`case components > IdentityEvidenceDrawer 1`] = `
+<section
+  aria-labelledby="identity-heading"
+  class="rounded border border-slate-700/80 bg-slate-950/40 p-4"
+>
+  <h2
+    class="text-lg font-semibold text-slate-50"
+    id="identity-heading"
+  >
+    Identity evidence
+  </h2>
+  <p
+    class="mt-1 text-sm text-slate-400"
+  >
+    LEI and VLEI are separate. Fuzzy name candidates are never shown as verified identity. A plain LEI string is not a VLEI.
+  </p>
+  <ul
+    class="mt-4 space-y-2"
+  >
+    <li
+      class="rounded border border-slate-800"
+    >
+      <button
+        aria-expanded="true"
+        class="flex w-full items-center justify-between gap-3 px-3 py-2.5 text-left"
+        type="button"
+      >
+        <span
+          class="text-sm font-medium text-slate-100"
+        >
+          SELLER
+          : 
+          Sahara Metals FZE
+        </span>
+        <span
+          class="text-xs text-amber-100/90"
+        >
+          Identity supported by VLEI
+        </span>
+      </button>
+      <div
+        class="border-t border-slate-800 px-3 py-3 text-sm text-slate-300"
+      >
+        <dl
+          class="grid gap-2 sm:grid-cols-2"
+        >
+          <div>
+            <dt
+              class="text-xs text-slate-500"
+            >
+              Raw document name
+            </dt>
+            <dd>
+              Sahara Metals FZE
+            </dd>
+          </div>
+          <div>
+            <dt
+              class="text-xs text-slate-500"
+            >
+              Normalized name
+            </dt>
+            <dd>
+              Sahara Metals FZE
+            </dd>
+          </div>
+          <div>
+            <dt
+              class="text-xs text-slate-500"
+            >
+              Document LEI
+            </dt>
+            <dd
+              class="font-mono text-xs"
+            >
+              984500SAHARA00000012
+            </dd>
+          </div>
+          <div>
+            <dt
+              class="text-xs text-slate-500"
+            >
+              LEI status
+            </dt>
+            <dd>
+              ISSUED
+            </dd>
+          </div>
+          <div>
+            <dt
+              class="text-xs text-slate-500"
+            >
+              VLEI status
+            </dt>
+            <dd>
+              VERIFIED FIXTURE
+               — 
+              VLEI fixture verified · SYNTHETIC_DEMO_CREDENTIAL
+            </dd>
+          </div>
+          <div>
+            <dt
+              class="text-xs text-slate-500"
+            >
+              Source / snapshot
+            </dt>
+            <dd
+              class="text-xs"
+            >
+              VLEI_FIXTURE_ADAPTER
+               · vlei-fix-demo-01
+               · 21 Aug 2026, 13:00
+            </dd>
+          </div>
+        </dl>
+        <h3
+          class="mt-4 text-xs font-semibold uppercase tracking-wide text-slate-500"
+        >
+          GLEIF candidate(s)
+        </h3>
+        <ul
+          class="mt-2 space-y-2"
+        >
+          <li
+            class="rounded border border-slate-800 bg-slate-900/60 px-2 py-2"
+          >
+            <p
+              class="font-mono text-xs text-sky-200"
+            >
+              984500SAHARA00000012
+            </p>
+            <p>
+              Sahara Metals FZE
+            </p>
+            <p
+              class="text-xs text-slate-400"
+            >
+              Exact document LEI + compatible GLEIF record
+               · Exact document LEI match
+            </p>
+          </li>
+        </ul>
+      </div>
+    </li>
+  </ul>
+</section>
+`;
+
+exports[`case components > InvoiceReviewPanel 1`] = `
+<section
+  aria-labelledby="invoice-review-heading"
+  class="rounded border border-slate-700/80 bg-slate-950/40 p-4"
+>
+  <h2
+    class="text-lg font-semibold text-slate-50"
+    id="invoice-review-heading"
+  >
+    Invoice review & agent trace
+  </h2>
+  <p
+    class="mt-1 text-sm text-slate-400"
+  >
+    Split-screen evidence review. Trace shows claims, challenges and arbiter outcomes only — never private chain-of-thought. Agent consensus is not a compliance approval.
+  </p>
+  <div
+    class="mt-4 grid gap-4 lg:grid-cols-2"
+  >
+    <div
+      class="rounded border border-slate-800 bg-slate-900/50 p-3"
+    >
+      <h3
+        class="text-sm font-medium text-slate-200"
+      >
+        Document surface (mock)
+      </h3>
+      <div
+        class="mt-3 min-h-[220px] rounded border border-dashed border-slate-700 bg-slate-950/80 p-4 text-sm text-slate-400"
+      >
+        <p
+          class="font-medium text-slate-300"
+        >
+          Commercial Invoice · page preview
+        </p>
+        <p
+          class="mt-2"
+        >
+          Synthetic page canvas. Evidence links below point to page/source text from extraction results.
+        </p>
+      </div>
+      <ul
+        class="mt-4 space-y-3"
+      >
+        <li
+          class="border-t border-slate-800 pt-3"
+        >
+          <div
+            class="flex flex-wrap items-baseline justify-between gap-2"
+          >
+            <span
+              class="text-sm text-slate-200"
+            >
+              Seller name
+            </span>
+            <span
+              class="font-mono text-[11px] text-slate-500"
+            >
+              Confidence: 
+              HIGH
+            </span>
+          </div>
+          <p
+            class="mt-1 font-medium text-slate-50"
+          >
+            Sahara Metals FZE
+          </p>
+          <p
+            class="mt-1 text-xs text-sky-300/90"
+          >
+            Evidence: p.
+            1
+             — “
+            Seller: Sahara Metals FZE
+            ”
+          </p>
+        </li>
+        <li
+          class="border-t border-slate-800 pt-3"
+        >
+          <div
+            class="flex flex-wrap items-baseline justify-between gap-2"
+          >
+            <span
+              class="text-sm text-slate-200"
+            >
+              Buyer name
+            </span>
+            <span
+              class="font-mono text-[11px] text-slate-500"
+            >
+              Confidence: 
+              HIGH
+            </span>
+          </div>
+          <p
+            class="mt-1 font-medium text-slate-50"
+          >
+            Indicore Trading Pvt Ltd
+          </p>
+          <p
+            class="mt-1 text-xs text-sky-300/90"
+          >
+            Evidence: p.
+            1
+             — “
+            Buyer: Indicore Trading Pvt Ltd
+            ”
+          </p>
+        </li>
+        <li
+          class="border-t border-slate-800 pt-3"
+        >
+          <div
+            class="flex flex-wrap items-baseline justify-between gap-2"
+          >
+            <span
+              class="text-sm text-slate-200"
+            >
+              Goods
+            </span>
+            <span
+              class="font-mono text-[11px] text-slate-500"
+            >
+              Confidence: 
+              MEDIUM
+            </span>
+          </div>
+          <p
+            class="mt-1 font-medium text-slate-50"
+          >
+            Copper cathodes, Grade A
+          </p>
+          <p
+            class="mt-1 text-xs text-sky-300/90"
+          >
+            Evidence: p.
+            1
+             — “
+            Copper cathodes Grade A
+            ”
+          </p>
+        </li>
+        <li
+          class="border-t border-slate-800 pt-3"
+        >
+          <div
+            class="flex flex-wrap items-baseline justify-between gap-2"
+          >
+            <span
+              class="text-sm text-slate-200"
+            >
+              Quantity
+            </span>
+            <span
+              class="font-mono text-[11px] text-slate-500"
+            >
+              Confidence: 
+              REVIEW_REQUIRED
+            </span>
+          </div>
+          <p
+            class="mt-1 font-medium text-slate-50"
+          >
+            250 MT
+          </p>
+          <p
+            class="mt-1 text-xs text-sky-300/90"
+          >
+            Evidence: p.
+            1
+             — “
+            Qty: 250 MT
+            ”
+          </p>
+        </li>
+        <li
+          class="border-t border-slate-800 pt-3"
+        >
+          <div
+            class="flex flex-wrap items-baseline justify-between gap-2"
+          >
+            <span
+              class="text-sm text-slate-200"
+            >
+              Port of loading
+            </span>
+            <span
+              class="font-mono text-[11px] text-slate-500"
+            >
+              Confidence: 
+              HIGH
+            </span>
+          </div>
+          <p
+            class="mt-1 font-medium text-slate-50"
+          >
+            Jebel Ali, AE
+          </p>
+          <p
+            class="mt-1 text-xs text-sky-300/90"
+          >
+            Evidence: p.
+            1
+             — “
+            POL: Jebel Ali
+            ”
+          </p>
+        </li>
+        <li
+          class="border-t border-slate-800 pt-3"
+        >
+          <div
+            class="flex flex-wrap items-baseline justify-between gap-2"
+          >
+            <span
+              class="text-sm text-slate-200"
+            >
+              Invoice number
+            </span>
+            <span
+              class="font-mono text-[11px] text-slate-500"
+            >
+              Confidence: 
+              HIGH
+            </span>
+          </div>
+          <p
+            class="mt-1 font-medium text-slate-50"
+          >
+            INV-SM-88421
+          </p>
+          <p
+            class="mt-1 text-xs text-sky-300/90"
+          >
+            Evidence: p.
+            1
+             — “
+            Invoice No. INV-SM-88421
+            ”
+          </p>
+        </li>
+      </ul>
+    </div>
+    <div
+      class="rounded border border-slate-800 bg-slate-900/50 p-3"
+    >
+      <h3
+        class="text-sm font-medium text-slate-200"
+      >
+        Agent trace
+      </h3>
+      <ol
+        class="mt-3 space-y-4"
+      >
+        <li
+          class="rounded border border-slate-800 p-3"
+        >
+          <p
+            class="text-xs font-semibold uppercase tracking-wide text-slate-400"
+          >
+            Round 
+            1
+             of max 3
+          </p>
+          <dl
+            class="mt-2 space-y-2 text-sm"
+          >
+            <div>
+              <dt
+                class="text-slate-400"
+              >
+                Extractor · 
+                COMPLETE
+              </dt>
+              <dd
+                class="text-slate-200"
+              >
+                <p>
+                  goods.quantity
+                  : 
+                  250 MT
+                   (evidence)
+                   — 
+                  Header quantity line
+                </p>
+              </dd>
+            </div>
+            <div>
+              <dt
+                class="text-slate-400"
+              >
+                Validator · 
+                COMPLETE
+              </dt>
+              <dd
+                class="text-slate-200"
+              >
+                <p>
+                  goods.quantity
+                  : 
+                  245 MT
+                   — 
+                  Line-item sum differs from header
+                </p>
+              </dd>
+            </div>
+            <div>
+              <dt
+                class="text-slate-400"
+              >
+                Challenger · 
+                COMPLETE
+              </dt>
+              <dd
+                class="text-slate-200"
+              >
+                <p>
+                  ARITHMETIC_CONFLICT
+                   on 
+                  goods.quantity
+                  : 
+                  Header 250 MT vs line sum 245 MT
+                </p>
+              </dd>
+            </div>
+            <div>
+              <dt
+                class="text-slate-400"
+              >
+                Arbiter · 
+                REVIEW_REQUIRED
+                 ·
+                 
+                Disagreement
+              </dt>
+              <dd
+                class="text-slate-100"
+              >
+                Unresolved quantity conflict — routed to human review.
+              </dd>
+            </div>
+          </dl>
+        </li>
+        <li
+          class="rounded border border-slate-800 p-3"
+        >
+          <p
+            class="text-xs font-semibold uppercase tracking-wide text-slate-400"
+          >
+            Round 
+            2
+             of max 3
+          </p>
+          <dl
+            class="mt-2 space-y-2 text-sm"
+          >
+            <div>
+              <dt
+                class="text-slate-400"
+              >
+                Extractor · 
+                COMPLETE
+              </dt>
+              <dd
+                class="text-slate-200"
+              >
+                <p>
+                  goods.quantity
+                  : 
+                  250 MT
+                   (evidence)
+                   — 
+                  Re-stated header value
+                </p>
+              </dd>
+            </div>
+            <div>
+              <dt
+                class="text-slate-400"
+              >
+                Validator · 
+                COMPLETE
+              </dt>
+              <dd
+                class="text-slate-200"
+              >
+                <p>
+                  goods.quantity
+                  : 
+                  245 MT
+                   — 
+                  Line items unchanged
+                </p>
+              </dd>
+            </div>
+            <div>
+              <dt
+                class="text-slate-400"
+              >
+                Challenger · 
+                COMPLETE
+              </dt>
+              <dd
+                class="text-slate-200"
+              >
+                <p>
+                  ARITHMETIC_CONFLICT
+                   on 
+                  goods.quantity
+                  : 
+                  Conflict persists after round 2
+                </p>
+              </dd>
+            </div>
+            <div>
+              <dt
+                class="text-slate-400"
+              >
+                Arbiter · 
+                REVIEW_REQUIRED
+                 ·
+                 
+                Disagreement
+              </dt>
+              <dd
+                class="text-slate-100"
+              >
+                Still unresolved after round 2.
+              </dd>
+            </div>
+          </dl>
+        </li>
+        <li
+          class="rounded border border-slate-800 p-3"
+        >
+          <p
+            class="text-xs font-semibold uppercase tracking-wide text-slate-400"
+          >
+            Round 
+            3
+             of max 3
+          </p>
+          <dl
+            class="mt-2 space-y-2 text-sm"
+          >
+            <div>
+              <dt
+                class="text-slate-400"
+              >
+                Extractor · 
+                COMPLETE
+              </dt>
+              <dd
+                class="text-slate-200"
+              >
+                <p>
+                  goods.quantity
+                  : 
+                  250 MT
+                   (evidence)
+                   — 
+                  No new evidence
+                </p>
+              </dd>
+            </div>
+            <div>
+              <dt
+                class="text-slate-400"
+              >
+                Validator · 
+                COMPLETE
+              </dt>
+              <dd
+                class="text-slate-200"
+              >
+                <p>
+                  goods.quantity
+                  : 
+                  245 MT
+                   — 
+                  No new evidence
+                </p>
+              </dd>
+            </div>
+            <div>
+              <dt
+                class="text-slate-400"
+              >
+                Challenger · 
+                COMPLETE
+              </dt>
+              <dd
+                class="text-slate-200"
+              >
+                <p>
+                  ARITHMETIC_CONFLICT
+                   on 
+                  goods.quantity
+                  : 
+                  Max rounds reached without evidence-backed single value
+                </p>
+              </dd>
+            </div>
+            <div>
+              <dt
+                class="text-slate-400"
+              >
+                Arbiter · 
+                REVIEW_REQUIRED
+                 ·
+                 
+                Disagreement
+              </dt>
+              <dd
+                class="text-slate-100"
+              >
+                Max 3 rounds reached. Outcome REVIEW_REQUIRED — consensus is not a compliance conclusion.
+              </dd>
+            </div>
+          </dl>
+        </li>
+      </ol>
+    </div>
+  </div>
+</section>
+`;
+
+exports[`case components > RegWatchPanel 1`] = `
+<section
+  aria-labelledby="regwatch-heading"
+  class="rounded border border-slate-700/80 bg-slate-950/40 p-4"
+>
+  <h2
+    class="text-lg font-semibold text-slate-50"
+    id="regwatch-heading"
+  >
+    RegWatch — source registry & replay gate
+  </h2>
+  <p
+    class="mt-1 text-sm text-slate-400"
+  >
+    LLM/system output may propose diffs only. Human approval is required before a rule/data version becomes active or replay runs. Prior result versions are preserved.
+  </p>
+  <ul
+    class="mt-4 space-y-4"
+  >
+    <li
+      class="rounded border border-slate-800 bg-slate-900/50 p-4"
+    >
+      <div
+        class="flex flex-wrap items-start justify-between gap-2"
+      >
+        <div>
+          <p
+            class="text-sm font-medium text-slate-100"
+          >
+            IFSCA circular snapshot (demo)
+          </p>
+          <p
+            class="font-mono text-[11px] text-slate-500"
+          >
+            IFSCA
+             · detected 
+            20 Aug 2026, 08:00
+          </p>
+        </div>
+        <span
+          class="rounded border border-slate-600 px-2 py-0.5 text-xs text-slate-200"
+        >
+          Approval: 
+          PROPOSED
+        </span>
+      </div>
+      <p
+        class="mt-2 text-sm text-slate-300"
+      >
+        Proposed update to documentary checklist wording for enhanced trade-house reviews.
+      </p>
+      <pre
+        class="mt-3 overflow-x-auto rounded bg-slate-950 p-3 text-xs text-slate-300"
+      >
+        + Require Certificate of Origin when corridor policy flag ENHANCED_ORIGIN=true
+- Keep CoO optional for baseline post-shipment profile
+      </pre>
+      <div
+        class="mt-3 grid gap-3 text-sm md:grid-cols-2"
+      >
+        <div>
+          <p
+            class="text-xs uppercase tracking-wide text-slate-500"
+          >
+            Old result version
+          </p>
+          <p
+            class="text-slate-300"
+          >
+            Active rule pack v0.4 — CoO conditional, non-blocking in baseline.
+          </p>
+        </div>
+        <div>
+          <p
+            class="text-xs uppercase tracking-wide text-slate-500"
+          >
+            New / proposed
+          </p>
+          <p
+            class="text-slate-300"
+          >
+            Proposed pack v0.4.1 — not active until human approval. Replay would create a new result version.
+          </p>
+        </div>
+      </div>
+      <p
+        class="mt-3 text-sm text-amber-100/90"
+      >
+        Replay blocked until human approval. Proposed changes are not active.
+      </p>
+    </li>
+    <li
+      class="rounded border border-slate-800 bg-slate-900/50 p-4"
+    >
+      <div
+        class="flex flex-wrap items-start justify-between gap-2"
+      >
+        <div>
+          <p
+            class="text-sm font-medium text-slate-100"
+          >
+            Demo sanctions publisher checksum
+          </p>
+          <p
+            class="font-mono text-[11px] text-slate-500"
+          >
+            DEMO_MOCK_WATCHLIST
+             · detected 
+            18 Aug 2026, 16:20
+          </p>
+        </div>
+        <span
+          class="rounded border border-slate-600 px-2 py-0.5 text-xs text-slate-200"
+        >
+          Approval: 
+          APPROVED
+        </span>
+      </div>
+      <p
+        class="mt-2 text-sm text-slate-300"
+      >
+        Snapshot checksum change detected on demo list.
+      </p>
+      <pre
+        class="mt-3 overflow-x-auto rounded bg-slate-950 p-3 text-xs text-slate-300"
+      >
+        ~ Replace screen-snap-demo-01 with screen-snap-demo-02
+      </pre>
+      <div
+        class="mt-3 grid gap-3 text-sm md:grid-cols-2"
+      >
+        <div>
+          <p
+            class="text-xs uppercase tracking-wide text-slate-500"
+          >
+            Old result version
+          </p>
+          <p
+            class="text-slate-300"
+          >
+            Cases evaluated on screen-snap-demo-01 retained as prior result versions.
+          </p>
+        </div>
+        <div>
+          <p
+            class="text-xs uppercase tracking-wide text-slate-500"
+          >
+            New / proposed
+          </p>
+          <p
+            class="text-slate-300"
+          >
+            Approved pack references screen-snap-demo-02. Selective replay appends new versions; history not overwritten.
+          </p>
+        </div>
+      </div>
+      <p
+        class="mt-3 text-sm text-amber-100/90"
+      >
+        Replay permitted only because this change is APPROVED — still creates a new result version.
+      </p>
+    </li>
+  </ul>
+</section>
+`;
+
+exports[`queue components > CompletenessSummary 1`] = `
+<ul
+  class="flex flex-col gap-0.5 text-xs text-slate-300"
+>
+  <li
+    class="flex flex-wrap gap-x-1"
+  >
+    <span
+      class="text-slate-400"
+    >
+      Commercial Invoice
+      :
+    </span>
+    <span
+      class="font-medium text-slate-100"
+    >
+      PROVIDED
+    </span>
+  </li>
+  <li
+    class="flex flex-wrap gap-x-1"
+  >
+    <span
+      class="text-slate-400"
+    >
+      BoL / AWB
+      :
+    </span>
+    <span
+      class="font-medium text-slate-100"
+    >
+      NOT AVAILABLE
+    </span>
+  </li>
+  <li
+    class="flex flex-wrap gap-x-1"
+  >
+    <span
+      class="text-slate-400"
+    >
+      Packing List
+      :
+    </span>
+    <span
+      class="font-medium text-slate-100"
+    >
+      OPTIONAL
+    </span>
+  </li>
+</ul>
+`;
+
+exports[`queue components > ProfileBadge renders every profile in the queue > ENHANCED_TRADE_HOUSE_REVIEW 1`] = `
+<span
+  class="inline-flex max-w-full items-center rounded border border-slate-600 bg-slate-900 px-2 py-0.5 text-xs font-medium text-slate-200"
+  title="ENHANCED_TRADE_HOUSE_REVIEW"
+>
+  <span
+    class="sr-only"
+  >
+    Transaction profile: 
+  </span>
+  Enhanced trade-house
+</span>
+`;
+
+exports[`queue components > ProfileBadge renders every profile in the queue > INVOICE_ONLY_PRE_REVIEW 1`] = `
+<span
+  class="inline-flex max-w-full items-center rounded border border-slate-600 bg-slate-900 px-2 py-0.5 text-xs font-medium text-slate-200"
+  title="INVOICE_ONLY_PRE_REVIEW"
+>
+  <span
+    class="sr-only"
+  >
+    Transaction profile: 
+  </span>
+  Invoice-only pre-review
+</span>
+`;
+
+exports[`queue components > ProfileBadge renders every profile in the queue > LC_DOCUMENT_REVIEW 1`] = `
+<span
+  class="inline-flex max-w-full items-center rounded border border-slate-600 bg-slate-900 px-2 py-0.5 text-xs font-medium text-slate-200"
+  title="LC_DOCUMENT_REVIEW"
+>
+  <span
+    class="sr-only"
+  >
+    Transaction profile: 
+  </span>
+  LC document review
+</span>
+`;
+
+exports[`queue components > ProfileBadge renders every profile in the queue > POST_SHIPMENT_DOCUMENT_REVIEW 1`] = `
+<span
+  class="inline-flex max-w-full items-center rounded border border-slate-600 bg-slate-900 px-2 py-0.5 text-xs font-medium text-slate-200"
+  title="POST_SHIPMENT_DOCUMENT_REVIEW"
+>
+  <span
+    class="sr-only"
+  >
+    Transaction profile: 
+  </span>
+  Post-shipment review
+</span>
+`;
+
+exports[`queue components > ProfileBadge renders every profile in the queue > POST_SHIPMENT_DOCUMENT_REVIEW 2`] = `
+<span
+  class="inline-flex max-w-full items-center rounded border border-slate-600 bg-slate-900 px-2 py-0.5 text-xs font-medium text-slate-200"
+  title="POST_SHIPMENT_DOCUMENT_REVIEW"
+>
+  <span
+    class="sr-only"
+  >
+    Transaction profile: 
+  </span>
+  Post-shipment review
+</span>
+`;
+
+exports[`queue components > PrototypeBanner 1`] = `
+<aside
+  aria-label="Prototype data notice"
+  class="border-b border-amber-700/40 bg-amber-950/50 px-4 py-2.5 text-sm text-amber-100"
+  role="status"
+>
+  <p
+    class="mx-auto flex max-w-6xl flex-wrap items-baseline gap-x-3 gap-y-1"
+  >
+    <span
+      class="font-semibold tracking-wide"
+    >
+      SYNTHETIC DEMO DATA
+    </span>
+    <span
+      class="text-amber-200/90"
+    >
+      Decision support only — not a Customs portal, payment engine, or autonomous approval system. No live sanctions, VLEI cryptography, or ICEGATE filing in this prototype.
+    </span>
+  </p>
+</aside>
+`;
+
+exports[`queue components > QueueTable 1`] = `
+<div
+  class="overflow-x-auto rounded border border-slate-700/80"
+>
+  <table
+    class="min-w-full border-collapse text-left text-sm"
+  >
+    <caption
+      class="sr-only"
+    >
+      Compliance case queue
+    </caption>
+    <thead
+      class="bg-slate-950 text-xs uppercase tracking-wide text-slate-400"
+    >
+      <tr>
+        <th
+          class="px-3 py-2.5 font-medium"
+          scope="col"
+        >
+          Case
+        </th>
+        <th
+          class="px-3 py-2.5 font-medium"
+          scope="col"
+        >
+          Profile
+        </th>
+        <th
+          class="px-3 py-2.5 font-medium"
+          scope="col"
+        >
+          Status / risk route
+        </th>
+        <th
+          class="px-3 py-2.5 font-medium"
+          scope="col"
+        >
+          Document completeness
+        </th>
+        <th
+          class="px-3 py-2.5 font-medium"
+          scope="col"
+        >
+          Updated (UTC)
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr
+        class="border-t border-slate-800 bg-slate-900/40 hover:bg-slate-900/80"
+      >
+        <td
+          class="px-3 py-3 align-top"
+        >
+          <a
+            class="font-medium text-sky-300 underline-offset-2 hover:underline"
+            href="/cases/case-inv-001"
+          >
+            TP-2026-0142
+          </a>
+          <p
+            class="mt-1 max-w-[16rem] truncate text-slate-200"
+            title="Gulf Precision Trading LLC"
+          >
+            Gulf Precision Trading LLC
+          </p>
+          <p
+            class="mt-0.5 font-mono text-[11px] text-slate-500"
+          >
+            IN-AE
+             · 
+            SYNTHETIC_DEMO
+          </p>
+        </td>
+        <td
+          class="px-3 py-3 align-top"
+        >
+          <span
+            class="inline-flex max-w-full items-center rounded border border-slate-600 bg-slate-900 px-2 py-0.5 text-xs font-medium text-slate-200"
+            title="INVOICE_ONLY_PRE_REVIEW"
+          >
+            <span
+              class="sr-only"
+            >
+              Transaction profile: 
+            </span>
+            Invoice-only pre-review
+          </span>
+        </td>
+        <td
+          class="px-3 py-3 align-top"
+        >
+          <div
+            class="flex flex-col gap-1"
+          >
+            <span
+              class="inline-flex w-fit items-center rounded border px-2 py-0.5 text-xs font-medium border-emerald-700/60 bg-emerald-950/40 text-emerald-100"
+            >
+              Ready for human review
+            </span>
+            <span
+              class="font-mono text-[11px] text-slate-400"
+            >
+              Status code: 
+              READY_FOR_HUMAN_REVIEW
+            </span>
+          </div>
+        </td>
+        <td
+          class="px-3 py-3 align-top"
+        >
+          <ul
+            class="flex flex-col gap-0.5 text-xs text-slate-300"
+          >
+            <li
+              class="flex flex-wrap gap-x-1"
+            >
+              <span
+                class="text-slate-400"
+              >
+                Commercial Invoice
+                :
+              </span>
+              <span
+                class="font-medium text-slate-100"
+              >
+                PROVIDED
+              </span>
+            </li>
+            <li
+              class="flex flex-wrap gap-x-1"
+            >
+              <span
+                class="text-slate-400"
+              >
+                BoL / AWB
+                :
+              </span>
+              <span
+                class="font-medium text-slate-100"
+              >
+                NOT AVAILABLE
+              </span>
+            </li>
+            <li
+              class="flex flex-wrap gap-x-1"
+            >
+              <span
+                class="text-slate-400"
+              >
+                Packing List
+                :
+              </span>
+              <span
+                class="font-medium text-slate-100"
+              >
+                OPTIONAL
+              </span>
+            </li>
+          </ul>
+        </td>
+        <td
+          class="px-3 py-3 align-top whitespace-nowrap text-slate-400"
+        >
+          21 Aug 2026, 10:15
+        </td>
+      </tr>
+      <tr
+        class="border-t border-slate-800 bg-slate-900/40 hover:bg-slate-900/80"
+      >
+        <td
+          class="px-3 py-3 align-top"
+        >
+          <a
+            class="font-medium text-sky-300 underline-offset-2 hover:underline"
+            href="/cases/case-post-002"
+          >
+            TP-2026-0148
+          </a>
+          <p
+            class="mt-1 max-w-[16rem] truncate text-slate-200"
+            title="Meridian Industrial Supplies Pte Ltd"
+          >
+            Meridian Industrial Supplies Pte Ltd
+          </p>
+          <p
+            class="mt-0.5 font-mono text-[11px] text-slate-500"
+          >
+            IN-SG
+             · 
+            SYNTHETIC_DEMO
+          </p>
+        </td>
+        <td
+          class="px-3 py-3 align-top"
+        >
+          <span
+            class="inline-flex max-w-full items-center rounded border border-slate-600 bg-slate-900 px-2 py-0.5 text-xs font-medium text-slate-200"
+            title="POST_SHIPMENT_DOCUMENT_REVIEW"
+          >
+            <span
+              class="sr-only"
+            >
+              Transaction profile: 
+            </span>
+            Post-shipment review
+          </span>
+        </td>
+        <td
+          class="px-3 py-3 align-top"
+        >
+          <div
+            class="flex flex-col gap-1"
+          >
+            <span
+              class="inline-flex w-fit items-center rounded border px-2 py-0.5 text-xs font-medium border-sky-700/60 bg-sky-950/40 text-sky-100"
+            >
+              Document pack incomplete
+            </span>
+            <span
+              class="font-mono text-[11px] text-slate-400"
+            >
+              Status code: 
+              DOCUMENT_PACK_INCOMPLETE
+            </span>
+          </div>
+        </td>
+        <td
+          class="px-3 py-3 align-top"
+        >
+          <ul
+            class="flex flex-col gap-0.5 text-xs text-slate-300"
+          >
+            <li
+              class="flex flex-wrap gap-x-1"
+            >
+              <span
+                class="text-slate-400"
+              >
+                Commercial Invoice
+                :
+              </span>
+              <span
+                class="font-medium text-slate-100"
+              >
+                PROVIDED
+              </span>
+            </li>
+            <li
+              class="flex flex-wrap gap-x-1"
+            >
+              <span
+                class="text-slate-400"
+              >
+                BoL / AWB
+                :
+              </span>
+              <span
+                class="font-medium text-slate-100"
+              >
+                NOT PROVIDED
+              </span>
+            </li>
+            <li
+              class="flex flex-wrap gap-x-1"
+            >
+              <span
+                class="text-slate-400"
+              >
+                Packing List
+                :
+              </span>
+              <span
+                class="font-medium text-slate-100"
+              >
+                CONDITIONALLY REQUIRED
+              </span>
+            </li>
+          </ul>
+        </td>
+        <td
+          class="px-3 py-3 align-top whitespace-nowrap text-slate-400"
+        >
+          21 Aug 2026, 11:02
+        </td>
+      </tr>
+      <tr
+        class="border-t border-slate-800 bg-slate-900/40 hover:bg-slate-900/80"
+      >
+        <td
+          class="px-3 py-3 align-top"
+        >
+          <a
+            class="font-medium text-sky-300 underline-offset-2 hover:underline"
+            href="/cases/case-lc-003"
+          >
+            TP-2026-0151
+          </a>
+          <p
+            class="mt-1 max-w-[16rem] truncate text-slate-200"
+            title="Nordic Agro Commodities AS"
+          >
+            Nordic Agro Commodities AS
+          </p>
+          <p
+            class="mt-0.5 font-mono text-[11px] text-slate-500"
+          >
+            IN-NO
+             · 
+            SYNTHETIC_DEMO
+          </p>
+        </td>
+        <td
+          class="px-3 py-3 align-top"
+        >
+          <span
+            class="inline-flex max-w-full items-center rounded border border-slate-600 bg-slate-900 px-2 py-0.5 text-xs font-medium text-slate-200"
+            title="LC_DOCUMENT_REVIEW"
+          >
+            <span
+              class="sr-only"
+            >
+              Transaction profile: 
+            </span>
+            LC document review
+          </span>
+        </td>
+        <td
+          class="px-3 py-3 align-top"
+        >
+          <div
+            class="flex flex-col gap-1"
+          >
+            <span
+              class="inline-flex w-fit items-center rounded border px-2 py-0.5 text-xs font-medium border-sky-700/60 bg-sky-950/40 text-sky-100"
+            >
+              Document pack incomplete
+            </span>
+            <span
+              class="font-mono text-[11px] text-slate-400"
+            >
+              Status code: 
+              DOCUMENT_PACK_INCOMPLETE
+            </span>
+          </div>
+        </td>
+        <td
+          class="px-3 py-3 align-top"
+        >
+          <ul
+            class="flex flex-col gap-0.5 text-xs text-slate-300"
+          >
+            <li
+              class="flex flex-wrap gap-x-1"
+            >
+              <span
+                class="text-slate-400"
+              >
+                Commercial Invoice
+                :
+              </span>
+              <span
+                class="font-medium text-slate-100"
+              >
+                PROVIDED
+              </span>
+            </li>
+            <li
+              class="flex flex-wrap gap-x-1"
+            >
+              <span
+                class="text-slate-400"
+              >
+                Letter of Credit
+                :
+              </span>
+              <span
+                class="font-medium text-slate-100"
+              >
+                NOT PROVIDED
+              </span>
+            </li>
+            <li
+              class="flex flex-wrap gap-x-1"
+            >
+              <span
+                class="text-slate-400"
+              >
+                BoL / AWB
+                :
+              </span>
+              <span
+                class="font-medium text-slate-100"
+              >
+                CONDITIONALLY REQUIRED
+              </span>
+            </li>
+          </ul>
+        </td>
+        <td
+          class="px-3 py-3 align-top whitespace-nowrap text-slate-400"
+        >
+          21 Aug 2026, 12:40
+        </td>
+      </tr>
+      <tr
+        class="border-t border-slate-800 bg-slate-900/40 hover:bg-slate-900/80"
+      >
+        <td
+          class="px-3 py-3 align-top"
+        >
+          <a
+            class="font-medium text-sky-300 underline-offset-2 hover:underline"
+            href="/cases/case-recon-004"
+          >
+            TP-2026-0155
+          </a>
+          <p
+            class="mt-1 max-w-[16rem] truncate text-slate-200"
+            title="Sahara Metals FZE"
+          >
+            Sahara Metals FZE
+          </p>
+          <p
+            class="mt-0.5 font-mono text-[11px] text-slate-500"
+          >
+            IN-AE
+             · 
+            SYNTHETIC_DEMO
+          </p>
+        </td>
+        <td
+          class="px-3 py-3 align-top"
+        >
+          <span
+            class="inline-flex max-w-full items-center rounded border border-slate-600 bg-slate-900 px-2 py-0.5 text-xs font-medium text-slate-200"
+            title="POST_SHIPMENT_DOCUMENT_REVIEW"
+          >
+            <span
+              class="sr-only"
+            >
+              Transaction profile: 
+            </span>
+            Post-shipment review
+          </span>
+        </td>
+        <td
+          class="px-3 py-3 align-top"
+        >
+          <div
+            class="flex flex-col gap-1"
+          >
+            <span
+              class="inline-flex w-fit items-center rounded border px-2 py-0.5 text-xs font-medium border-amber-700/60 bg-amber-950/40 text-amber-100"
+            >
+              Review required
+            </span>
+            <span
+              class="font-mono text-[11px] text-slate-400"
+            >
+              Status code: 
+              REVIEW_REQUIRED
+            </span>
+          </div>
+        </td>
+        <td
+          class="px-3 py-3 align-top"
+        >
+          <ul
+            class="flex flex-col gap-0.5 text-xs text-slate-300"
+          >
+            <li
+              class="flex flex-wrap gap-x-1"
+            >
+              <span
+                class="text-slate-400"
+              >
+                Commercial Invoice
+                :
+              </span>
+              <span
+                class="font-medium text-slate-100"
+              >
+                PROVIDED
+              </span>
+            </li>
+            <li
+              class="flex flex-wrap gap-x-1"
+            >
+              <span
+                class="text-slate-400"
+              >
+                BoL / AWB
+                :
+              </span>
+              <span
+                class="font-medium text-slate-100"
+              >
+                PROVIDED
+              </span>
+            </li>
+            <li
+              class="flex flex-wrap gap-x-1"
+            >
+              <span
+                class="text-slate-400"
+              >
+                Packing List
+                :
+              </span>
+              <span
+                class="font-medium text-slate-100"
+              >
+                OPTIONAL
+              </span>
+            </li>
+          </ul>
+        </td>
+        <td
+          class="px-3 py-3 align-top whitespace-nowrap text-slate-400"
+        >
+          21 Aug 2026, 13:18
+        </td>
+      </tr>
+      <tr
+        class="border-t border-slate-800 bg-slate-900/40 hover:bg-slate-900/80"
+      >
+        <td
+          class="px-3 py-3 align-top"
+        >
+          <a
+            class="font-medium text-sky-300 underline-offset-2 hover:underline"
+            href="/cases/case-screen-005"
+          >
+            TP-2026-0160
+          </a>
+          <p
+            class="mt-1 max-w-[16rem] truncate text-slate-200"
+            title="Eastern Horizon Logistics Co."
+          >
+            Eastern Horizon Logistics Co.
+          </p>
+          <p
+            class="mt-0.5 font-mono text-[11px] text-slate-500"
+          >
+            IN-GB
+             · 
+            SYNTHETIC_DEMO
+          </p>
+        </td>
+        <td
+          class="px-3 py-3 align-top"
+        >
+          <span
+            class="inline-flex max-w-full items-center rounded border border-slate-600 bg-slate-900 px-2 py-0.5 text-xs font-medium text-slate-200"
+            title="ENHANCED_TRADE_HOUSE_REVIEW"
+          >
+            <span
+              class="sr-only"
+            >
+              Transaction profile: 
+            </span>
+            Enhanced trade-house
+          </span>
+        </td>
+        <td
+          class="px-3 py-3 align-top"
+        >
+          <div
+            class="flex flex-col gap-1"
+          >
+            <span
+              class="inline-flex w-fit items-center rounded border px-2 py-0.5 text-xs font-medium border-amber-700/60 bg-amber-950/40 text-amber-100"
+            >
+              Maker review required
+            </span>
+            <span
+              class="font-mono text-[11px] text-slate-400"
+            >
+              Status code: 
+              MAKER_REVIEW_REQUIRED
+            </span>
+          </div>
+        </td>
+        <td
+          class="px-3 py-3 align-top"
+        >
+          <ul
+            class="flex flex-col gap-0.5 text-xs text-slate-300"
+          >
+            <li
+              class="flex flex-wrap gap-x-1"
+            >
+              <span
+                class="text-slate-400"
+              >
+                Commercial Invoice
+                :
+              </span>
+              <span
+                class="font-medium text-slate-100"
+              >
+                PROVIDED
+              </span>
+            </li>
+            <li
+              class="flex flex-wrap gap-x-1"
+            >
+              <span
+                class="text-slate-400"
+              >
+                BoL / AWB
+                :
+              </span>
+              <span
+                class="font-medium text-slate-100"
+              >
+                PROVIDED
+              </span>
+            </li>
+            <li
+              class="flex flex-wrap gap-x-1"
+            >
+              <span
+                class="text-slate-400"
+              >
+                Certificate of Origin
+                :
+              </span>
+              <span
+                class="font-medium text-slate-100"
+              >
+                CONDITIONALLY REQUIRED
+              </span>
+            </li>
+          </ul>
+        </td>
+        <td
+          class="px-3 py-3 align-top whitespace-nowrap text-slate-400"
+        >
+          21 Aug 2026, 14:05
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+`;
+
+exports[`queue components > StatusRouteChip renders every status/route pair in the queue > DOCUMENT_PACK_INCOMPLETE/DOCUMENT_PACK_INCOMPLETE 1`] = `
+<div
+  class="flex flex-col gap-1"
+>
+  <span
+    class="inline-flex w-fit items-center rounded border px-2 py-0.5 text-xs font-medium border-sky-700/60 bg-sky-950/40 text-sky-100"
+  >
+    Document pack incomplete
+  </span>
+  <span
+    class="font-mono text-[11px] text-slate-400"
+  >
+    Status code: 
+    DOCUMENT_PACK_INCOMPLETE
+  </span>
+</div>
+`;
+
+exports[`queue components > StatusRouteChip renders every status/route pair in the queue > DOCUMENT_PACK_INCOMPLETE/DOCUMENT_PACK_INCOMPLETE 2`] = `
+<div
+  class="flex flex-col gap-1"
+>
+  <span
+    class="inline-flex w-fit items-center rounded border px-2 py-0.5 text-xs font-medium border-sky-700/60 bg-sky-950/40 text-sky-100"
+  >
+    Document pack incomplete
+  </span>
+  <span
+    class="font-mono text-[11px] text-slate-400"
+  >
+    Status code: 
+    DOCUMENT_PACK_INCOMPLETE
+  </span>
+</div>
+`;
+
+exports[`queue components > StatusRouteChip renders every status/route pair in the queue > MAKER_REVIEW_REQUIRED/MAKER_REVIEW_REQUIRED 1`] = `
+<div
+  class="flex flex-col gap-1"
+>
+  <span
+    class="inline-flex w-fit items-center rounded border px-2 py-0.5 text-xs font-medium border-amber-700/60 bg-amber-950/40 text-amber-100"
+  >
+    Maker review required
+  </span>
+  <span
+    class="font-mono text-[11px] text-slate-400"
+  >
+    Status code: 
+    MAKER_REVIEW_REQUIRED
+  </span>
+</div>
+`;
+
+exports[`queue components > StatusRouteChip renders every status/route pair in the queue > READY_FOR_HUMAN_REVIEW/READY_FOR_HUMAN_REVIEW 1`] = `
+<div
+  class="flex flex-col gap-1"
+>
+  <span
+    class="inline-flex w-fit items-center rounded border px-2 py-0.5 text-xs font-medium border-emerald-700/60 bg-emerald-950/40 text-emerald-100"
+  >
+    Ready for human review
+  </span>
+  <span
+    class="font-mono text-[11px] text-slate-400"
+  >
+    Status code: 
+    READY_FOR_HUMAN_REVIEW
+  </span>
+</div>
+`;
+
+exports[`queue components > StatusRouteChip renders every status/route pair in the queue > REVIEW_REQUIRED/REVIEW_REQUIRED 1`] = `
+<div
+  class="flex flex-col gap-1"
+>
+  <span
+    class="inline-flex w-fit items-center rounded border px-2 py-0.5 text-xs font-medium border-amber-700/60 bg-amber-950/40 text-amber-100"
+  >
+    Review required
+  </span>
+  <span
+    class="font-mono text-[11px] text-slate-400"
+  >
+    Status code: 
+    REVIEW_REQUIRED
+  </span>
+</div>
+`;

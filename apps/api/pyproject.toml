@@ -13,6 +13,9 @@ dependencies = [
   "sqlalchemy>=2.0,<3",
   "pydantic>=2.6,<3",
   "pydantic-settings>=2.2,<3",
+  # Required by FastAPI for multipart/form-data (document upload endpoint).
+  # Without it apps/api/tests fails at import time on a clean install.
+  "python-multipart>=0.0.9",
 ]
 
 [project.optional-dependencies]
