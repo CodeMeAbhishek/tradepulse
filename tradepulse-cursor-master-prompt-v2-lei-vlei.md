@@ -174,8 +174,8 @@ Paste this once into Cursor/Claude Code after creating the clean repository:
 You are initializing TradePulse AI, a LEI/VLEI-enabled documentary trade-compliance workbench.
 
 Read:
-- tradepulse-prd-v6-lei-vlei.md
-- tradepulse-system-design-v3-lei-vlei.md
+- tradepulse-prd-v7-unified-trade-trust.md
+- tradepulse-system-design-v4-unified-trade-trust.md
 - tradepulse-cursor-master-prompt-v2-lei-vlei.md
 
 Create only the repository skeleton described below. Do not implement business logic, authentication, real sanctions integration, production VLEI verification, ICEGATE integration, payment functions or deployment.
@@ -227,8 +227,8 @@ Use this for every task. Replace the brackets.
 You are working on TradePulse AI.
 
 Before acting, read:
-1. tradepulse-prd-v6-lei-vlei.md
-2. tradepulse-system-design-v3-lei-vlei.md
+1. tradepulse-prd-v7-unified-trade-trust.md
+2. tradepulse-system-design-v4-unified-trade-trust.md
 3. tradepulse-cursor-master-prompt-v2-lei-vlei.md
 4. Existing code, tests and git status.
 

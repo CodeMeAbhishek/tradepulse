@@ -9,12 +9,18 @@ credentials.json
 # Dependencies and build products
 node_modules/
 .venv/
+venv/
 __pycache__/
 *.py[cod]
+*.egg-info/
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
 .next/
 dist/
 build/
 coverage/
+out/
 
 # Local databases and raw/reference downloads
 data/raw/
@@ -22,7 +28,14 @@ data/private/
 data/snapshots/raw/
 *.db
 *.sqlite
+*.sqlite3
 
 # OS/editor
 .DS_Store
+Thumbs.db
 .vscode/
+.idea/
+
+# Logs
+*.log
+npm-debug.log*
