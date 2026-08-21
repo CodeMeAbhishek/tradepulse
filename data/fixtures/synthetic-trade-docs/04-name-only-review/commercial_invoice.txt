@@ -1,0 +1,18 @@
+﻿# SYNTHETIC_DEMO | FIXTURE_ONLY | name-only — must not auto-verify
+data_label: SYNTHETIC_DEMO
+scenario: potential_entity_match_review
+invoice_number: INV-SYN-NAME-01
+invoice_date: 2026-03-11
+currency: USD
+seller: Amit Trading Company Private Limited
+seller_lei:
+buyer: Gulf Importers LLC
+description: Basmati rice
+quantity: 12
+unit: MT
+unit_price: 980
+line_total: 11760
+total_amount: 11760
+hs_code: 100630
+port_of_loading: Nhava Sheva, IN
+port_of_discharge: Jebel Ali, AE

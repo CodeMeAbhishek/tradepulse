@@ -1,0 +1,61 @@
+%PDF-1.4
+%‚„œ”
+1 0 obj<< /Type /Catalog /Pages 2 0 R >>endobj
+2 0 obj<< /Type /Pages /Kids [3 0 R] /Count 1 >>endobj
+3 0 obj<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R /Resources<< /Font<< /F1 5 0 R >> >> >>endobj
+4 0 obj<< /Length 633 >>stream
+BT
+/F1 9 Tf
+50 780 Td
+11 TL
+(?# SYNTHETIC_DEMO | FIXTURE_ONLY | invoice-only profile) Tj
+T*
+(data_label: SYNTHETIC_DEMO) Tj
+T*
+(scenario: invoice_only_transport_not_available) Tj
+T*
+(invoice_number: INV-SYN-IO-01) Tj
+T*
+(invoice_date: 2026-03-14) Tj
+T*
+(currency: USD) Tj
+T*
+(seller: Amit Trading Co.) Tj
+T*
+(seller_lei: 5493001KJTIIGC8Y1R12) Tj
+T*
+(buyer: Gulf Importers LLC) Tj
+T*
+(description: Spices mixed) Tj
+T*
+(quantity: 5) Tj
+T*
+(unit: MT) Tj
+T*
+(unit_price: 3200) Tj
+T*
+(line_total: 16000) Tj
+T*
+(total_amount: 16000) Tj
+T*
+(hs_code: 091099) Tj
+T*
+(port_of_loading: Cochin, IN) Tj
+T*
+(port_of_discharge: Rotterdam, NL) Tj
+ET
+endstream
+endobj
+5 0 obj<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>endobj
+xref
+0 6
+0000000000 65535 f 
+0000000015 00000 n 
+0000000062 00000 n 
+0000000117 00000 n 
+0000000239 00000 n 
+0000000921 00000 n 
+trailer<< /Size 6 /Root 1 0 R >>
+startxref
+989
+%%EOF

@@ -14,8 +14,11 @@ from tradepulse_contracts.enums import (
     IdentityPartyRole,
 )
 
-from app.adapters.pdf import sha256_hex
+from app.adapters.llm import build_llm_adapter
+from app.adapters.pdf import extract_text, sha256_hex
+from app.adapters.pdf.bol_fixture import parse_labeled_bol
 from app.adapters.screening import ScreeningSubject
+from app.adapters.storage import get_document_storage
 from app.domain.document_policy import PackCompletenessStatus
 from app.domain.enums import TradeProfile
 from app.repositories.case_store import CaseAggregate, CaseStore
@@ -49,7 +52,7 @@ class PlatformState:
         self.regwatch = RegWatchService(audit=self.audit)
         self.registry = seed_demo_registry(SourceRegistry())
         self.duplicates = DuplicateIndex()
-        self.invoice_service = InvoiceExtractionService()
+        self.invoice_service = InvoiceExtractionService(llm=build_llm_adapter())
         self.entity_service = EntityResolutionService()
         self.replay = ReplayService(audit=self.audit)
 
@@ -154,6 +157,13 @@ def add_document(
     case = platform.cases.require(case_id)
     document_id = f"DOC-{uuid.uuid4().hex[:8].upper()}"
     digest = sha256_hex(content)
+    stored = get_document_storage().put(
+        case_id=case_id,
+        document_id=document_id,
+        content=content,
+        content_type=content_type,
+        filename=filename,
+    )
     meta = DocumentMetadata(
         document_id=document_id,
         case_id=case_id,
@@ -162,7 +172,7 @@ def add_document(
         content_type=content_type,
         byte_size=len(content),
         sha256=digest,
-        storage_uri=f"memory://{case_id}/{document_id}",
+        storage_uri=stored.storage_uri,
         processing_state=DocumentProcessingState.UPLOADED,
         uploaded_at=_now(),
     )
@@ -177,6 +187,8 @@ def add_document(
             "document_id": document_id,
             "document_type": document_type.value,
             "sha256": digest,
+            "storage_uri": stored.storage_uri,
+            "storage_backend": stored.backend,
         },
     )
     return meta
@@ -212,6 +224,9 @@ def process_case(case_id: str, *, state: PlatformState | None = None) -> dict[st
         (d for d in case.documents if d.document_type is DocumentType.COMMERCIAL_INVOICE),
         None,
     )
+    agent_trace_payload: list[dict[str, Any]] = []
+    extraction_provider: str | None = None
+    extraction_model: str | None = None
     if invoice_doc:
         content = case.document_bytes[invoice_doc.document_id]
         pipeline = platform.invoice_service.process_invoice(
@@ -221,11 +236,27 @@ def process_case(case_id: str, *, state: PlatformState | None = None) -> dict[st
             content_type=invoice_doc.content_type,
         )
         case.invoice_extraction = pipeline.extraction
+        agent_trace_payload = [item.model_dump(mode="json") for item in pipeline.agent_trace]
+        extraction_provider = pipeline.extraction_result.model_metadata.provider
+        extraction_model = pipeline.extraction_result.model_metadata.model
 
-    # Optional structured BoL may be supplied via metadata for prototype.
-    bol_meta = case.metadata.get("bol_extraction")
-    if isinstance(bol_meta, dict):
-        case.bol_extraction = BolExtraction.model_validate(bol_meta)
+    # Optional structured BoL: labeled text (including PDF printable extraction).
+    bol_doc = next(
+        (d for d in case.documents if d.document_type is DocumentType.BILL_OF_LADING),
+        None,
+    )
+    if bol_doc is not None:
+        raw = case.document_bytes[bol_doc.document_id]
+        extracted = extract_text(
+            content=raw,
+            content_type=bol_doc.content_type,
+            filename=bol_doc.filename,
+        )
+        case.bol_extraction = parse_labeled_bol(extracted.text)
+    else:
+        bol_meta = case.metadata.get("bol_extraction")
+        if isinstance(bol_meta, dict):
+            case.bol_extraction = BolExtraction.model_validate(bol_meta)
 
     if case.invoice_extraction is not None:
         case.reconciliation = reconcile_invoice_bol(
@@ -321,6 +352,37 @@ def process_case(case_id: str, *, state: PlatformState | None = None) -> dict[st
     except WorkflowTransitionError:
         pass
 
+    workbench = {
+        "policy": policy.model_dump(mode="json"),
+        "findings": [f.model_dump(mode="json") for f in case.findings],
+        "risk_route": case.risk_route,
+        "reconciliation": (
+            case.reconciliation.model_dump(mode="json") if case.reconciliation else None
+        ),
+        "identities": [i.model_dump(mode="json") for i in case.identities],
+        "documents": [d.model_dump(mode="json") for d in case.documents],
+        "invoice_number": (
+            case.invoice_extraction.invoice_number if case.invoice_extraction else None
+        ),
+        "currency": case.invoice_extraction.currency if case.invoice_extraction else None,
+        "total_amount": (
+            case.invoice_extraction.total_amount if case.invoice_extraction else None
+        ),
+        "seller_name": (
+            case.invoice_extraction.seller.legal_name
+            if case.invoice_extraction and case.invoice_extraction.seller
+            else None
+        ),
+        "agent_trace": agent_trace_payload,
+        "debate_rounds_used": (
+            max((item.get("round") or 1) for item in agent_trace_payload)
+            if agent_trace_payload
+            else 0
+        ),
+        "extraction_provider": extraction_provider,
+        "extraction_model": extraction_model,
+    }
+    case.metadata["last_workbench"] = workbench
     case.touch()
     platform.audit.append(
         event_type="CASE_PROCESSED",
@@ -330,13 +392,7 @@ def process_case(case_id: str, *, state: PlatformState | None = None) -> dict[st
     )
     return {
         "case": to_case_record(case),
-        "policy": policy.model_dump(mode="json"),
-        "findings": [f.model_dump(mode="json") for f in case.findings],
-        "risk_route": case.risk_route,
-        "reconciliation": (
-            case.reconciliation.model_dump(mode="json") if case.reconciliation else None
-        ),
-        "identities": [i.model_dump(mode="json") for i in case.identities],
+        **workbench,
     }
 
 

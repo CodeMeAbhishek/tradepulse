@@ -1,0 +1,18 @@
+﻿# SYNTHETIC_DEMO | FIXTURE_ONLY | pack incomplete (invoice only under post-shipment)
+data_label: SYNTHETIC_DEMO
+scenario: document_pack_incomplete
+invoice_number: INV-SYN-INC-01
+invoice_date: 2026-03-16
+currency: USD
+seller: Amit Trading Co.
+seller_lei: 5493001KJTIIGC8Y1R12
+buyer: Gulf Importers LLC
+description: Cotton yarn
+quantity: 8
+unit: MT
+unit_price: 2100
+line_total: 16800
+total_amount: 16800
+hs_code: 520511
+port_of_loading: Chennai, IN
+port_of_discharge: Hamburg, DE

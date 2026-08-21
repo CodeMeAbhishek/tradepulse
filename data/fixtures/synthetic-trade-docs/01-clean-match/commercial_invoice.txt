@@ -1,0 +1,23 @@
+﻿# SYNTHETIC_DEMO | FIXTURE_ONLY | clean match
+data_label: SYNTHETIC_DEMO
+scenario: clean_invoice_bol_match
+invoice_number: INV-SYN-2201
+invoice_date: 2026-03-01
+currency: USD
+seller: Amit Trading Co.
+seller_lei: 5493001KJTIIGC8Y1R12
+seller_country: IN
+seller_gstin: 27AABCA1234A1Z5
+seller_iec: 0312345678
+buyer: Gulf Importers LLC
+buyer_lei: 213800WAVVOPS85N2205
+buyer_country: AE
+description: Copper cathodes Grade A
+quantity: 500
+unit: MT
+unit_price: 2500
+line_total: 1250000
+total_amount: 1250000
+hs_code: 740311
+port_of_loading: Mundra, IN
+port_of_discharge: Jebel Ali, AE

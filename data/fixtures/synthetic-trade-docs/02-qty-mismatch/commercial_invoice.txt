@@ -1,0 +1,18 @@
+﻿# SYNTHETIC_DEMO | FIXTURE_ONLY | quantity mismatch climax
+data_label: SYNTHETIC_DEMO
+scenario: qty_mismatch_500_vs_350
+invoice_number: INV-SYN-2208
+invoice_date: 2026-03-08
+currency: USD
+seller: Amit Trading Co.
+seller_lei: 5493001KJTIIGC8Y1R12
+buyer: Gulf Importers LLC
+description: Copper cathodes Grade A
+quantity: 500
+unit: cartons
+unit_price: 1780.8
+line_total: 890400
+total_amount: 890400
+hs_code: 740311
+port_of_loading: Mundra, IN
+port_of_discharge: Jebel Ali, AE

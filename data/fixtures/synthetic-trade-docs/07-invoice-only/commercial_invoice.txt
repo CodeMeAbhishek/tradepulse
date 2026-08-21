@@ -1,0 +1,18 @@
+﻿# SYNTHETIC_DEMO | FIXTURE_ONLY | invoice-only profile
+data_label: SYNTHETIC_DEMO
+scenario: invoice_only_transport_not_available
+invoice_number: INV-SYN-IO-01
+invoice_date: 2026-03-14
+currency: USD
+seller: Amit Trading Co.
+seller_lei: 5493001KJTIIGC8Y1R12
+buyer: Gulf Importers LLC
+description: Spices mixed
+quantity: 5
+unit: MT
+unit_price: 3200
+line_total: 16000
+total_amount: 16000
+hs_code: 091099
+port_of_loading: Cochin, IN
+port_of_discharge: Rotterdam, NL

@@ -19,7 +19,7 @@ from tradepulse_contracts.identity import (
 )
 
 from app.adapters.gleif.base import GleifAdapter, GleifRecord
-from app.adapters.gleif.fixture import FixtureGleifAdapter
+from app.adapters.gleif.factory import build_gleif_adapter
 from app.adapters.vlei.base import VLEIVerifier, VleiCredentialInput
 from app.adapters.vlei.fixture import UnavailableVLEIVerifier
 from app.services.entity_resolution.scoring import (
@@ -100,7 +100,7 @@ class EntityResolutionService:
         gleif: GleifAdapter | None = None,
         vlei: VLEIVerifier | None = None,
     ) -> None:
-        self._gleif = gleif or FixtureGleifAdapter()
+        self._gleif = gleif or build_gleif_adapter()
         self._vlei = vlei or UnavailableVLEIVerifier()
 
     def resolve_party(self, party: PartyIdentityInput) -> IdentityEvidence:
@@ -142,7 +142,11 @@ class EntityResolutionService:
                     candidates.append(
                         RegistryCandidate(
                             candidate_name=record.legal_name,
-                            source="GLEIF_NAME_SEARCH",
+                            source=(
+                                "GLEIF_NAME_SEARCH_LIVE"
+                                if (search.snapshot_id or "").startswith("gleif-live")
+                                else "GLEIF_NAME_SEARCH"
+                            ),
                             score=score,
                             jurisdiction=record.jurisdiction,
                             stable_identifier=record.lei,

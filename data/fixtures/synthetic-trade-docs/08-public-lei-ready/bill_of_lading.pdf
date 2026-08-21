@@ -1,0 +1,49 @@
+%PDF-1.4
+%‚„œ”
+1 0 obj<< /Type /Catalog /Pages 2 0 R >>endobj
+2 0 obj<< /Type /Pages /Kids [3 0 R] /Count 1 >>endobj
+3 0 obj<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R /Resources<< /Font<< /F1 5 0 R >> >> >>endobj
+4 0 obj<< /Length 479 >>stream
+BT
+/F1 9 Tf
+50 780 Td
+11 TL
+(?# SYNTHETIC_DEMO | PUBLIC_GLEIF_CANDIDATE BoL) Tj
+T*
+(data_label: SYNTHETIC_DEMO) Tj
+T*
+(bl_number: BL-SYN-PUB-01) Tj
+T*
+(shipper: Tata Steel Limited) Tj
+T*
+(consignee: Gulf Importers LLC) Tj
+T*
+(goods_description: Hot rolled steel coils \(synthetic demo line\)) Tj
+T*
+(quantity: 100) Tj
+T*
+(unit: MT) Tj
+T*
+(port_of_loading: Paradip, IN) Tj
+T*
+(port_of_discharge: Jebel Ali, AE) Tj
+T*
+(invoice_reference: INV-SYN-PUB-01) Tj
+T*
+(hs_code: 7208) Tj
+ET
+endstream
+endobj
+5 0 obj<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>endobj
+xref
+0 6
+0000000000 65535 f 
+0000000015 00000 n 
+0000000062 00000 n 
+0000000117 00000 n 
+0000000239 00000 n 
+0000000767 00000 n 
+trailer<< /Size 6 /Root 1 0 R >>
+startxref
+835
+%%EOF

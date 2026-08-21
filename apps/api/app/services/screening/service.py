@@ -6,7 +6,7 @@ from tradepulse_contracts.enums import CheckStatus, Severity
 from tradepulse_contracts.rule_result import RuleDataSourceRef, RuleEvidenceItem, RuleResult
 
 from app.adapters.screening.base import ScreeningAdapter, ScreeningSubject
-from app.adapters.screening.mock import MockScreeningAdapter
+from app.adapters.screening.factory import build_screening_adapter
 
 RULE_PACK = "screening@1.0.0"
 
@@ -17,13 +17,14 @@ def screen_subject(
     adapter: ScreeningAdapter | None = None,
     check_id: str = "SCREEN-PARTY-001",
 ) -> RuleResult:
-    screening = adapter or MockScreeningAdapter()
+    screening = adapter or build_screening_adapter()
     result = screening.screen(subject)
     source = RuleDataSourceRef(
         source_id=result.source_id,
         version=result.source_label,
         snapshot_id=result.snapshot_id,
     )
+    live = result.source_id == "opensanctions"
 
     if not result.available:
         return RuleResult(
@@ -35,9 +36,9 @@ def screen_subject(
                 f"Screening source {result.source_label} unavailable; "
                 "sanctions check was not passed."
             ),
-            rule_reference="screening.demo_mock",
+            rule_reference="screening.source_unavailable",
             data_sources=[source],
-            recommended_action="Retry when snapshot is restored; do not treat as PASS.",
+            recommended_action="Retry when the screening source is restored; do not treat as PASS.",
         )
 
     if result.hits:
@@ -52,7 +53,11 @@ def screen_subject(
                 f"Potential match on {result.source_label} list "
                 f"({top.list_entry_name}); not a confirmed sanctions finding."
             ),
-            rule_reference="screening.demo_mock.potential_match",
+            rule_reference=(
+                "screening.opensanctions.potential_match"
+                if live
+                else "screening.demo_mock.potential_match"
+            ),
             evidence=[
                 RuleEvidenceItem(
                     field=top.matched_field,
@@ -61,7 +66,7 @@ def screen_subject(
                 )
             ],
             data_sources=[source],
-            recommended_action="Human review required; do not treat fuzzy/demo match as confirmed.",
+            recommended_action="Human review required; do not treat a list candidate as confirmed.",
         )
 
     return RuleResult(
@@ -70,7 +75,9 @@ def screen_subject(
         status=CheckStatus.PASS,
         severity=Severity.INFO,
         reason=f"No potential match on {result.source_label} snapshot for presented subject.",
-        rule_reference="screening.demo_mock.clear",
+        rule_reference=(
+            "screening.opensanctions.clear" if live else "screening.demo_mock.clear"
+        ),
         data_sources=[source],
         recommended_action="Continue remaining compliance checks.",
     )

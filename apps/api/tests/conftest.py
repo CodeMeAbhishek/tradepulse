@@ -15,6 +15,25 @@ from app.main import create_app
 from app.services.case_service import reset_platform_state
 
 
+@pytest.fixture(autouse=True)
+def _clear_settings_caches() -> Generator[None, None, None]:
+    get_settings.cache_clear()
+    try:
+        from app.adapters.price.factory import get_live_price_adapter
+
+        get_live_price_adapter.cache_clear()
+    except Exception:
+        pass
+    yield
+    get_settings.cache_clear()
+    try:
+        from app.adapters.price.factory import get_live_price_adapter
+
+        get_live_price_adapter.cache_clear()
+    except Exception:
+        pass
+
+
 @pytest.fixture()
 def client(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Generator[TestClient, None, None]:
     db_path = tmp_path / "test.db"

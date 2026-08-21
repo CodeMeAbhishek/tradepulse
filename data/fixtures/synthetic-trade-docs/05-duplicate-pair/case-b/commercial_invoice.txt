@@ -1,0 +1,18 @@
+﻿# SYNTHETIC_DEMO | FIXTURE_ONLY | duplicate submission signal
+data_label: SYNTHETIC_DEMO
+scenario: duplicate_signal
+invoice_number: INV-SYN-DUP-99
+invoice_date: 2026-03-12
+currency: USD
+seller: Amit Trading Co.
+seller_lei: 5493001KJTIIGC8Y1R12
+buyer: Gulf Importers LLC
+description: Cotton yarn
+quantity: 20
+unit: MT
+unit_price: 2100
+line_total: 42000
+total_amount: 42000
+hs_code: 520511
+port_of_loading: Mundra, IN
+port_of_discharge: Jebel Ali, AE

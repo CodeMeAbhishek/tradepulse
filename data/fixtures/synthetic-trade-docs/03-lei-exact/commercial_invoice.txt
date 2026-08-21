@@ -1,0 +1,18 @@
+﻿# SYNTHETIC_DEMO | FIXTURE_ONLY | exact LEI
+data_label: SYNTHETIC_DEMO
+scenario: identity_verified_by_lei
+invoice_number: INV-SYN-LEI-01
+invoice_date: 2026-03-10
+currency: USD
+seller: Amit Trading Co.
+seller_lei: 5493001KJTIIGC8Y1R12
+buyer: Gulf Importers LLC
+description: Basmati rice
+quantity: 10
+unit: MT
+unit_price: 1000
+line_total: 10000
+total_amount: 10000
+hs_code: 100630
+port_of_loading: INNSA
+port_of_discharge: AEJEA

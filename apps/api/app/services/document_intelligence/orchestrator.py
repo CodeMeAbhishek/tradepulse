@@ -23,7 +23,7 @@ from tradepulse_contracts.enums import (
 )
 
 from app.adapters.llm.base import LLMAdapter
-from app.adapters.llm.fixture import FixtureLLMAdapter
+from app.adapters.llm.factory import build_llm_adapter
 from app.schemas.invoice import INVOICE_SCHEMA_VERSION, InvoiceExtraction
 from app.services.document_intelligence.agents import (
     run_arbiter,
@@ -171,7 +171,7 @@ class InvoiceExtractionService:
         llm: LLMAdapter | None = None,
         cache: ExtractionCache | None = None,
     ) -> None:
-        self._llm = llm or FixtureLLMAdapter()
+        self._llm = llm or build_llm_adapter()
         self._cache = cache or ExtractionCache()
 
     def process_invoice(

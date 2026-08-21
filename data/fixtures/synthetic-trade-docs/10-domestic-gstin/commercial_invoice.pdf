@@ -1,0 +1,75 @@
+%PDF-1.4
+%‚„œ”
+1 0 obj<< /Type /Catalog /Pages 2 0 R >>endobj
+2 0 obj<< /Type /Pages /Kids [3 0 R] /Count 1 >>endobj
+3 0 obj<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R /Resources<< /Font<< /F1 5 0 R >> >> >>endobj
+4 0 obj<< /Length 884 >>stream
+BT
+/F1 9 Tf
+50 780 Td
+11 TL
+(?# SYNTHETIC_DEMO | domestic identity fields \(no live GST claim\)) Tj
+T*
+(data_label: SYNTHETIC_DEMO) Tj
+T*
+(scenario: domestic_gstin_fields) Tj
+T*
+(invoice_number: INV-SYN-DOM-01) Tj
+T*
+(invoice_date: 2026-03-17) Tj
+T*
+(currency: USD) Tj
+T*
+(seller: Amit Trading Co.) Tj
+T*
+(seller_lei:) Tj
+T*
+(seller_gstin: 27AABCA1234A1Z5) Tj
+T*
+(seller_pan: AABCA1234A) Tj
+T*
+(seller_cin: U51909MH2015PTC123456) Tj
+T*
+(seller_iec: 0312345678) Tj
+T*
+(e_invoice_irn: SYNTHETIC-IRN-0001-NOT-LIVE) Tj
+T*
+(e_way_bill_number: SYNTHETIC-EWB-0001) Tj
+T*
+(buyer: Domestic Buyer Traders) Tj
+T*
+(buyer_gstin: 29AABCB5678B1Z9) Tj
+T*
+(description: Basmati rice) Tj
+T*
+(quantity: 2) Tj
+T*
+(unit: MT) Tj
+T*
+(unit_price: 980) Tj
+T*
+(line_total: 1960) Tj
+T*
+(total_amount: 1960) Tj
+T*
+(hs_code: 100630) Tj
+T*
+(port_of_loading: Pune, IN) Tj
+T*
+(port_of_discharge: Bengaluru, IN) Tj
+ET
+endstream
+endobj
+5 0 obj<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>endobj
+xref
+0 6
+0000000000 65535 f 
+0000000015 00000 n 
+0000000062 00000 n 
+0000000117 00000 n 
+0000000239 00000 n 
+0000001172 00000 n 
+trailer<< /Size 6 /Root 1 0 R >>
+startxref
+1240
+%%EOF

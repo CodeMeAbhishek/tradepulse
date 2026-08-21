@@ -1,0 +1,18 @@
+﻿# SYNTHETIC_DEMO | FIXTURE_ONLY | price variance indicator
+data_label: SYNTHETIC_DEMO
+scenario: price_anomaly_indicator
+invoice_number: INV-SYN-PRICE-01
+invoice_date: 2026-03-13
+currency: USD
+seller: Amit Trading Co.
+seller_lei: 5493001KJTIIGC8Y1R12
+buyer: Gulf Importers LLC
+description: Copper cathodes Grade A
+quantity: 1
+unit: MT
+unit_price: 999999
+line_total: 999999
+total_amount: 999999
+hs_code: 740311
+port_of_loading: Mundra, IN
+port_of_discharge: Jebel Ali, AE

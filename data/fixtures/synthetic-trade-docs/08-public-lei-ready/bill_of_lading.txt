@@ -1,0 +1,12 @@
+﻿# SYNTHETIC_DEMO | PUBLIC_GLEIF_CANDIDATE BoL
+data_label: SYNTHETIC_DEMO
+bl_number: BL-SYN-PUB-01
+shipper: Tata Steel Limited
+consignee: Gulf Importers LLC
+goods_description: Hot rolled steel coils (synthetic demo line)
+quantity: 100
+unit: MT
+port_of_loading: Paradip, IN
+port_of_discharge: Jebel Ali, AE
+invoice_reference: INV-SYN-PUB-01
+hs_code: 7208

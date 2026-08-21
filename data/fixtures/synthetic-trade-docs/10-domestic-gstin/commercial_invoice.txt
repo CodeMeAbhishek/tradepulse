@@ -1,0 +1,25 @@
+﻿# SYNTHETIC_DEMO | domestic identity fields (no live GST claim)
+data_label: SYNTHETIC_DEMO
+scenario: domestic_gstin_fields
+invoice_number: INV-SYN-DOM-01
+invoice_date: 2026-03-17
+currency: USD
+seller: Amit Trading Co.
+seller_lei:
+seller_gstin: 27AABCA1234A1Z5
+seller_pan: AABCA1234A
+seller_cin: U51909MH2015PTC123456
+seller_iec: 0312345678
+e_invoice_irn: SYNTHETIC-IRN-0001-NOT-LIVE
+e_way_bill_number: SYNTHETIC-EWB-0001
+buyer: Domestic Buyer Traders
+buyer_gstin: 29AABCB5678B1Z9
+description: Basmati rice
+quantity: 2
+unit: MT
+unit_price: 980
+line_total: 1960
+total_amount: 1960
+hs_code: 100630
+port_of_loading: Pune, IN
+port_of_discharge: Bengaluru, IN

@@ -21,22 +21,49 @@ class ExtractedDocumentText:
 
 
 _PRINTABLE_RUN = re.compile(rb"[\x20-\x7E\t\r\n]{4,}")
+_PDF_SHOW_TEXT = re.compile(r"\((?:\\.|[^\\)])*\)\s*Tj")
+
+
+def _decode_pdf_string(raw: str) -> str:
+    inner = raw.strip()
+    if inner.startswith("(") and inner.endswith(")"):
+        inner = inner[1:-1]
+    return (
+        inner.replace("\\(", "(")
+        .replace("\\)", ")")
+        .replace("\\\\", "\\")
+        .replace("\\n", "\n")
+    )
+
+
+def _pdf_text_from_show_ops(blob: str) -> str:
+    """Prefer PDF text-showing operators so labeled fixtures stay parseable."""
+    lines: list[str] = []
+    for match in _PDF_SHOW_TEXT.finditer(blob):
+        token = match.group(0)
+        paren = token.rsplit("Tj", 1)[0].strip()
+        lines.append(_decode_pdf_string(paren))
+    return "\n".join(lines).strip()
 
 
 def extract_text(*, content: bytes, content_type: str, filename: str = "") -> ExtractedDocumentText:
     """
     Extract plain text for downstream agents.
 
-    Supports text/plain fixtures without extra deps. PDF uses a stdlib printable-run
-    fallback (not a production parser); prefer text fixtures in tests.
+    Supports text/plain fixtures. PDF uploads (application/pdf or %PDF magic) use a
+    stdlib printable-run fallback — demo-safe until Textract/Bedrock OCR is configured.
     """
     normalized_type = (content_type or "").split(";")[0].strip().lower()
     lower_name = filename.lower()
+    is_pdf = (
+        content.startswith(b"%PDF")
+        or normalized_type == "application/pdf"
+        or lower_name.endswith(".pdf")
+    )
 
-    if (
-        normalized_type in {"text/plain", "text/csv"}
+    if not is_pdf and (
+        normalized_type in {"text/plain", "text/csv", "application/octet-stream"}
         or lower_name.endswith((".txt", ".csv"))
-        or not content.startswith(b"%PDF")
     ):
         text = content.decode("utf-8", errors="replace").strip()
         return ExtractedDocumentText(
@@ -45,12 +72,30 @@ def extract_text(*, content: bytes, content_type: str, filename: str = "") -> Ex
             extractor="utf8_text",
         )
 
-    # Lightweight PDF fallback: keep printable runs only (demo-safe, not layout-accurate).
-    runs = [m.group().decode("latin-1", errors="ignore") for m in _PRINTABLE_RUN.finditer(content)]
-    text = "\n".join(runs).strip()
+    if is_pdf:
+        blob = content.decode("latin-1", errors="ignore")
+        text = _pdf_text_from_show_ops(blob)
+        extractor = "pdf_tj_text"
+        if not text:
+            runs = [
+                m.group().decode("latin-1", errors="ignore")
+                for m in _PRINTABLE_RUN.finditer(content)
+            ]
+            text = "\n".join(runs).strip()
+            extractor = "pdf_printable_fallback"
+        return ExtractedDocumentText(
+            text=text,
+            page_count=None,
+            extractor=extractor,
+            warning=(
+                "PDF text used stdlib extraction (not production OCR). "
+                "Scanned image PDFs need Textract/Bedrock later."
+            ),
+        )
+
+    text = content.decode("utf-8", errors="replace").strip()
     return ExtractedDocumentText(
         text=text,
-        page_count=None,
-        extractor="pdf_printable_fallback",
-        warning="PDF text used printable-run fallback; not a production PDF parser.",
+        page_count=1 if text else 0,
+        extractor="utf8_text",
     )

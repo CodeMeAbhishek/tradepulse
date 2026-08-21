@@ -5,6 +5,7 @@ from __future__ import annotations
 from tradepulse_contracts.enums import CheckStatus
 from tradepulse_contracts.rule_result import assert_not_unavailable_as_pass
 
+from app.adapters.price.base import LivePriceQuote, LivePriceResult
 from app.adapters.screening import MockScreeningAdapter, ScreeningSubject, UnavailableScreeningAdapter
 from app.services.compliance import (
     DuplicateIndex,
@@ -14,6 +15,27 @@ from app.services.compliance import (
     route_risk,
 )
 from app.services.screening import screen_subject
+
+
+class _FixedLivePrice:
+    def __init__(self, result: LivePriceResult) -> None:
+        self._result = result
+
+    def lookup(self, **_: object) -> LivePriceResult:
+        return self._result
+
+
+def _quote(price: float = 950.0) -> LivePriceQuote:
+    return LivePriceQuote(
+        commodity_key="rough_rice",
+        symbol="ZR=F",
+        price_per_mt=price,
+        currency="USD",
+        unit="MT",
+        source_id="yahoo-finance-futures",
+        source_label="LIVE/MARKET_FUTURES",
+        snapshot_id="yahoo:ZR=F",
+    )
 
 
 def test_screening_clear_uses_demo_mock_label() -> None:
@@ -51,9 +73,10 @@ def test_price_within_tolerance_pass() -> None:
         currency="USD",
         unit="MT",
         hs_code="100630",
+        adapter=_FixedLivePrice(LivePriceResult(available=True, quote=_quote(950.0))),
     )
     assert result.status is CheckStatus.PASS
-    assert result.data_sources[0].version == "STATIC/SYNTHETIC/DEMO"
+    assert result.data_sources[0].version == "LIVE/MARKET_FUTURES"
 
 
 def test_price_variance_requires_review_not_fraud() -> None:
@@ -62,6 +85,7 @@ def test_price_variance_requires_review_not_fraud() -> None:
         currency="USD",
         unit="MT",
         description="Basmati rice",
+        adapter=_FixedLivePrice(LivePriceResult(available=True, quote=_quote(950.0))),
     )
     assert result.status is CheckStatus.REVIEW_REQUIRED
     assert "not fraud" in result.reason.lower()
@@ -73,6 +97,9 @@ def test_price_unmapped_is_data_unavailable() -> None:
         currency="USD",
         unit="MT",
         description="Unmapped Commodity XYZ",
+        adapter=_FixedLivePrice(
+            LivePriceResult(available=False, detail="No live market symbol mapped")
+        ),
     )
     assert result.status is CheckStatus.DATA_UNAVAILABLE
 
@@ -83,6 +110,7 @@ def test_price_missing_unit_price_not_applicable() -> None:
         currency="USD",
         unit="MT",
         hs_code="100630",
+        adapter=_FixedLivePrice(LivePriceResult(available=False)),
     )
     assert result.status is CheckStatus.NOT_APPLICABLE
 
@@ -137,6 +165,7 @@ def test_risk_route_price_or_duplicate_maker_review() -> None:
         currency="USD",
         unit="MT",
         hs_code="100630",
+        adapter=_FixedLivePrice(LivePriceResult(available=True, quote=_quote(950.0))),
     )
     assert route_risk(findings=[price]) is RiskRoute.MAKER_REVIEW_REQUIRED
 
@@ -147,6 +176,7 @@ def test_risk_route_data_unavailable() -> None:
         currency="USD",
         unit="MT",
         description="No Mapping",
+        adapter=_FixedLivePrice(LivePriceResult(available=False, detail="unmapped")),
     )
     assert route_risk(findings=[finding]) is RiskRoute.DATA_REVIEW_REQUIRED
 
@@ -161,5 +191,6 @@ def test_risk_route_ready_when_all_pass() -> None:
         currency="USD",
         unit="MT",
         hs_code="100630",
+        adapter=_FixedLivePrice(LivePriceResult(available=True, quote=_quote(950.0))),
     )
     assert route_risk(findings=[screening, price]) is RiskRoute.READY_FOR_HUMAN_REVIEW

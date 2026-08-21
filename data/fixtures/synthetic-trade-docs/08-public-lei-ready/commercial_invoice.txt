@@ -1,0 +1,23 @@
+﻿# SYNTHETIC_DEMO | PUBLIC_GLEIF_CANDIDATE
+# Trade values are synthetic. Seller LEI is a real public GLEIF identifier for later live lookup.
+# LEI source reference: India LEI / GLEIF record for TATA STEEL LIMITED — 335800E6C75YGSGD5T66
+data_label: SYNTHETIC_DEMO
+scenario: public_lei_ready_for_live_gleif
+invoice_number: INV-SYN-PUB-01
+invoice_date: 2026-03-15
+currency: USD
+seller: Tata Steel Limited
+seller_lei: 335800E6C75YGSGD5T66
+seller_country: IN
+seller_address: Bombay House, 24 Homi Mody Street, Fort, Mumbai
+buyer: Gulf Importers LLC
+buyer_lei: 213800WAVVOPS85N2205
+description: Hot rolled steel coils (synthetic demo line)
+quantity: 100
+unit: MT
+unit_price: 620
+line_total: 62000
+total_amount: 62000
+hs_code: 7208
+port_of_loading: Paradip, IN
+port_of_discharge: Jebel Ali, AE

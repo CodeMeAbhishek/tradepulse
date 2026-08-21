@@ -2,16 +2,13 @@ import Link from "next/link";
 
 export default function CaseNotFound() {
   return (
-    <main className="mx-auto max-w-3xl px-4 py-16 text-center">
-      <h1 className="text-xl font-semibold text-slate-50">Case not found</h1>
-      <p className="mt-2 text-sm text-slate-400">
-        No synthetic queue fixture matches this case id.
+    <main className="tp-card mx-auto max-w-lg p-8 text-center">
+      <h1 className="text-lg font-semibold text-[var(--tp-navy)]">Case not found</h1>
+      <p className="mt-2 text-sm text-[var(--tp-muted)]">
+        No demo case matches this id. Reset demo data from the header if needed.
       </p>
-      <Link
-        href="/"
-        className="mt-6 inline-block text-sm text-sky-300 underline-offset-2 hover:underline"
-      >
-        Return to compliance queue
+      <Link href="/queue" className="mt-4 inline-block text-sm text-[var(--tp-accent)]">
+        Return to queue
       </Link>
     </main>
   );

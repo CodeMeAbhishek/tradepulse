@@ -1,0 +1,12 @@
+﻿# SYNTHETIC_DEMO | FIXTURE_ONLY | quantity mismatch BoL
+data_label: SYNTHETIC_DEMO
+bl_number: BL-SYN-2208
+shipper: Amit Trading Co.
+consignee: Gulf Importers LLC
+goods_description: Copper cathodes Grade A
+quantity: 350
+unit: cartons
+port_of_loading: Mundra, IN
+port_of_discharge: Jebel Ali, AE
+invoice_reference: INV-SYN-2208
+hs_code: 740311
