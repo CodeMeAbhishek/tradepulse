@@ -1,0 +1,27 @@
+---
+description: Document requirement states and transaction-profile policy for TradePulse cases
+alwaysApply: true
+---
+
+# Document Policy Rules
+
+Commercial Invoice is required for every TradePulse core review case.
+
+Bill of Lading/Air Waybill is conditionally required:
+- Invoice-only profile: invoice checks can run; transport reconciliation is NOT_AVAILABLE.
+- Post-shipment profile: BoL/AWB is required; missing document means DOCUMENT_PACK_INCOMPLETE.
+
+Packing List, Certificate of Origin, Insurance Certificate, Draft/Bill of Exchange, KYC/KYB and Inspection Certificate are conditionally required by configured transaction profile/policy.
+
+Letter of Credit is required only for an LC-profile case.
+
+Never state that a document is universally legally mandatory unless the configured policy explicitly says it is required for that case.
+
+UI and API must distinguish:
+REQUIRED
+CONDITIONALLY_REQUIRED
+OPTIONAL
+NOT_APPLICABLE
+NOT_PROVIDED
+NOT_AVAILABLE
+DOCUMENT_PACK_INCOMPLETE

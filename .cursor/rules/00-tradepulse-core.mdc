@@ -1,0 +1,47 @@
+---
+description: TradePulse core product boundaries, authority order, and safety invariants
+alwaysApply: true
+---
+
+# TradePulse Core Rules
+
+Before planning or changing code, read:
+1. tradepulse-prd-v7-unified-trade-trust.md
+2. tradepulse-system-design-v4-unified-trade-trust.md
+3. tradepulse-cursor-master-prompt-v2-lei-vlei.md
+4. relevant existing code and tests
+
+Authority order:
+- PRD defines user, product scope, business rules, document policy, acceptance criteria and team roles.
+- System design defines architecture, schemas, safety boundaries, storage, APIs, failure handling and tests.
+- If these documents conflict, stop and explain the conflict. Do not invent a compromise.
+
+TradePulse is documentary trade-compliance decision support for bank and trade-house users.
+It is not a Customs portal, container inspection system, ICEGATE filing tool, payment engine or autonomous compliance decision-maker.
+
+Never:
+- Claim to verify physical goods inside a container.
+- File or simulate a Customs clearance/Let Export Order.
+- Claim that AI approved, rejected, sanctioned, cleared or found fraud.
+- Treat a fuzzy name match as identity proof.
+- Treat an LEI returned by name search as confirmation of identity without compatible document/stable-identifier evidence.
+- Treat a plain LEI string as a VLEI.
+- Treat a mock JSON credential as live VLEI verification.
+- Treat a potential sanctions candidate as confirmed without authoritative evidence and configured policy.
+- Turn DATA_UNAVAILABLE, NOT_AVAILABLE or NOT_APPLICABLE into PASS.
+- Let an agent consensus override deterministic policy or human review.
+- Let an agent debate exceed 3 rounds.
+- Let an LLM activate a rule pack, change a case decision, or overwrite audit history.
+- Deploy, push, merge, commit, alter secrets or install unrelated dependencies without explicit human instruction.
+
+Always preserve:
+- Raw document value and normalized value.
+- Page/bounding-box/source text evidence where available.
+- Document hash, parser/model/prompt version.
+- Agent run, round, claim, challenge and arbiter trace.
+- Source URL, publisher, snapshot ID, checksum, freshness timestamp and coverage note.
+- Rule-pack version, policy version and result version.
+- LEI evidence/status and VLEI evidence/status separately.
+- Append-only audit history and old/new result versions after replay.
+
+Use strict types at module boundaries. Add/update tests for all behavior changes. Keep tasks bounded to allowed files.
