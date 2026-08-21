@@ -1,0 +1,46 @@
+import React from 'react';
+import { render, screen } from '@testing-library/react';
+import { describe, test, expect } from 'vitest';
+import { StatusRouteChip } from '@/components/queue/StatusRouteChip';
+import { PrototypeBanner } from '@/components/PrototypeBanner';
+import { IdentityEvidenceDrawer } from '@/components/case/IdentityEvidenceDrawer';
+
+describe('Safety Label Rendering', () => {
+  test('StatusRouteChip renders explicit text for route and status (not just color)', () => {
+    render(<StatusRouteChip status="DOCUMENT_PACK_INCOMPLETE" readinessRoute="DOCUMENT_PACK_INCOMPLETE" />);
+    // Should display human readable label
+    expect(screen.getByText(/Document pack incomplete/i)).toBeInTheDocument();
+    // Should display raw status code
+    expect(screen.getByText(/Status code: DOCUMENT_PACK_INCOMPLETE/i)).toBeInTheDocument();
+  });
+
+  test('PrototypeBanner renders synthetic demo disclaimers', () => {
+    render(<PrototypeBanner />);
+    expect(screen.getByText(/SYNTHETIC DEMO DATA/i)).toBeInTheDocument();
+    expect(screen.getByText(/Decision support only — not a Customs portal/i)).toBeInTheDocument();
+  });
+
+  test('IdentityEvidenceDrawer renders correct label for fixture VLEI and explicit outcome', () => {
+    const mockParties = [{
+      role: "SELLER" as const,
+      name: "Acme Corp",
+      rawName: "Acme Corp",
+      normalizedName: "ACME CORP",
+      lei: null,
+      leiStatus: "NONE",
+      gleifCandidates: [],
+      identityOutcome: "IDENTITY_SUPPORTED_BY_VLEI" as const,
+      vleiStatus: "VERIFIED_FIXTURE" as const,
+      vleiLabel: "VLEI fixture verified · SYNTHETIC_DEMO_CREDENTIAL",
+      similarityNote: "Exact match",
+      isExactDocumentMatch: true
+    }];
+    render(<IdentityEvidenceDrawer parties={mockParties} />);
+    
+    // Outcome label
+    expect(screen.getByText(/Identity supported by VLEI/i)).toBeInTheDocument();
+    // Specific fixture label
+    expect(screen.getByText(/VLEI fixture verified/i)).toBeInTheDocument();
+    expect(screen.getByText(/SYNTHETIC_DEMO_CREDENTIAL/i)).toBeInTheDocument();
+  });
+});
