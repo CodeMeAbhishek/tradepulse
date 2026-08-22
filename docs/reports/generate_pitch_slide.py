@@ -177,6 +177,46 @@ def add_evidence_chips(slide, col_left, col_top, col_w):
         x += chip_w + gap
 
 
+def add_gift_flowchart(slide, box_left, box_top, box_w):
+    """Why GIFT IFIH — visual path from residency to pilot."""
+    pad = Inches(0.18)
+    y = box_top + Inches(0.38)
+    node_h = Inches(0.42)
+    arrow_w = Inches(0.28)
+    arrow_h = Inches(0.14)
+    inner_w = box_w - 2 * pad
+    labels = [
+        "Mentors &\nregulators",
+        "GIFT trade\ndesk intros",
+        "Sandbox /\npilot path",
+        "Bank Ops\npilot",
+    ]
+    node_w = (inner_w - 3 * arrow_w) / 4
+    x = box_left + pad
+    for i, label in enumerate(labels):
+        flow_node(slide, x, y, node_w, node_h, label, fill=WHITE)
+        x += node_w
+        if i < len(labels) - 1:
+            flow_arrow(slide, x, y + (node_h - arrow_h) / 2, arrow_w, arrow_h)
+            x += arrow_w
+
+    add_textbox(
+        slide,
+        box_left + pad,
+        y + node_h + Inches(0.04),
+        box_w - 2 * pad,
+        Inches(0.28),
+        [
+            (
+                "Young Builders → residency + IFSCA exposure → convert tonight’s prototype into a supervised bank pilot",
+                {"size": 7.5, "italic": True, "align": PP_ALIGN.CENTER, "color": ORANGE},
+            )
+        ],
+        align=PP_ALIGN.CENTER,
+    )
+
+
+
 def main():
     prs = Presentation()
     prs.slide_width = Inches(13.333)
@@ -226,7 +266,7 @@ def main():
 
     # --- Row: Problem | Solution | Validation ---
     y = y + h_snap + gap
-    h_mid = Inches(2.65)
+    h_mid = Inches(2.55)
     col_w = (usable_w - 2 * gap) / 3
 
     problem = add_box(slide, L, y, col_w, h_mid)
@@ -298,18 +338,15 @@ def main():
 
     # --- Why GIFT IFIH? ---
     y = y + h_low + gap
-    h_gift = Inches(0.95)
+    h_gift = Inches(1.25)
     gift = add_box(slide, L, y, usable_w, h_gift)
     set_shape_text(
         gift,
         [
-            ("Why GIFT IFIH?", {"size": 12, "bold": True, "align": PP_ALIGN.CENTER, "space_after": 5}),
-            (
-                "• Mentors + GIFT trade-desk intros → path from this prototype to a supervised bank pilot",
-                {"size": 9, "space_after": 0, "align": PP_ALIGN.CENTER},
-            ),
+            ("Why GIFT IFIH?", {"size": 12, "bold": True, "align": PP_ALIGN.CENTER, "space_after": 2}),
         ],
     )
+    add_gift_flowchart(slide, L, y, usable_w)
 
     # --- Footer (preserved) ---
     add_textbox(
