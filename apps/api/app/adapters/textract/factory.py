@@ -16,7 +16,7 @@ def get_textract_adapter() -> TextractAdapter:
     if mode in {"textract", "aws", "live"}:
         return TextractDocumentAdapter(
             region=settings.aws_region or "ap-south-1",
-            profile=settings.aws_profile or None,
+            profile=(settings.aws_profile or "").strip() or None,
             poll_seconds=float(settings.textract_poll_seconds or 1.0),
             max_polls=int(settings.textract_max_polls or 60),
         )

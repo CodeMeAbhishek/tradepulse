@@ -63,6 +63,12 @@ async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
 
 def create_app() -> FastAPI:
     settings = get_settings()
+    # Empty AWS_PROFILE breaks boto3 (ProfileNotFound for ""). Use the task role on ECS.
+    import os
+
+    if not (os.environ.get("AWS_PROFILE") or "").strip():
+        os.environ.pop("AWS_PROFILE", None)
+
     application = FastAPI(
         title="TradePulse API",
         version=settings.app_version,
@@ -73,13 +79,24 @@ def create_app() -> FastAPI:
         lifespan=lifespan,
     )
 
-    origins = [o.strip() for o in settings.cors_origins.split(",") if o.strip()]
+    raw_origins = [o.strip() for o in settings.cors_origins.split(",") if o.strip()]
+    # Starlette rejects allow_origins=["*"] with allow_credentials=True for browser clients.
+    if raw_origins == ["*"]:
+        cors_kwargs: dict = {
+            "allow_origins": [],
+            "allow_origin_regex": r"https?://.*",
+            "allow_credentials": True,
+        }
+    else:
+        cors_kwargs = {
+            "allow_origins": raw_origins or ["http://localhost:3000"],
+            "allow_credentials": True,
+        }
     application.add_middleware(
         CORSMiddleware,
-        allow_origins=origins or ["http://localhost:3000"],
-        allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
+        **cors_kwargs,
     )
 
     @application.middleware("http")

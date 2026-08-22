@@ -72,7 +72,7 @@ def get_document_storage():
             bucket=settings.s3_documents_bucket,
             prefix=settings.s3_documents_prefix,
             region=settings.aws_region,
-            profile=settings.aws_profile or None,
+            profile=(settings.aws_profile or "").strip() or None,
         )
     from app.adapters.storage.memory import MemoryDocumentStorage
 

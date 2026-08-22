@@ -12,11 +12,12 @@ def build_llm_adapter() -> LLMAdapter:
     settings = get_settings()
     provider = (settings.llm_provider or "fixture").strip().lower()
     if provider in {"bedrock", "aws", "nova", "live"}:
+        profile = (settings.aws_profile or "").strip() or None
         return BedrockLLMAdapter(
             model_id=(settings.bedrock_model_id or DEFAULT_BEDROCK_MODEL_ID).strip()
             or DEFAULT_BEDROCK_MODEL_ID,
             region=settings.aws_region or "ap-south-1",
-            profile=settings.aws_profile or None,
+            profile=profile,
             prompt_version=settings.llm_prompt_version or "invoice-extract-bedrock@1.2.0",
             max_tokens=settings.bedrock_max_tokens or 3000,
         )

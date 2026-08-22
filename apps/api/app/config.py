@@ -37,8 +37,8 @@ class Settings(BaseSettings):
     bedrock_model_id: str = "apac.amazon.nova-lite-v1:0"
     bedrock_max_tokens: int = 3000
 
-    # AWS (profile-based; no keys required in env when using `aws login`)
-    aws_profile: str = "tradepulse"
+    # AWS (leave blank in ECS to use the task role; set AWS_PROFILE locally)
+    aws_profile: str = ""
     aws_region: str = "ap-south-1"
     document_storage_backend: str = "memory"
     s3_documents_bucket: str = ""
