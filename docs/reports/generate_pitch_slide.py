@@ -269,17 +269,18 @@ def main():
 
     # --- Row: Regulatory | Team-Market Fit ---
     y = y + h_mid + gap
-    h_low = Inches(1.35)
+    h_low = Inches(1.50)
     half_w = (usable_w - gap) / 2
 
     regulatory = add_box(slide, L, y, half_w, h_low)
     set_shape_text(
         regulatory,
         [
-            ("4. Regulatory Requirements (Domestic/IFSC)", {"size": 11, "bold": True, "space_after": 5}),
-            ("• IFSCA / GIFT trade desks · bank ops under RBI", {"size": 9, "space_after": 3}),
-            ("• We never claim: AI approved / cleared / sanctioned", {"size": 9, "space_after": 3}),
-            ("• Officers stay in the loop on every material gap", {"size": 9, "space_after": 0}),
+            ("4. Regulatory Requirements (Domestic/IFSC)", {"size": 11, "bold": True, "space_after": 4}),
+            ("• Focus: IFSCA / GIFT City trade desks; bank trade ops under RBI", {"size": 8.5, "space_after": 2}),
+            ("• Company ID: use official records when available — look-alike names are not proof", {"size": 8.5, "space_after": 2}),
+            ("• We never claim: AI approved / cleared / sanctioned a trade", {"size": 8.5, "space_after": 2}),
+            ("• Missing papers stay visible — officers stay in the loop on every material gap", {"size": 8.5, "space_after": 0}),
         ],
     )
 
@@ -287,10 +288,11 @@ def main():
     set_shape_text(
         team,
         [
-            ("5. Team-Market Fit", {"size": 11, "bold": True, "space_after": 5}),
-            ("• Abhishek platform · Ansh product · Atharva UI · Shivansh QA", {"size": 9, "space_after": 3}),
-            ("• Clear owners — we don’t invent answers mid-demo", {"size": 9, "space_after": 3}),
-            ("• Win: live cloud desk officers can click today", {"size": 9, "space_after": 0}),
+            ("5. Team-Market Fit", {"size": 11, "bold": True, "space_after": 4}),
+            ("• Abhishek — platform  ·  Ansh — product desk  ·  Atharva — UI  ·  Shivansh — QA", {"size": 8.5, "space_after": 2}),
+            ("• Clear owners for every part — we stop when rules conflict, we don’t invent mid-demo", {"size": 8.5, "space_after": 2}),
+            ("• Built for the Ops buyer, not a generic “AI chatbot for PDFs” demo", {"size": 8.5, "space_after": 2}),
+            ("• Biggest win: live cloud review desk officers can open and click today", {"size": 8.5, "space_after": 0}),
         ],
     )
 
