@@ -14,9 +14,10 @@ describe('Safety Label Rendering', () => {
     expect(screen.getByText(/Status code: DOCUMENT_PACK_INCOMPLETE/i)).toBeInTheDocument();
   });
 
-  test('PrototypeBanner renders synthetic demo disclaimers', () => {
+  test('PrototypeBanner renders demo data disclaimers', () => {
     render(<PrototypeBanner />);
-    expect(screen.getByText(/SYNTHETIC DEMO DATA/i)).toBeInTheDocument();
+    // The banner must name the data as demo in words, not by colour alone.
+    expect(screen.getByText(/DEMO DATA/i)).toBeInTheDocument();
     expect(screen.getByText(/Decision support only — not a Customs portal/i)).toBeInTheDocument();
   });
 
