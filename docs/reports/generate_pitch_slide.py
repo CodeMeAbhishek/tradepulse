@@ -130,7 +130,7 @@ def main():
         snap,
         [
             ("Pitch Snapshot", {"size": 12, "bold": True, "align": PP_ALIGN.CENTER, "space_after": 6}),
-            ("• Team Name: TradePulse  |  Track(s): Track 1 — Agentic AI  |  Focus: Cross-border Trade Finance / Documentary Compliance (BFSI)", {"size": 9, "space_after": 3}),
+            ("• Team Name: TradePulse  |  Track: Track 1 — Agentic AI  |  Focus: Helping bank / GIFT trade officers review trade documents faster and safer", {"size": 9, "space_after": 3}),
             (f"• Stage: {checkbox(False)} Idea   {checkbox(True)} Prototype   {checkbox(False)} MVP   {checkbox(False)} Pilot", {"size": 9, "space_after": 3}),
             (f"• Team Commitment: {checkbox(False)} Full-time   {checkbox(True)} Part-time", {"size": 9, "space_after": 0}),
         ],
@@ -146,9 +146,9 @@ def main():
         problem,
         [
             ("1. Problem", {"size": 11, "bold": True, "space_after": 5}),
-            ("• Who: Trade Finance Ops examiners / makers at banks & GIFT City IBUs (buyer: Head of Trade Finance Ops)", {"size": 8.5, "space_after": 3}),
-            ("• Today: Manual UCP-style PDF review, fuzzy name hits treated as certainty, exception queues + weak audit packs", {"size": 8.5, "space_after": 3}),
-            ("• Pain (quant + qual): Hours per documentary pack; false certainty on identity/sanctions; DATA gaps silently “passed”; audit defensibility risk — scale rises with IFSC / cross-border volume", {"size": 8.5, "space_after": 0}),
+            ("• Who: Trade officers at banks and GIFT City IBUs — first buyer is Head of Trade Finance Ops", {"size": 8.5, "space_after": 3}),
+            ("• Today: Staff still grind through invoice + shipping PDFs by hand; weak name matches get treated as “confirmed”; missing papers get waved through", {"size": 8.5, "space_after": 3}),
+            ("• Pain: Hours per file; risky audit trail; queues explode as cross-border / IFSC volume grows — ops cannot scale with more headcount alone", {"size": 8.5, "space_after": 0}),
         ],
     )
 
@@ -157,10 +157,10 @@ def main():
         solution,
         [
             ("2. Solution", {"size": 11, "bold": True, "space_after": 5}),
-            ("• Building: TradePulse — documentary trade-compliance decision support (not autopilot approval)", {"size": 8.5, "space_after": 3}),
-            ("• Value: Agentic extract→validate→challenge→arbitrate (≤3 rounds) + identity ladder (LEI ≠ verified; vLEI separate) + examiner case pack + maker–checker", {"size": 8.5, "space_after": 3}),
-            ("• Different / why now: Epistemic honesty (never false-PASS); agentic AI cost curves; LEI/vLEI maturity; GIFT trade-finance scrutiny", {"size": 8.5, "space_after": 3}),
-            ("• Innovation / IP: Typed failure states + bounded swarm + provenance/audit contracts (policy-versioned)", {"size": 8.5, "space_after": 0}),
+            ("• Building: TradePulse — a review desk that prepares the case file; humans still decide (we do not auto-approve)", {"size": 8.5, "space_after": 3}),
+            ("• Value: Pulls facts from documents, double-checks them, flags conflicts, and hands officers a clear pack for maker → checker", {"size": 8.5, "space_after": 3}),
+            ("• Different / why now: We refuse fake “all clear” when data is missing; GIFT trade desks need faster review without cutting corners", {"size": 8.5, "space_after": 3}),
+            ("• Innovation: Built-in honesty rules — every gap stays visible; every finding keeps its source for audit", {"size": 8.5, "space_after": 0}),
         ],
     )
 
@@ -169,9 +169,9 @@ def main():
         validation,
         [
             ("3. Validation", {"size": 11, "bold": True, "space_after": 5}),
-            ("• Customer interviews: Persona locked to Head of Trade Finance Ops (GIFT IBU / bank trade desk) via PRD buyer research — formal interview log expanding post-hackathon", {"size": 8.5, "space_after": 3}),
-            ("• Research findings: Banks examine documents (not cargo GPS); fuzzy match ≠ identity; live AWS demo (ECS+ALB, Bedrock/Textract) proves working prototype path", {"size": 8.5, "space_after": 3}),
-            ("• Evidence: Working live prototype; identity ladder + examiner pack shipped; synthetic fixtures labeled (not sold as live regulatory truth)", {"size": 8.5, "space_after": 0}),
+            ("• Buyer locked: Head of Trade Finance Ops at a GIFT City IBU / bank trade desk (formal interview log expands after the hackathon)", {"size": 8.5, "space_after": 3}),
+            ("• What we heard: Banks review the paperwork — they do not “see inside the container”; name similarity is not proof of who someone is", {"size": 8.5, "space_after": 3}),
+            ("• Evidence: Working live demo on AWS (Mumbai); officers can open a case, see mismatches, and download a handoff pack — demo data clearly labelled", {"size": 8.5, "space_after": 0}),
         ],
     )
 
@@ -185,8 +185,8 @@ def main():
         regulatory,
         [
             ("4. Regulatory Requirements (Domestic/IFSC)", {"size": 11, "bold": True, "space_after": 5}),
-            ("• Regulators: IFSCA (IFSC/GIFT); RBI (banking/trade finance ops); SEBI N/A primary; IRDAI N/A; GLEIF (LEI) / vLEI trust frameworks", {"size": 8.5, "space_after": 3}),
-            ("• Risks: Model-risk if product claims “AI approved/cleared/sanctioned”; sanctions false-certainty; unlabeled synthetic as live — mitigated by decision-support-only + HITL + typed DATA_UNAVAILABLE ≠ PASS", {"size": 8.5, "space_after": 0}),
+            ("• Focus: IFSCA / GIFT City trade desks; bank trade ops under RBI; company ID checks via official LEI records where available", {"size": 8.5, "space_after": 3}),
+            ("• Risks we refuse: Saying “AI approved / cleared / sanctioned”; treating a similar name as the same person; hiding missing data as a pass — officers stay in the loop", {"size": 8.5, "space_after": 0}),
         ],
     )
 
@@ -195,9 +195,9 @@ def main():
         team,
         [
             ("5. Team-Market Fit", {"size": 11, "bold": True, "space_after": 5}),
-            ("• Experience: Backend/platform & AWS (Abhishek); workbench product (Ansh); UI/UX (Atharva); QA/release gate (Shivansh)", {"size": 8.5, "space_after": 3}),
-            ("• Why us: Contract-locked ownership; refuse invented compliance claims; ship examiner trust core not chat-OCR demos", {"size": 8.5, "space_after": 3}),
-            ("• Biggest achievement: Live AWS prototype — agentic pipeline + identity ladder + examiner pack on ECS Fargate (ap-south-1)", {"size": 8.5, "space_after": 0}),
+            ("• Roles: Abhishek — platform; Ansh — product desk; Atharva — UI; Shivansh — quality gate", {"size": 8.5, "space_after": 3}),
+            ("• Why us: Clear owners; we stop when rules conflict instead of inventing answers mid-demo", {"size": 8.5, "space_after": 3}),
+            ("• Biggest win: Live cloud demo officers can click today — review desk, sample cases, downloadable handoff pack", {"size": 8.5, "space_after": 0}),
         ],
     )
 
@@ -209,7 +209,7 @@ def main():
         gift,
         [
             ("Why GIFT IFIH?", {"size": 12, "bold": True, "align": PP_ALIGN.CENTER, "space_after": 5}),
-            ("• Join Young Builders Residency for: GIFT/IFSC pilot pathways, mentor access (trade ops + compliance), IFSCA-oriented regulatory guidance, and bank/IBU partnership intros — to convert tonight’s prototype into a supervised pilot for a Head of Trade Finance Ops at a GIFT City IBU", {"size": 8.5, "space_after": 0}),
+            ("• Join Young Builders for: intro to GIFT trade desks, mentors in ops + compliance, and a path from this prototype to a supervised bank pilot — for Head of Trade Finance Ops at a GIFT City IBU", {"size": 8.5, "space_after": 0}),
         ],
     )
 
