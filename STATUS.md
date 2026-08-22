@@ -110,6 +110,6 @@ The repository has a 100% passing test suite across all layers (341 passing test
 - All frontend tests passed (7 passing tests).
 - Zero failures observed.
 
-**New Risks / Gaps Found:**
-- **No PDF OCR integration yet:** The `README.md` explicitly notes that PDFs still use a printable-text fallback. Genuine scanned image PDFs cannot be processed until `Textract` or similar OCR is added.
-- **Rate Limiting / Timeout Risks:** The new HTTP adapters use strict timeouts (e.g. 20.0s for Yahoo) and fail closed on HTTP errors. Extended outages of OpenSanctions or Yahoo will result in `DATA_UNAVAILABLE` routes, pushing more cases to human `DATA_REVIEW_REQUIRED` queues.
+**Gaps — Status Update (verified 2026-08-22):**
+- ~~**No PDF OCR integration yet**~~ → **✅ RESOLVED.** Amazon Textract is now fully wired (`TEXT_EXTRACT_MODE=textract`). The adapter routes PDF bytes to Textract, falls back to printable-text extraction on failure, and the `.env.example` ships with `TEXT_EXTRACT_MODE=textract` as the default. Scanned image PDFs are now supported when AWS credentials are active.
+- **Rate Limiting / Timeout Risks** → **⚠️ STILL TRUE — BY DESIGN.** Adapter timeouts remain intentionally strict (Yahoo: 20.0s, OpenSanctions: 20.0s, GLEIF: 12.0s). This is the fail-closed safety architecture: a slow or unavailable external service returns `DATA_UNAVAILABLE` rather than hanging the request or fabricating a `PASS`. The operational consequence is that extended outages will grow the human `DATA_REVIEW_REQUIRED` queue. This is an accepted trade-off (safety over throughput), not a bug.
