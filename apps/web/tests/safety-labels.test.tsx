@@ -34,7 +34,14 @@ describe('Safety Label Rendering', () => {
       vleiStatus: "VERIFIED_FIXTURE" as const,
       vleiLabel: "VLEI fixture verified · SYNTHETIC_DEMO_CREDENTIAL",
       similarityNote: "Exact match",
-      isExactDocumentMatch: true
+      isExactDocumentMatch: true,
+      // Provenance is required, not optional. The drawer renders these as the
+      // "Source / snapshot" line, so a party without them exercises the one
+      // state this component should never be in: evidence with no stated
+      // origin. Values match the equivalent fixture in lib/mock/case-detail.ts.
+      source: "VLEI_FIXTURE_ADAPTER",
+      retrievedAt: "2026-08-21T13:00:00Z",
+      snapshotId: "vlei-fix-demo-01"
     }];
     render(<IdentityEvidenceDrawer parties={mockParties} />);
     
