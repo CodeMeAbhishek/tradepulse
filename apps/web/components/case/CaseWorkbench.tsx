@@ -4,10 +4,12 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { policyLabel, statusLabel } from "@/lib/api/map";
 import { useDemo } from "@/lib/demo/DemoProvider";
+import { InvestigationCanvas } from "@/components/case/InvestigationCanvas";
 import { RiskChip, ToneChip, WorkflowChip } from "@/components/ui/StatusChips";
 import { profileLabel } from "@/lib/demo/store";
 
 const TABS = [
+  "Investigate",
   "Summary",
   "Documents",
   "Reconciliation",
@@ -17,7 +19,7 @@ const TABS = [
 ] as const;
 
 export function CaseWorkbench({ caseId }: { caseId: string }) {
-  const [tab, setTab] = useState<(typeof TABS)[number]>("Summary");
+  const [tab, setTab] = useState<(typeof TABS)[number]>("Investigate");
   const [note, setNote] = useState("");
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
@@ -140,6 +142,8 @@ export function CaseWorkbench({ caseId }: { caseId: string }) {
           </button>
         ))}
       </div>
+
+      {tab === "Investigate" ? <InvestigationCanvas tradeCase={live} /> : null}
 
       {tab === "Summary" ? (
         <section className="grid gap-3 md:grid-cols-3">

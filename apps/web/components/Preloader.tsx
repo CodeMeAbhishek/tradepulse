@@ -103,14 +103,14 @@ export function Preloader() {
         <g id="center-t-and-arrow">
           <path d="M 55 76 H 122 V 92 H 98 V 132 H 80 V 92 H 55 Z" fill="#1B4F9E" />
           <path
-            d="M 44 138 L 66 112 L 82 128 L 101 96 L 116 112 L 149 64"
+            d="M 44 138 L 66 112 L 82 128 L 101 96 L 116 112 L 152 59"
             fill="none"
             stroke="#E9631D"
             strokeWidth="12"
             strokeLinejoin="round"
             strokeLinecap="round"
           />
-          <path d="M 178 36 L 168 74 L 156 62 L 140 54 Z" fill="#2E6FB7" />
+          <path d="M 177 31 L 166 69 L 141 47 Z" fill="#2E6FB7" />
         </g>
       </svg>
 
