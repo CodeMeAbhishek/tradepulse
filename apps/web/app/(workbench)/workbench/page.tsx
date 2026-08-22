@@ -10,7 +10,7 @@ import { useCountUp } from "@/lib/useCountUp";
 export default function OverviewPage() {
   const { cases, ready, mode, seedSamples, apiOnline, error } = useDemo();
   const reduce = useReducedMotion();
-  if (!ready) return <p className="text-sm text-[var(--tp-muted)]">Loading workbench…</p>;
+  if (!ready) return <p className="text-sm text-[var(--tp-muted)]">Loading your review desk…</p>;
 
   const pending = cases.filter((c) => c.workflow === "PENDING_MAKER").length;
   const checker = cases.filter((c) => c.workflow === "MAKER_APPROVED").length;
@@ -32,12 +32,12 @@ export default function OverviewPage() {
       <section className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <h1 className="font-display text-3xl font-semibold tracking-tight text-[var(--tp-navy)]">
-            Compliance overview
+            Desk overview
           </h1>
           <p className="mt-1 max-w-2xl text-sm text-[var(--tp-muted)]">
             {mode === "api"
-              ? "Live cases from the API. Review evidence, then act as maker or checker—TradePulse does not approve for you."
-              : "Local demo store. Set NEXT_PUBLIC_DATA_MODE=api to use the live backend."}
+              ? "Cases ready for documentary review. Check the evidence, then act as maker or checker — TradePulse does not approve for you."
+              : "Working with local demo cases. Connect to the review service to use shared cases."}
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -48,7 +48,7 @@ export default function OverviewPage() {
               className="tp-btn-secondary"
               disabled={apiOnline === false}
             >
-              Seed sample cases
+              Load sample cases
             </button>
           ) : null}
           <Link href="/workbench/cases/new" className="tp-btn-primary">
@@ -59,7 +59,8 @@ export default function OverviewPage() {
 
       {error ? (
         <div className="rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-900">
-          Cannot reach API. Run uvicorn on port 8000, then Refresh.
+          Cannot reach the review service. Try Refresh. If the problem continues, contact your
+          platform team.
         </div>
       ) : null}
 
@@ -82,7 +83,7 @@ export default function OverviewPage() {
         </div>
         {attention.length === 0 ? (
           <p className="px-4 py-8 text-center text-sm text-[var(--tp-muted)]">
-            No cases yet. Create one or seed API samples.
+            No cases yet. Open a new case or load sample cases to begin.
           </p>
         ) : (
           <ul className="divide-y divide-[var(--tp-line)]">

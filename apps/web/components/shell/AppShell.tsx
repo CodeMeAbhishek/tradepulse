@@ -7,11 +7,11 @@ import { cn } from "@/lib/cn";
 import { BrandMark } from "@/components/BrandMark";
 
 const NAV = [
-  { href: "/workbench", label: "Overview", match: "exact" as const },
-  { href: "/workbench/queue", label: "Queue", match: "prefix" as const },
+  { href: "/workbench", label: "Desk home", match: "exact" as const },
+  { href: "/workbench/queue", label: "Case queue", match: "prefix" as const },
   { href: "/workbench/cases/new", label: "New case", match: "prefix" as const },
-  { href: "/workbench/approvals", label: "Approvals", match: "prefix" as const },
-  { href: "/workbench/regwatch", label: "RegWatch", match: "prefix" as const },
+  { href: "/workbench/approvals", label: "Checker inbox", match: "prefix" as const },
+  { href: "/workbench/regwatch", label: "Regulation watch", match: "prefix" as const },
 ] as const;
 
 export function AppShell({ children }: { children: React.ReactNode }) {
@@ -33,20 +33,21 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     <div className="min-h-screen">
       <div className="border-b border-amber-200/80 bg-amber-50 px-4 py-2.5 text-sm text-amber-950">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-x-3 gap-y-1">
-          <span className="font-semibold tracking-wide">SYNTHETIC DATA</span>
+          <span className="font-semibold tracking-wide">DEMO DATA</span>
           <span className="rounded border border-amber-300/80 bg-white/80 px-1.5 py-0.5 text-[11px] font-semibold uppercase tracking-wide">
-            {mode === "api" ? "Live API" : "Local demo"}
-            {mode === "api" && apiOnline === true ? " · connected" : null}
-            {mode === "api" && apiOnline === false ? " · offline" : null}
+            {mode === "api" ? "Connected" : "Offline demo"}
+            {mode === "api" && apiOnline === true ? " · ready" : null}
+            {mode === "api" && apiOnline === false ? " · unavailable" : null}
           </span>
           <span className="text-amber-900/85">
-            Decision support for bank & GIFT IFSC trade-house officers — not a Customs portal,
-            payment engine, or autonomous approver.
+            Decision support for bank & GIFT IFSC trade officers — not a Customs portal, payment
+            system, or automatic approver. Sample files are labelled demo data.
           </span>
         </div>
         {error ? (
           <div className="mx-auto mt-1 max-w-7xl text-xs text-rose-800">
-            API error: {error}. Start the API on :8000 or set NEXT_PUBLIC_DATA_MODE=demo.
+            Cannot reach the review service right now. Try Refresh, or ask your platform contact if
+            this continues. ({error})
           </div>
         ) : null}
       </div>
@@ -61,7 +62,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               </span>
             </Link>
             <p className="mt-0.5 pl-10 text-[11px] uppercase tracking-[0.14em] text-[var(--tp-muted)]">
-              Officer workbench
+              Trade review desk
             </p>
           </div>
           <nav className="flex flex-wrap gap-1" aria-label="Primary">
@@ -106,7 +107,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 onClick={() => void seedSamples()}
                 className="cursor-pointer rounded-md border border-teal-700/30 bg-teal-50 px-3 py-1.5 text-xs font-medium text-teal-900 transition hover:bg-teal-100"
               >
-                Seed API samples
+                Load sample cases
               </button>
             ) : (
               <button
@@ -114,7 +115,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 onClick={() => void reset()}
                 className="cursor-pointer rounded-md border border-[var(--tp-line)] px-3 py-1.5 text-xs font-medium text-[var(--tp-muted)] transition hover:bg-slate-50"
               >
-                Reset demo data
+                Reset demo cases
               </button>
             )}
           </div>

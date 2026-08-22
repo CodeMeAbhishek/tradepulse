@@ -13,11 +13,11 @@ export function InvoiceReviewPanel({
       aria-labelledby="invoice-review-heading"
     >
       <h2 id="invoice-review-heading" className="text-lg font-semibold text-slate-50">
-        Invoice review & agent trace
+        Invoice review & check history
       </h2>
       <p className="mt-1 text-sm text-slate-400">
-        Split-screen evidence review. Trace shows claims, challenges and arbiter outcomes only —
-        never private chain-of-thought. Agent consensus is not a compliance approval.
+        Side-by-side evidence review. History shows what was proposed, challenged, and settled —
+        not private model reasoning. Automated agreement is never a compliance approval.
       </p>
 
       <div className="mt-4 grid gap-4 lg:grid-cols-2">
@@ -62,7 +62,7 @@ export function InvoiceReviewPanel({
                 </p>
                 <dl className="mt-2 space-y-2 text-sm">
                   <div>
-                    <dt className="text-slate-400">Extractor · {round.extractor.status}</dt>
+                    <dt className="text-slate-400">Extraction · {round.extractor.status}</dt>
                     <dd className="text-slate-200">
                       {round.extractor.claims.map((c) => (
                         <p key={`${round.round}-ex-${c.fieldPath}`}>
@@ -73,7 +73,7 @@ export function InvoiceReviewPanel({
                     </dd>
                   </div>
                   <div>
-                    <dt className="text-slate-400">Validator · {round.validator.status}</dt>
+                    <dt className="text-slate-400">Independent check · {round.validator.status}</dt>
                     <dd className="text-slate-200">
                       {round.validator.claims.map((c) => (
                         <p key={`${round.round}-va-${c.fieldPath}`}>
@@ -83,7 +83,7 @@ export function InvoiceReviewPanel({
                     </dd>
                   </div>
                   <div>
-                    <dt className="text-slate-400">Challenger · {round.challenger.status}</dt>
+                    <dt className="text-slate-400">Exception review · {round.challenger.status}</dt>
                     <dd className="text-slate-200">
                       {round.challenger.challenges.length === 0
                         ? "No challenges."
@@ -96,7 +96,7 @@ export function InvoiceReviewPanel({
                   </div>
                   <div>
                     <dt className="text-slate-400">
-                      Arbiter · {round.arbiter.status} ·{" "}
+                      Settled values · {round.arbiter.status} ·{" "}
                       {round.arbiter.agreement ? "Agreement" : "Disagreement"}
                     </dt>
                     <dd className="text-slate-100">{round.arbiter.decisionSummary}</dd>

@@ -54,8 +54,8 @@ def _fixture_root() -> Path | None:
 PACKS: list[SamplePack] = [
     SamplePack(
         pack_id="01-clean-match",
-        title="Clean match",
-        summary="Invoice and BoL quantities align — baseline happy path.",
+        title="Aligned invoice and Bill of Lading",
+        summary="Quantities and key fields match — a straightforward documentary review.",
         default_profile="POST_SHIPMENT_DOCUMENT_REVIEW",
         include_bol=True,
         files=[
@@ -66,7 +66,7 @@ PACKS: list[SamplePack] = [
     SamplePack(
         pack_id="02-qty-mismatch",
         title="Quantity mismatch",
-        summary="Invoice 500 vs BoL 350 cartons — forces REVIEW_REQUIRED (not a fraud verdict).",
+        summary="Invoice shows 500 cartons; Bill of Lading shows 350 — flagged for officer review (not a fraud finding).",
         default_profile="POST_SHIPMENT_DOCUMENT_REVIEW",
         include_bol=True,
         files=[
@@ -76,8 +76,8 @@ PACKS: list[SamplePack] = [
     ),
     SamplePack(
         pack_id="03-lei-exact",
-        title="Exact LEI on invoice",
-        summary="Document LEI matches GLEIF fixture — strong identity evidence path.",
+        title="Legal Entity ID on the invoice",
+        summary="Document carries a Legal Entity Identifier that matches the registry record — stronger identity evidence.",
         default_profile="POST_SHIPMENT_DOCUMENT_REVIEW",
         include_bol=False,
         files=[
@@ -86,8 +86,8 @@ PACKS: list[SamplePack] = [
     ),
     SamplePack(
         pack_id="04-name-only-review",
-        title="Name-only review",
-        summary="Name search only — must stay potential match / REVIEW, not identity proof.",
+        title="Name only — needs review",
+        summary="Only a name search lead — treat as a potential match for human review, not confirmed identity.",
         default_profile="POST_SHIPMENT_DOCUMENT_REVIEW",
         include_bol=False,
         files=[
@@ -96,8 +96,8 @@ PACKS: list[SamplePack] = [
     ),
     SamplePack(
         pack_id="06-price-anomaly",
-        title="Price anomaly",
-        summary="Price variance indicator for human review — not an auto-block.",
+        title="Price needs attention",
+        summary="Unit price sits outside the usual reference band — for officer review, not an automatic block.",
         default_profile="POST_SHIPMENT_DOCUMENT_REVIEW",
         include_bol=False,
         files=[
@@ -106,8 +106,8 @@ PACKS: list[SamplePack] = [
     ),
     SamplePack(
         pack_id="07-invoice-only",
-        title="Invoice only",
-        summary="No BoL — transport reconciliation shows NOT_AVAILABLE (not PASS).",
+        title="Invoice only (pre-shipment)",
+        summary="No Bill of Lading yet — transport comparison shows as not available (that is not a pass).",
         default_profile="INVOICE_ONLY_PRE_REVIEW",
         include_bol=False,
         files=[
@@ -116,8 +116,8 @@ PACKS: list[SamplePack] = [
     ),
     SamplePack(
         pack_id="08-public-lei-ready",
-        title="Public LEI pack",
-        summary="Invoice + BoL with public LEI string for identity ladder demo.",
+        title="Invoice and BoL with Legal Entity ID",
+        summary="Full packet with a Legal Entity Identifier for identity review practice.",
         default_profile="POST_SHIPMENT_DOCUMENT_REVIEW",
         include_bol=True,
         files=[

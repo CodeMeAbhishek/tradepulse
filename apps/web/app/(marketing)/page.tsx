@@ -6,24 +6,44 @@ import { BrandMark } from "@/components/BrandMark";
 import { useCountUp } from "@/lib/useCountUp";
 
 const STATS = [
-  { label: "Agent debate cap", value: 3, suffix: " rounds", hint: "Bounded swarm — never endless LLM loops" },
-  { label: "Identity ladder", value: 4, suffix: " states", hint: "Candidate → LEI → vLEI → unresolved" },
-  { label: "Kernel docs", value: 2, suffix: "+", hint: "Invoice required; BoL for post-shipment" },
-  { label: "AWS region", value: 1, suffix: " live", hint: "ap-south-1 ECS Fargate demo" },
+  {
+    label: "Review rounds",
+    value: 3,
+    suffix: " max",
+    hint: "Document checks stop after three passes — then an officer decides",
+  },
+  {
+    label: "Identity checks",
+    value: 4,
+    suffix: " levels",
+    hint: "From name match to legal-entity ID — never treat a guess as proof",
+  },
+  {
+    label: "Core documents",
+    value: 2,
+    suffix: "+",
+    hint: "Commercial invoice always; Bill of Lading when goods have shipped",
+  },
+  {
+    label: "Human decision",
+    value: 1,
+    suffix: " rule",
+    hint: "TradePulse prepares evidence — your desk makes the call",
+  },
 ] as const;
 
 const PILLARS = [
   {
-    title: "Bounded agentic extraction",
-    body: "Extract → validate → challenge → arbitrate. Max three rounds. Disagreements surface as REVIEW_REQUIRED — never averaged away.",
+    title: "Documents read with challenge built in",
+    body: "Fields are pulled from the packet, checked again, and challenged when something looks off. If checks disagree, the case is flagged for you — values are never silently averaged.",
   },
   {
-    title: "Identity confidence ladder",
-    body: "GLEIF name hits are candidates. Document LEI is stronger. vLEI is separate evidence. Fuzzy match is never identity proof.",
+    title: "Counterparty identity, step by step",
+    body: "A similar name is only a lead. A matching Legal Entity Identifier on the document is stronger. Verifiable role credentials (vLEI) are separate. Fuzzy name match is never identity proof.",
   },
   {
-    title: "Examiner case pack",
-    body: "Maker–checker handoff with evidence, not an AI approval badge. Decision support for Head of Trade Finance Ops.",
+    title: "Maker–checker ready handoff",
+    body: "Download an examiner pack with evidence for dual control. This is decision support for Trade Finance Ops — not an AI approval stamp.",
   },
 ] as const;
 
@@ -104,7 +124,9 @@ export default function LandingPage() {
           <motion.div className="flex items-center gap-4" {...fade}>
             <BrandMark className="h-16 w-16 sm:h-20 sm:w-20" />
             <div>
-              <p className="tp-label text-[var(--tp-brand-orange)]">GIFT IFSC · Track 1 Agentic AI</p>
+              <p className="tp-label text-[var(--tp-brand-orange)]">
+                For bank & GIFT IFSC trade desks
+              </p>
               <h1 className="font-display text-4xl font-semibold tracking-tight text-[var(--tp-navy)] sm:text-5xl md:text-6xl">
                 TradePulse
               </h1>
@@ -114,26 +136,27 @@ export default function LandingPage() {
             className="mt-6 max-w-2xl text-xl font-semibold leading-snug text-[var(--tp-ink)] sm:text-2xl"
             {...fadeDelay(0.08)}
           >
-            Documentary trade-compliance decision support — not autopilot approval.
+            Documentary trade review support — your officers decide, not the software.
           </motion.p>
           <motion.p
             className="mt-4 max-w-xl text-base leading-relaxed text-[var(--tp-muted)] sm:text-lg"
             {...fadeDelay(0.16)}
           >
-            For the Head of Trade Finance Ops at a GIFT City IBU: turn invoice and transport packs
-            into one evidence-backed case, with an identity ladder and examiner handoff. Humans
-            decide. Missing data never becomes PASS.
+            Built for Trade Finance Operations and compliance officers: turn invoice and transport
+            packs into one evidence-backed case, check counterparty identity carefully, and hand off
+            a clear pack for maker–checker. Missing information stays open — it is never treated as a
+            pass.
           </motion.p>
           <motion.div className="mt-8 flex flex-wrap gap-3" {...fadeDelay(0.24)}>
             <Link href="/workbench" className="tp-btn-primary px-5 py-3 text-base">
-              Enter workbench
+              Open review desk
             </Link>
             <Link href="/workbench/cases/new" className="tp-btn-secondary px-5 py-3 text-base">
-              New case with samples
+              Start a new case
             </Link>
           </motion.div>
           <motion.p className="mt-4 text-xs text-[var(--tp-muted)]" {...fadeDelay(0.3)}>
-            Prototype · SYNTHETIC_DEMO fixtures labelled · Live on AWS ap-south-1
+            Prototype environment · Sample documents are clearly labelled as demo data
           </motion.p>
         </div>
       </section>
@@ -150,11 +173,12 @@ export default function LandingPage() {
         <div className="mx-auto max-w-6xl space-y-14 px-4 py-20 sm:px-6">
           <div className="max-w-2xl">
             <h2 className="font-display text-3xl font-semibold text-[var(--tp-navy)]">
-              Built for examiners, not black boxes
+              Built for examiners under time pressure
             </h2>
             <p className="mt-3 text-[var(--tp-muted)] leading-relaxed">
-              Manual packs miss quantity mismatches and identity ambiguity. Commodity AI checkers
-              overclaim. TradePulse keeps failure modes honest and audit-ready.
+              Manual packs miss quantity mismatches and unclear counterparties. Tools that
+              over-promise create audit risk. TradePulse keeps exceptions visible and decisions with
+              your desk.
             </p>
           </div>
 
@@ -176,12 +200,12 @@ export default function LandingPage() {
 
           <div className="max-w-2xl">
             <h2 className="font-display text-3xl font-semibold text-[var(--tp-navy)]">
-              What it never claims
+              What TradePulse never claims
             </h2>
             <ul className="mt-3 list-disc space-y-2 pl-5 text-[var(--tp-muted)]">
-              <li>Physical goods inside a container</li>
-              <li>Customs clearance or ICEGATE filing</li>
-              <li>AI approval, rejection, or confirmed sanctions without authoritative evidence</li>
+              <li>What is physically inside a container</li>
+              <li>Customs clearance or government filing on your behalf</li>
+              <li>That software approved, rejected, or confirmed a sanctions hit without your review</li>
             </ul>
           </div>
 
@@ -189,22 +213,22 @@ export default function LandingPage() {
             <BrandMark className="h-14 w-14" />
             <div className="min-w-0 flex-1">
               <h2 className="font-display text-2xl font-semibold text-[var(--tp-navy)]">
-                Try the officer workbench
+                Open the review desk
               </h2>
               <p className="mt-1 text-sm text-[var(--tp-muted)]">
-                Open the queue, pick a labeled sample pack from the cloud library, or upload your own
-                invoice / BoL — then review the identity ladder and examiner pack.
+                Work the case queue, choose a labelled demo packet or upload your own invoice and Bill
+                of Lading, then review identity and findings before maker–checker action.
               </p>
             </div>
             <Link href="/workbench" className="tp-btn-primary shrink-0">
-              Enter workbench
+              Open review desk
             </Link>
           </div>
         </div>
       </section>
 
       <footer className="border-t border-[var(--tp-line)] px-4 py-8 text-center text-sm text-[var(--tp-muted)]">
-        TradePulse · Documentary trade-compliance decision support · GIFT IFSC prototype
+        TradePulse · Documentary trade review support for bank and GIFT IFSC officers · Prototype
       </footer>
     </main>
   );

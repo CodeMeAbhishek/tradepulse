@@ -8,11 +8,11 @@ export function RegWatchPanel({ events }: { events: RegWatchEvent[] }) {
       aria-labelledby="regwatch-heading"
     >
       <h2 id="regwatch-heading" className="text-lg font-semibold text-slate-50">
-        RegWatch — source registry & replay gate
+        Regulation watch — proposed updates
       </h2>
       <p className="mt-1 text-sm text-slate-400">
-        LLM/system output may propose diffs only. Human approval is required before a rule/data
-        version becomes active or replay runs. Prior result versions are preserved.
+        Suggested rule or data changes need human approval before they become active or before a
+        replay runs. Earlier case results stay on record.
       </p>
 
       <ul className="mt-4 space-y-4">

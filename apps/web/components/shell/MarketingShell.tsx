@@ -23,7 +23,7 @@ export function MarketingShell({ children }: { children: React.ReactNode }) {
               How it works
             </a>
             <Link href="/workbench" className="tp-btn-primary text-sm">
-              Enter workbench
+              Open review desk
             </Link>
           </nav>
         </div>

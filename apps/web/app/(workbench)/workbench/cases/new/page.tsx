@@ -75,8 +75,8 @@ export default function NewCasePage() {
       <div>
         <h1 className="font-display text-3xl font-semibold text-[var(--tp-navy)]">New trade case</h1>
         <p className="mt-1 text-sm text-[var(--tp-muted)]">
-          Build a documentary packet. Commercial invoice is required; Bill of Lading is needed for
-          post-shipment reconciliation. Pick a labeled sample from the cloud library or upload your
+          Assemble the documentary packet. A commercial invoice is required; a Bill of Lading is
+          needed when you are reviewing after shipment. Choose a labelled demo packet or upload your
           own files.
         </p>
       </div>
@@ -93,7 +93,7 @@ export default function NewCasePage() {
             let useBol = includeBol || Boolean(bol);
 
             if (mode === "api" && docSource === "library") {
-              if (!selectedPack) throw new Error("Select a sample pack from the library");
+              if (!selectedPack) throw new Error("Select a demo packet from the library");
               inv = null;
               bol = null;
               for (const f of selectedPack.files) {
@@ -167,7 +167,7 @@ export default function NewCasePage() {
                 )}
                 onClick={() => setDocSource("library")}
               >
-                Sample library (cloud)
+                Sample library
               </button>
               <button
                 type="button"
@@ -179,15 +179,15 @@ export default function NewCasePage() {
                 )}
                 onClick={() => setDocSource("upload")}
               >
-                Upload files
+                Upload documents
               </button>
             </div>
 
             {docSource === "library" ? (
               <div className="space-y-2">
                 <p className="text-xs text-[var(--tp-muted)]">
-                  SYNTHETIC_DEMO packs hosted with the API (same idea as a Canva project library).
-                  Jury can pick a scenario without local files.
+                  Ready-made demo packets for training and walkthroughs. Each is labelled demo data —
+                  not a live customer file.
                 </p>
                 {packsError ? <p className="text-xs text-rose-700">{packsError}</p> : null}
                 <div className="grid gap-2 sm:grid-cols-2">
@@ -209,7 +209,7 @@ export default function NewCasePage() {
                           {p.title}
                         </span>
                         <span className="mt-1 block text-[11px] font-semibold uppercase tracking-wide text-[var(--tp-brand-orange)]">
-                          {p.data_label}
+                          Demo sample
                         </span>
                         <span className="mt-1 block text-xs leading-snug text-[var(--tp-muted)]">
                           {p.summary}
@@ -219,14 +219,14 @@ export default function NewCasePage() {
                   })}
                 </div>
                 {!packs.length && !packsError ? (
-                  <p className="text-xs text-[var(--tp-muted)]">Loading sample packs…</p>
+                  <p className="text-xs text-[var(--tp-muted)]">Loading demo packets…</p>
                 ) : null}
               </div>
             ) : (
               <div className="space-y-3">
                 <p className="text-xs text-[var(--tp-muted)]">
-                  Upload invoice and/or Bill of Lading (.txt or .pdf). Extraction uses the configured
-                  document pipeline.
+                  Upload a commercial invoice and, if needed, a Bill of Lading (.txt or .pdf).
+                  TradePulse will extract fields for your review.
                 </p>
                 <label className="block text-sm">
                   <span className="font-medium text-[var(--tp-navy)]">Commercial invoice</span>
@@ -263,8 +263,8 @@ export default function NewCasePage() {
             <span>
               <span className="font-medium text-[var(--tp-navy)]">Include Bill of Lading</span>
               <span className="mt-0.5 block text-[var(--tp-muted)]">
-                Needed for post-shipment transport checks. Off for invoice-only — transport
-                reconciliation shows as not available (not a pass).
+                Needed for post-shipment transport checks. Turn off for invoice-only review —
+                transport comparison then shows as not available (that is not a pass).
               </span>
             </span>
           </label>
@@ -272,7 +272,7 @@ export default function NewCasePage() {
 
         {err ? <p className="text-sm text-rose-700">{err}</p> : null}
         <button type="submit" disabled={busy} className="tp-btn-primary disabled:opacity-50">
-          {busy ? "Creating & processing…" : "Create case & open workbench"}
+          {busy ? "Preparing case for review…" : "Create case & open for review"}
         </button>
       </form>
     </div>

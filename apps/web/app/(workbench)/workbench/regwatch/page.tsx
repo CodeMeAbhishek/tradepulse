@@ -27,10 +27,12 @@ export default function RegWatchPage() {
   return (
     <div className="space-y-4">
       <div>
-        <h1 className="font-display text-3xl font-semibold text-[var(--tp-navy)]">RegWatch</h1>
+        <h1 className="font-display text-3xl font-semibold text-[var(--tp-navy)]">
+          Regulation watch
+        </h1>
         <p className="mt-1 max-w-2xl text-sm text-[var(--tp-muted)]">
-          Source registry and proposal gate. Systems may summarise; humans approve before rule or
-          data activation. Propose is never the same as activate.
+          Proposed checklist or list updates need an officer’s approval before they go live. A
+          proposal is never the same as activation. Earlier case results stay on record.
         </p>
       </div>
 

@@ -28,11 +28,20 @@ type TabId = (typeof TABS)[number]["id"];
 
 function agentStepTitle(agent: string): string {
   const key = agent.trim().toLowerCase();
-  if (key.includes("extract")) return "Extracted fields";
-  if (key.includes("valid")) return "Checked fields";
-  if (key.includes("challeng")) return "Flagged issues";
+  if (key.includes("extract")) return "Document extraction";
+  if (key.includes("valid")) return "Independent field check";
+  if (key.includes("challeng")) return "Exception review";
   if (key.includes("arbit")) return "Settled values";
+  if (key.includes("reconcil") || key.includes("cross")) return "Cross-document check";
   return agent;
+}
+
+function agentStatusLabel(status: string): string {
+  const key = status.trim().toUpperCase();
+  if (key === "COMPLETE" || key === "DONE") return "Done";
+  if (key === "REVIEW_REQUIRED") return "Needs officer review";
+  if (key === "QUEUED") return "Queued";
+  return status.replaceAll("_", " ");
 }
 
 function buildBrief(live: TradeCase): { bullets: string[]; cta: string } {
@@ -90,8 +99,8 @@ function buildDemoExaminerPack(live: TradeCase) {
     safety_notes: [
       "TradePulse is decision-support software. It does not approve, reject, clear, sanction, or find fraud.",
       "Fuzzy name matching is never identity proof.",
-      "DATA_UNAVAILABLE, NOT_AVAILABLE, and NOT_APPLICABLE must never be treated as PASS.",
-      "Agent consensus is an extraction-confidence signal only, never a compliance conclusion.",
+      "If information is missing or not applicable, that must never be treated as a pass.",
+      "Automated agreement on extracted fields is a confidence signal only — never a compliance conclusion.",
       "Checker approval cannot precede maker approval.",
     ],
     case: {
@@ -268,7 +277,7 @@ export function CaseWorkbench({ caseId }: { caseId: string }) {
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="min-w-0">
             <p className="text-[11px] uppercase tracking-[0.14em] text-[var(--tp-muted)]">
-              Case workbench {mode === "api" ? "· live API" : "· local demo"}
+              Case review {mode === "api" ? "· connected" : "· demo"}
             </p>
             <h1 className="mt-1 text-2xl font-semibold text-[var(--tp-navy)]">{live.reference}</h1>
             <p className="mt-1 text-[var(--tp-ink)]">{live.counterparty}</p>
@@ -552,8 +561,8 @@ export function CaseWorkbench({ caseId }: { caseId: string }) {
         <section className="tp-card p-5">
           <h2 className="text-sm font-semibold text-[var(--tp-navy)]">How we checked the documents</h2>
           <p className="mb-4 mt-1 text-sm text-[var(--tp-muted)]">
-            Up to three review rounds. We keep short claims and challenges only — not private model
-            reasoning. Agreement between steps is never a compliance approval.
+            Up to three review passes. You see short findings only — not private model reasoning.
+            Agreement between steps is never a compliance approval.
           </p>
           <ol className="space-y-3">
             {live.agentTrace.map((step, idx) => (
@@ -566,7 +575,7 @@ export function CaseWorkbench({ caseId }: { caseId: string }) {
                     {agentStepTitle(step.agent)}
                   </span>
                   <span className="text-[11px] font-medium uppercase tracking-wide text-[var(--tp-muted)]">
-                    {step.status}
+                    {agentStatusLabel(step.status)}
                   </span>
                 </div>
                 <p className="mt-1 text-sm leading-relaxed">{step.summary}</p>

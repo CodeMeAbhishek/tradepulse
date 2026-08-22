@@ -106,7 +106,7 @@ function buildGraph(c: TradeCase): { nodes: GraphNode[]; edges: GraphEdge[] } {
         `Requirement: ${d.policy}`,
         `Provided: ${d.provided ? "yes" : "no"}`,
         `Blocks pack if missing: ${d.blocker ? "yes" : "no"}`,
-        "Text extraction may use Textract or local PDF parse; LLM output stays untrusted until validated.",
+        "Text is read from the document for review; automated suggestions stay unverified until an officer accepts them.",
       ],
     });
     edges.push({ from: id, to: "case" });

@@ -33,11 +33,11 @@ export function DocumentUploadPanel({
       <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
         <div>
           <h2 id="upload-heading" className="text-lg font-semibold text-slate-50">
-            Upload & document policy checklist
+            Documents & checklist
           </h2>
           <p className="mt-1 text-sm text-slate-400">
-            Checklist states come from configured profile fixtures. Missing optional documents do not
-            block a case. Commercial Invoice is always required.
+            Checklist follows the transaction profile you select. Optional documents do not block a
+            case. Commercial invoice is always required.
           </p>
         </div>
         <ProfileBadge profile={profile} />
@@ -60,7 +60,7 @@ export function DocumentUploadPanel({
 
       <div className="mb-4">
         <label className="block text-sm text-slate-300">
-          Multi-file upload (local demo only — not sent to external APIs)
+          Multi-file upload (demo — files stay in this session)
           <input
             type="file"
             multiple
