@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useRef, useState } from "react";
 import { motion, useReducedMotion } from "motion/react";
 import { useDemo } from "@/lib/demo/DemoProvider";
 import { RiskChip, WorkflowChip } from "@/components/ui/StatusChips";
@@ -10,6 +11,23 @@ import { useCountUp } from "@/lib/useCountUp";
 export default function OverviewPage() {
   const { cases, ready, mode, seedSamples, apiOnline, error } = useDemo();
   const reduce = useReducedMotion();
+  const [seeding, setSeeding] = useState(false);
+  const autoSeedTried = useRef(false);
+
+  // Prototype API is in-memory: after redeploy the queue is empty. Auto-load a
+  // varied sample desk once so the overview is never a barren zero state.
+  useEffect(() => {
+    if (!ready || mode !== "api" || apiOnline === false || cases.length > 0) return;
+    if (autoSeedTried.current || seeding) return;
+    autoSeedTried.current = true;
+    setSeeding(true);
+    void seedSamples()
+      .catch(() => {
+        /* empty state CTA remains available */
+      })
+      .finally(() => setSeeding(false));
+  }, [ready, mode, apiOnline, cases.length, seedSamples, seeding]);
+
   if (!ready) return <p className="text-sm text-[var(--tp-muted)]">Loading your review desk…</p>;
 
   const pending = cases.filter((c) => c.workflow === "PENDING_MAKER").length;
@@ -20,7 +38,12 @@ export default function OverviewPage() {
       c.riskRoute === "REVIEW_REQUIRED" ||
       c.riskRoute === "HIGH_RISK_ESCALATION",
   ).length;
-  const attention = [...cases].sort((a, b) => b.updatedAt.localeCompare(a.updatedAt)).slice(0, 4);
+  const attention = [...cases].sort((a, b) => b.updatedAt.localeCompare(a.updatedAt)).slice(0, 5);
+
+  const runSeed = () => {
+    setSeeding(true);
+    void seedSamples().finally(() => setSeeding(false));
+  };
 
   return (
     <motion.div
@@ -41,14 +64,14 @@ export default function OverviewPage() {
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
-          {mode === "api" && cases.length === 0 ? (
+          {mode === "api" ? (
             <button
               type="button"
-              onClick={() => void seedSamples()}
+              onClick={runSeed}
               className="tp-btn-secondary"
-              disabled={apiOnline === false}
+              disabled={apiOnline === false || seeding}
             >
-              Load sample cases
+              {seeding ? "Loading sample desk…" : "Load sample cases"}
             </button>
           ) : null}
           <Link href="/workbench/cases/new" className="tp-btn-primary">
@@ -82,9 +105,31 @@ export default function OverviewPage() {
           </Link>
         </div>
         {attention.length === 0 ? (
-          <p className="px-4 py-8 text-center text-sm text-[var(--tp-muted)]">
-            No cases yet. Open a new case or load sample cases to begin.
-          </p>
+          <div className="px-4 py-10 text-center">
+            <p className="text-base font-semibold text-[var(--tp-navy)]">
+              {seeding ? "Preparing a sample review desk…" : "No cases on this desk yet"}
+            </p>
+            <p className="mx-auto mt-2 max-w-md text-sm text-[var(--tp-muted)]">
+              {seeding
+                ? "Loading varied demo packets (different counterparties, corridors, and review profiles)."
+                : "The live demo store resets when the review service restarts. Load sample cases to populate a working queue, or open a new case."}
+            </p>
+            {!seeding && mode === "api" ? (
+              <div className="mt-5 flex flex-wrap items-center justify-center gap-2">
+                <button
+                  type="button"
+                  onClick={runSeed}
+                  className="tp-btn-primary"
+                  disabled={apiOnline === false}
+                >
+                  Load sample cases
+                </button>
+                <Link href="/workbench/cases/new" className="tp-btn-secondary">
+                  Open new case
+                </Link>
+              </div>
+            ) : null}
+          </div>
         ) : (
           <ul className="divide-y divide-[var(--tp-line)]">
             {attention.map((c, i) => (

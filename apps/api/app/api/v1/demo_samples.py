@@ -29,6 +29,9 @@ class SamplePack(BaseModel):
     data_label: str = "SYNTHETIC_DEMO"
     default_profile: str
     include_bol: bool = True
+    # Officer-facing defaults aligned to the fixture documents (not free-form fiction).
+    suggested_counterparty: str
+    suggested_corridor: str
     files: list[SampleFile] = Field(default_factory=list)
 
 
@@ -58,6 +61,8 @@ PACKS: list[SamplePack] = [
         summary="Quantities and key fields match — a straightforward documentary review.",
         default_profile="POST_SHIPMENT_DOCUMENT_REVIEW",
         include_bol=True,
+        suggested_counterparty="Amit Trading Co.",
+        suggested_corridor="IN-AE",
         files=[
             SampleFile(role="commercial_invoice", filename="commercial_invoice.txt", media_type="text/plain"),
             SampleFile(role="bill_of_lading", filename="bill_of_lading.txt", media_type="text/plain"),
@@ -69,6 +74,8 @@ PACKS: list[SamplePack] = [
         summary="Invoice shows 500 cartons; Bill of Lading shows 350 — flagged for officer review (not a fraud finding).",
         default_profile="POST_SHIPMENT_DOCUMENT_REVIEW",
         include_bol=True,
+        suggested_counterparty="Amit Trading Co.",
+        suggested_corridor="IN-AE",
         files=[
             SampleFile(role="commercial_invoice", filename="commercial_invoice.txt", media_type="text/plain"),
             SampleFile(role="bill_of_lading", filename="bill_of_lading.txt", media_type="text/plain"),
@@ -80,6 +87,8 @@ PACKS: list[SamplePack] = [
         summary="Document carries a Legal Entity Identifier that matches the registry record — stronger identity evidence.",
         default_profile="POST_SHIPMENT_DOCUMENT_REVIEW",
         include_bol=False,
+        suggested_counterparty="Amit Trading Co.",
+        suggested_corridor="IN-AE",
         files=[
             SampleFile(role="commercial_invoice", filename="commercial_invoice.txt", media_type="text/plain"),
         ],
@@ -90,6 +99,8 @@ PACKS: list[SamplePack] = [
         summary="Only a name search lead — treat as a potential match for human review, not confirmed identity.",
         default_profile="POST_SHIPMENT_DOCUMENT_REVIEW",
         include_bol=False,
+        suggested_counterparty="Amit Trading Company Private Limited",
+        suggested_corridor="IN-AE",
         files=[
             SampleFile(role="commercial_invoice", filename="commercial_invoice.txt", media_type="text/plain"),
         ],
@@ -100,6 +111,8 @@ PACKS: list[SamplePack] = [
         summary="Unit price sits outside the usual reference band — for officer review, not an automatic block.",
         default_profile="POST_SHIPMENT_DOCUMENT_REVIEW",
         include_bol=False,
+        suggested_counterparty="Amit Trading Co.",
+        suggested_corridor="IN-AE",
         files=[
             SampleFile(role="commercial_invoice", filename="commercial_invoice.txt", media_type="text/plain"),
         ],
@@ -110,6 +123,8 @@ PACKS: list[SamplePack] = [
         summary="No Bill of Lading yet — transport comparison shows as not available (that is not a pass).",
         default_profile="INVOICE_ONLY_PRE_REVIEW",
         include_bol=False,
+        suggested_counterparty="Amit Trading Co.",
+        suggested_corridor="IN-NL",
         files=[
             SampleFile(role="commercial_invoice", filename="commercial_invoice.txt", media_type="text/plain"),
         ],
@@ -120,6 +135,8 @@ PACKS: list[SamplePack] = [
         summary="Full packet with a Legal Entity Identifier for identity review practice.",
         default_profile="POST_SHIPMENT_DOCUMENT_REVIEW",
         include_bol=True,
+        suggested_counterparty="Tata Steel Limited",
+        suggested_corridor="IN-AE",
         files=[
             SampleFile(role="commercial_invoice", filename="commercial_invoice.txt", media_type="text/plain"),
             SampleFile(role="bill_of_lading", filename="bill_of_lading.txt", media_type="text/plain"),

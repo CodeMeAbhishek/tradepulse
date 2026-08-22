@@ -24,14 +24,16 @@ type SamplePack = {
   data_label: string;
   default_profile: string;
   include_bol: boolean;
+  suggested_counterparty: string;
+  suggested_corridor: string;
   files: Array<{ role: string; filename: string; media_type: string }>;
 };
 
 export default function NewCasePage() {
   const { create, mode } = useDemo();
   const router = useRouter();
-  const [counterparty, setCounterparty] = useState("Amit Trading Co.");
-  const [corridor, setCorridor] = useState("IN-AE");
+  const [counterparty, setCounterparty] = useState("");
+  const [corridor, setCorridor] = useState("");
   const [profile, setProfile] = useState<Profile>("POST_SHIPMENT_DOCUMENT_REVIEW");
   const [includeBol, setIncludeBol] = useState(true);
   const [invoiceFile, setInvoiceFile] = useState<File | null>(null);
@@ -44,7 +46,11 @@ export default function NewCasePage() {
   const [err, setErr] = useState<string | null>(null);
 
   useEffect(() => {
-    if (mode !== "api") return;
+    if (mode !== "api") {
+      setCounterparty("Amit Trading Co.");
+      setCorridor("IN-AE");
+      return;
+    }
     let cancelled = false;
     void api
       .listSamplePacks()
@@ -66,6 +72,8 @@ export default function NewCasePage() {
 
   useEffect(() => {
     if (!selectedPack || docSource !== "library") return;
+    setCounterparty(selectedPack.suggested_counterparty);
+    setCorridor(selectedPack.suggested_corridor);
     setProfile(selectedPack.default_profile as Profile);
     setIncludeBol(selectedPack.include_bol);
   }, [selectedPack, docSource]);
@@ -121,38 +129,6 @@ export default function NewCasePage() {
             .finally(() => setBusy(false));
         }}
       >
-        <label className="block text-sm">
-          <span className="font-medium text-[var(--tp-navy)]">Counterparty</span>
-          <input
-            className="mt-1 w-full rounded-lg border border-[var(--tp-line)] px-3 py-2"
-            value={counterparty}
-            onChange={(e) => setCounterparty(e.target.value)}
-            required
-          />
-        </label>
-        <label className="block text-sm">
-          <span className="font-medium text-[var(--tp-navy)]">Corridor</span>
-          <input
-            className="mt-1 w-full rounded-lg border border-[var(--tp-line)] px-3 py-2"
-            value={corridor}
-            onChange={(e) => setCorridor(e.target.value)}
-          />
-        </label>
-        <label className="block text-sm">
-          <span className="font-medium text-[var(--tp-navy)]">Transaction profile</span>
-          <select
-            className="mt-1 w-full rounded-lg border border-[var(--tp-line)] px-3 py-2"
-            value={profile}
-            onChange={(e) => setProfile(e.target.value as Profile)}
-          >
-            {PROFILES.map((p) => (
-              <option key={p} value={p}>
-                {profileLabel(p)}
-              </option>
-            ))}
-          </select>
-        </label>
-
         {mode === "api" ? (
           <fieldset className="space-y-3 rounded-lg border border-[var(--tp-line)] p-3">
             <legend className="px-1 text-sm font-medium text-[var(--tp-navy)]">Documents</legend>
@@ -186,8 +162,8 @@ export default function NewCasePage() {
             {docSource === "library" ? (
               <div className="space-y-2">
                 <p className="text-xs text-[var(--tp-muted)]">
-                  Ready-made demo packets for training and walkthroughs. Each is labelled demo data —
-                  not a live customer file.
+                  Pick a demo packet — counterparty, corridor, and profile update from that packet’s
+                  documents.
                 </p>
                 {packsError ? <p className="text-xs text-rose-700">{packsError}</p> : null}
                 <div className="grid gap-2 sm:grid-cols-2">
@@ -210,6 +186,9 @@ export default function NewCasePage() {
                         </span>
                         <span className="mt-1 block text-[11px] font-semibold uppercase tracking-wide text-[var(--tp-brand-orange)]">
                           Demo sample
+                        </span>
+                        <span className="mt-1 block font-mono text-[11px] text-[var(--tp-navy)]">
+                          {p.suggested_counterparty} · {p.suggested_corridor}
                         </span>
                         <span className="mt-1 block text-xs leading-snug text-[var(--tp-muted)]">
                           {p.summary}
@@ -250,6 +229,46 @@ export default function NewCasePage() {
             )}
           </fieldset>
         ) : null}
+
+        <label className="block text-sm">
+          <span className="font-medium text-[var(--tp-navy)]">Counterparty</span>
+          <input
+            className="mt-1 w-full rounded-lg border border-[var(--tp-line)] px-3 py-2"
+            value={counterparty}
+            onChange={(e) => setCounterparty(e.target.value)}
+            readOnly={mode === "api" && docSource === "library"}
+            required
+          />
+          {mode === "api" && docSource === "library" ? (
+            <span className="mt-1 block text-xs text-[var(--tp-muted)]">
+              Taken from the selected demo packet (matches the invoice seller).
+            </span>
+          ) : null}
+        </label>
+        <label className="block text-sm">
+          <span className="font-medium text-[var(--tp-navy)]">Corridor</span>
+          <input
+            className="mt-1 w-full rounded-lg border border-[var(--tp-line)] px-3 py-2"
+            value={corridor}
+            onChange={(e) => setCorridor(e.target.value)}
+            readOnly={mode === "api" && docSource === "library"}
+          />
+        </label>
+        <label className="block text-sm">
+          <span className="font-medium text-[var(--tp-navy)]">Transaction profile</span>
+          <select
+            className="mt-1 w-full rounded-lg border border-[var(--tp-line)] px-3 py-2"
+            value={profile}
+            onChange={(e) => setProfile(e.target.value as Profile)}
+            disabled={mode === "api" && docSource === "library"}
+          >
+            {PROFILES.map((p) => (
+              <option key={p} value={p}>
+                {profileLabel(p)}
+              </option>
+            ))}
+          </select>
+        </label>
 
         {docSource === "upload" || mode !== "api" ? (
           <label className="flex items-start gap-2 text-sm">

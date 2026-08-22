@@ -18,6 +18,8 @@ def test_list_sample_packs_when_fixtures_present() -> None:
         return
     assert any(p["pack_id"] == "01-clean-match" for p in packs)
     first = packs[0]
+    assert first.get("suggested_counterparty")
+    assert first.get("suggested_corridor")
     file_meta = first["files"][0]
     dl = client.get(f"/api/v1/demo/sample-packs/{first['pack_id']}/files/{file_meta['filename']}")
     assert dl.status_code == 200

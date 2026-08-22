@@ -140,7 +140,48 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
           persistLocal(resetDemoData());
           return;
         }
-        // Clean invoice-only
+        // Prefer real library packs so the desk shows varied counterparties / corridors.
+        // Fallback to two synthetic fixtures if the sample library is unavailable.
+        const DESK_PACK_IDS = [
+          "01-clean-match",
+          "02-qty-mismatch",
+          "04-name-only-review",
+          "07-invoice-only",
+          "08-public-lei-ready",
+        ] as const;
+
+        try {
+          const packs = await api.listSamplePacks();
+          const byId = new Map(packs.map((p) => [p.pack_id, p]));
+          const chosen = DESK_PACK_IDS.map((id) => byId.get(id)).filter(
+            (p): p is NonNullable<typeof p> => Boolean(p),
+          );
+
+          if (chosen.length > 0) {
+            for (const pack of chosen) {
+              const record = await api.createCase({
+                transaction_profile: pack.default_profile,
+                corridor: pack.suggested_corridor,
+                assignee: pack.suggested_counterparty,
+              });
+              for (const f of pack.files) {
+                const file = await api.fetchSampleFile(pack.pack_id, f.filename);
+                await api.uploadDocument(
+                  record.case_id,
+                  file,
+                  file.name,
+                  f.role === "bill_of_lading" ? "bill_of_lading" : "commercial_invoice",
+                );
+              }
+              await api.processCase(record.case_id);
+            }
+            await refresh();
+            return;
+          }
+        } catch {
+          // Fall through to fixture seed below.
+        }
+
         const clean = await api.createCase({
           transaction_profile: "INVOICE_ONLY_PRE_REVIEW",
           corridor: "IN-AE",
@@ -156,7 +197,6 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
         );
         await api.processCase(clean.case_id);
 
-        // Mismatch post-shipment
         const mismatch = await api.createCase({
           transaction_profile: "POST_SHIPMENT_DOCUMENT_REVIEW",
           corridor: "IN-AE",

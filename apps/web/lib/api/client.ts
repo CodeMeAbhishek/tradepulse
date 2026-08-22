@@ -274,6 +274,8 @@ export const api = {
         data_label: string;
         default_profile: string;
         include_bol: boolean;
+        suggested_counterparty: string;
+        suggested_corridor: string;
         files: Array<{ role: string; filename: string; media_type: string }>;
       }>
     >("/demo/sample-packs"),
