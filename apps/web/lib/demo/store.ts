@@ -53,7 +53,10 @@ export interface Finding {
   statusLabel: string;
   summary: string;
   action: string;
+  /** Legacy single-line provenance label. */
   source: string;
+  /** Clickable verification sources when available. */
+  sources?: Array<{ label: string; platform: string | null; url: string | null }>;
 }
 
 export interface IdentityCard {

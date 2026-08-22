@@ -16,6 +16,7 @@ import type {
   TradeCase,
   WorkflowState,
 } from "@/lib/demo/store";
+import { resolveSourceLinks } from "@/lib/sources/resolve";
 
 function asProfile(p: string): Profile {
   const allowed: Profile[] = [
@@ -144,6 +145,7 @@ export function statusLabel(s: string): string {
 }
 
 function mapFinding(f: RuleResult): Finding {
+  const sources = resolveSourceLinks(f.data_sources);
   return {
     id: f.check_id,
     title: FINDING_TITLES[f.check_id] || f.check_id.replaceAll("_", " "),
@@ -152,11 +154,15 @@ function mapFinding(f: RuleResult): Finding {
     summary: f.reason,
     action: f.recommended_action || "Human review required when status is not Clear.",
     source:
-      f.data_sources
-        .map((s) => [s.source_id, s.snapshot_id || s.version].filter(Boolean).join(" · "))
-        .join(" | ") ||
+      sources.map((s) => s.label).join(" | ") ||
       f.rule_reference ||
       f.rule_pack_version,
+    sources:
+      sources.length > 0
+        ? sources
+        : f.rule_reference
+          ? [{ label: f.rule_reference, platform: null, url: null }]
+          : undefined,
   };
 }
 

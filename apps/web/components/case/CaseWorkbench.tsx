@@ -13,6 +13,7 @@ import {
 } from "@/components/case/IdentityLadder";
 import { RiskChip, ToneChip, WorkflowChip } from "@/components/ui/StatusChips";
 import { profileLabel, type Finding, type TradeCase } from "@/lib/demo/store";
+import { parseLegacySourceString } from "@/lib/sources/resolve";
 
 const TABS = [
   { id: "investigate", label: "Investigate" },
@@ -385,7 +386,7 @@ export function CaseWorkbench({ caseId }: { caseId: string }) {
                 </p>
                 <button
                   type="button"
-                  className="mt-3 self-start text-xs font-medium text-[var(--tp-muted)] underline-offset-2 hover:underline"
+                  className="mt-3 self-start cursor-pointer text-xs font-medium text-[var(--tp-muted)] underline-offset-2 hover:underline"
                   onClick={() =>
                     setShowEvidence((prev) => ({ ...prev, [f.id]: !prev[f.id] }))
                   }
@@ -393,7 +394,35 @@ export function CaseWorkbench({ caseId }: { caseId: string }) {
                   {showEvidence[f.id] ? "Hide evidence source" : "Show evidence source"}
                 </button>
                 {showEvidence[f.id] ? (
-                  <p className="mt-1 font-mono text-[11px] text-[var(--tp-muted)]">{f.source}</p>
+                  <div className="mt-2 space-y-1.5">
+                    {(f.sources && f.sources.length > 0
+                      ? f.sources
+                      : parseLegacySourceString(f.source)
+                    ).map((src) => (
+                      <div key={src.label} className="rounded-md bg-[var(--tp-bg)] px-2.5 py-2">
+                        {src.platform ? (
+                          <p className="text-[10px] font-semibold uppercase tracking-wide text-[var(--tp-muted)]">
+                            {src.platform}
+                            {src.url ? " · open to verify" : " · no public URL"}
+                          </p>
+                        ) : null}
+                        {src.url ? (
+                          <a
+                            href={src.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="mt-0.5 inline-block cursor-pointer font-mono text-[11px] font-medium text-[var(--tp-brand-blue)] underline-offset-2 hover:underline"
+                          >
+                            {src.label}
+                          </a>
+                        ) : (
+                          <p className="mt-0.5 font-mono text-[11px] text-[var(--tp-muted)]">
+                            {src.label}
+                          </p>
+                        )}
+                      </div>
+                    ))}
+                  </div>
                 ) : null}
               </article>
             ))
