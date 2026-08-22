@@ -41,7 +41,6 @@ type DemoContextValue = {
     corridor: string;
     profile: Profile;
     includeBol: boolean;
-    mismatchQty?: boolean;
     invoiceFile?: File | null;
     bolFile?: File | null;
   }) => Promise<TradeCase>;
@@ -222,8 +221,6 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
             "commercial_invoice",
           );
         } else {
-          const invQty = input.mismatchQty ? 500 : 500;
-          const unit = input.mismatchQty ? "cartons" : "MT";
           await api.uploadDocument(
             record.case_id,
             new Blob(
@@ -231,11 +228,8 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
                 buildInvoiceFixture({
                   seller: input.counterparty,
                   lei: FIXTURE_LEI,
-                  quantity: invQty,
-                  unit,
-                  ...(input.mismatchQty
-                    ? { unitPrice: 1780.8, kgPerUnit: 200 }
-                    : {}),
+                  quantity: 500,
+                  unit: "MT",
                 }),
               ],
               { type: "text/plain" },
@@ -255,16 +249,14 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
               "bill_of_lading",
             );
           } else {
-            const bolQty = input.mismatchQty ? 350 : 500;
-            const unit = input.mismatchQty ? "cartons" : "MT";
             await api.uploadDocument(
               record.case_id,
               new Blob(
                 [
                   buildBolFixture({
                     shipper: input.counterparty,
-                    quantity: bolQty,
-                    unit,
+                    quantity: 500,
+                    unit: "MT",
                   }),
                 ],
                 { type: "text/plain" },

@@ -31,10 +31,12 @@
   --tp-elevated: var(--tp-surface);
   --tp-navy-deep: oklch(0.2 0.028 249);
 
-  /* The palette has no teal or blue. Both resolve to ink so accents read as
-     one family rather than introducing a colour the system does not contain. */
-  --tp-teal: oklch(0.245 0.031 249.2);
-  --tp-accent: oklch(0.245 0.031 249.2);
+  /* Logo brand accents (preloader mark): navy-blue + pulse orange. */
+  --tp-brand-blue: #1b4f9e;
+  --tp-brand-blue-deep: #143a78;
+  --tp-brand-orange: #e9631d;
+  --tp-teal: var(--tp-brand-blue);
+  --tp-accent: var(--tp-brand-blue);
 
   /* Severity, in the text-safe inks. --amber measures 2.9:1 on paper, so the
      lighter fill value can mark a rule or a chip but must never be the colour
@@ -157,16 +159,22 @@ a {
   align-items: center;
   justify-content: center;
   border-radius: 10px;
-  background: var(--tp-navy);
-  color: var(--tp-surface);
+  background: var(--tp-brand-blue);
+  color: #fffdf8;
   font-size: 0.875rem;
   font-weight: 600;
   padding: 0.65rem 1.15rem;
   transition: background-color var(--tp-fast, 140ms) var(--tp-ease, ease);
   cursor: pointer;
+  border: none;
+  text-decoration: none;
 }
 .tp-btn-primary:hover {
-  background: var(--tp-navy-deep);
+  background: var(--tp-brand-blue-deep);
+}
+.tp-btn-primary:focus-visible {
+  outline: 2px solid var(--tp-brand-orange);
+  outline-offset: 2px;
 }
 .tp-btn-secondary {
   display: inline-flex;

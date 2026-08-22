@@ -4,8 +4,9 @@ from __future__ import annotations
 
 from fastapi import APIRouter
 
-from app.api.v1 import cases, platform
+from app.api.v1 import cases, demo_samples, platform
 
 router = APIRouter(prefix="/api/v1")
 router.include_router(cases.router)
 router.include_router(platform.router)
+router.include_router(demo_samples.router)

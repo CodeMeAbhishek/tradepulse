@@ -2,6 +2,57 @@
 
 import Link from "next/link";
 import { motion, useReducedMotion } from "motion/react";
+import { BrandMark } from "@/components/BrandMark";
+import { useCountUp } from "@/lib/useCountUp";
+
+const STATS = [
+  { label: "Agent debate cap", value: 3, suffix: " rounds", hint: "Bounded swarm — never endless LLM loops" },
+  { label: "Identity ladder", value: 4, suffix: " states", hint: "Candidate → LEI → vLEI → unresolved" },
+  { label: "Kernel docs", value: 2, suffix: "+", hint: "Invoice required; BoL for post-shipment" },
+  { label: "AWS region", value: 1, suffix: " live", hint: "ap-south-1 ECS Fargate demo" },
+] as const;
+
+const PILLARS = [
+  {
+    title: "Bounded agentic extraction",
+    body: "Extract → validate → challenge → arbitrate. Max three rounds. Disagreements surface as REVIEW_REQUIRED — never averaged away.",
+  },
+  {
+    title: "Identity confidence ladder",
+    body: "GLEIF name hits are candidates. Document LEI is stronger. vLEI is separate evidence. Fuzzy match is never identity proof.",
+  },
+  {
+    title: "Examiner case pack",
+    body: "Maker–checker handoff with evidence, not an AI approval badge. Decision support for Head of Trade Finance Ops.",
+  },
+] as const;
+
+function StatCard({
+  label,
+  value,
+  suffix,
+  hint,
+  delay,
+}: {
+  label: string;
+  value: number;
+  suffix: string;
+  hint: string;
+  delay: number;
+}) {
+  const reduce = useReducedMotion();
+  const n = useCountUp(value, reduce ? 1 : 900 + delay * 120);
+  return (
+    <div className="rounded-xl border border-[var(--tp-line)] bg-[var(--tp-elevated)]/90 p-4 shadow-sm">
+      <p className="tp-label text-[var(--tp-muted)]">{label}</p>
+      <p className="mt-2 font-display text-3xl font-semibold text-[var(--tp-brand-blue)]">
+        {n}
+        <span className="text-lg font-medium text-[var(--tp-muted)]">{suffix}</span>
+      </p>
+      <p className="mt-1 text-xs leading-snug text-[var(--tp-muted)]">{hint}</p>
+    </div>
+  );
+}
 
 export default function LandingPage() {
   const reduce = useReducedMotion();
@@ -23,87 +74,104 @@ export default function LandingPage() {
 
   return (
     <main>
-      {/* Hero — brand first, one composition, light full-bleed atmosphere */}
       <section className="relative min-h-[100svh] overflow-hidden">
         <div
           aria-hidden
           className="pointer-events-none absolute inset-0"
           style={{
             background:
-              "linear-gradient(135deg, #f8fafc 0%, #eef4f8 42%, #e6f0ef 100%)",
+              "radial-gradient(ellipse 80% 60% at 70% 10%, rgba(233,99,29,0.12), transparent 55%), radial-gradient(ellipse 70% 50% at 15% 80%, rgba(27,79,158,0.14), transparent 50%), linear-gradient(160deg, #f8fafc 0%, #eef3f8 45%, #f4f2ed 100%)",
           }}
         />
         <div
           aria-hidden
           className={
             reduce
-              ? "pointer-events-none absolute inset-0 opacity-40"
-              : "pointer-events-none absolute inset-0 opacity-40 [background-image:radial-gradient(circle_at_1px_1px,rgba(12,35,64,0.07)_1px,transparent_0)] [background-size:28px_28px]"
+              ? "pointer-events-none absolute inset-0 opacity-30"
+              : "pointer-events-none absolute inset-0 opacity-35 [background-image:radial-gradient(circle_at_1px_1px,rgba(27,79,158,0.09)_1px,transparent_0)] [background-size:26px_26px]"
           }
         />
         {!reduce ? (
           <motion.div
             aria-hidden
-            className="pointer-events-none absolute -left-24 top-24 h-72 w-72 rounded-full bg-teal-200/35 blur-3xl"
-            animate={{ x: [0, 24, 0], y: [0, 12, 0] }}
-            transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
+            className="pointer-events-none absolute -right-16 top-28 h-80 w-80 rounded-full bg-[rgba(233,99,29,0.18)] blur-3xl"
+            animate={{ x: [0, -18, 0], y: [0, 14, 0] }}
+            transition={{ duration: 16, repeat: Infinity, ease: "easeInOut" }}
           />
         ) : null}
 
         <div className="relative z-10 mx-auto flex min-h-[100svh] max-w-6xl flex-col justify-center px-4 pb-16 pt-28 sm:px-6">
+          <motion.div className="flex items-center gap-4" {...fade}>
+            <BrandMark className="h-16 w-16 sm:h-20 sm:w-20" />
+            <div>
+              <p className="tp-label text-[var(--tp-brand-orange)]">GIFT IFSC · Track 1 Agentic AI</p>
+              <h1 className="font-display text-4xl font-semibold tracking-tight text-[var(--tp-navy)] sm:text-5xl md:text-6xl">
+                TradePulse
+              </h1>
+            </div>
+          </motion.div>
           <motion.p
-            className="font-display text-5xl font-semibold tracking-tight text-[var(--tp-navy)] sm:text-6xl md:text-7xl"
-            {...fade}
-          >
-            TradePulse
-          </motion.p>
-          <motion.h1
-            className="mt-5 max-w-2xl text-2xl font-semibold leading-snug text-[var(--tp-ink)] sm:text-3xl"
+            className="mt-6 max-w-2xl text-xl font-semibold leading-snug text-[var(--tp-ink)] sm:text-2xl"
             {...fadeDelay(0.08)}
           >
-            Scattered trade documents, one evidence-backed case file.
-          </motion.h1>
+            Documentary trade-compliance decision support — not autopilot approval.
+          </motion.p>
           <motion.p
             className="mt-4 max-w-xl text-base leading-relaxed text-[var(--tp-muted)] sm:text-lg"
             {...fadeDelay(0.16)}
           >
-            Make the digital evidence around a shipment complete, consistent, and actionable—so the
-            right human can decide faster. We never claim to know what is inside a container.
+            For the Head of Trade Finance Ops at a GIFT City IBU: turn invoice and transport packs
+            into one evidence-backed case, with an identity ladder and examiner handoff. Humans
+            decide. Missing data never becomes PASS.
           </motion.p>
           <motion.div className="mt-8 flex flex-wrap gap-3" {...fadeDelay(0.24)}>
-            <Link href="/workbench" className="tp-btn-primary">
+            <Link href="/workbench" className="tp-btn-primary px-5 py-3 text-base">
               Enter workbench
             </Link>
-            <a href="#how-it-works" className="tp-btn-secondary">
-              How it works
-            </a>
+            <Link href="/workbench/cases/new" className="tp-btn-secondary px-5 py-3 text-base">
+              New case with samples
+            </Link>
           </motion.div>
+          <motion.p className="mt-4 text-xs text-[var(--tp-muted)]" {...fadeDelay(0.3)}>
+            Prototype · SYNTHETIC_DEMO fixtures labelled · Live on AWS ap-south-1
+          </motion.p>
         </div>
       </section>
 
-      <section id="how-it-works" className="border-t border-[var(--tp-line)] bg-[var(--tp-elevated)]">
-        <div className="mx-auto max-w-6xl space-y-16 px-4 py-20 sm:px-6">
+      <section className="border-t border-[var(--tp-line)] bg-[var(--tp-elevated)]">
+        <div className="mx-auto grid max-w-6xl gap-4 px-4 py-12 sm:grid-cols-2 sm:px-6 lg:grid-cols-4">
+          {STATS.map((s, i) => (
+            <StatCard key={s.label} {...s} delay={i} />
+          ))}
+        </div>
+      </section>
+
+      <section id="how-it-works" className="border-t border-[var(--tp-line)]">
+        <div className="mx-auto max-w-6xl space-y-14 px-4 py-20 sm:px-6">
           <div className="max-w-2xl">
             <h2 className="font-display text-3xl font-semibold text-[var(--tp-navy)]">
-              The problem officers face
+              Built for examiners, not black boxes
             </h2>
             <p className="mt-3 text-[var(--tp-muted)] leading-relaxed">
-              Manual packs miss quantity mismatches, identity ambiguity, and price outliers. Audit
-              trails scatter across inboxes. Reviewers need evidence in one place—not another black
-              box.
+              Manual packs miss quantity mismatches and identity ambiguity. Commodity AI checkers
+              overclaim. TradePulse keeps failure modes honest and audit-ready.
             </p>
           </div>
 
-          <div className="max-w-2xl">
-            <h2 className="font-display text-3xl font-semibold text-[var(--tp-navy)]">
-              What TradePulse does
-            </h2>
-            <p className="mt-3 text-[var(--tp-muted)] leading-relaxed">
-              Extract → validate → reconcile across invoice and bill of lading → anchor party
-              identity (LEI / vLEI evidence) → screen configured lists → check price plausibility →
-              route a human maker and checker. Agent consensus is an extraction signal only—never a
-              legal or sanctions conclusion.
-            </p>
+          <div className="grid gap-6 md:grid-cols-3">
+            {PILLARS.map((p) => (
+              <article
+                key={p.title}
+                className="rounded-xl border border-[var(--tp-line)] bg-[var(--tp-elevated)] p-5"
+              >
+                <div
+                  className="mb-3 h-1 w-10 rounded-full"
+                  style={{ background: "linear-gradient(90deg, #1B4F9E, #E9631D)" }}
+                />
+                <h3 className="font-display text-lg font-semibold text-[var(--tp-navy)]">{p.title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-[var(--tp-muted)]">{p.body}</p>
+              </article>
+            ))}
           </div>
 
           <div className="max-w-2xl">
@@ -113,20 +181,23 @@ export default function LandingPage() {
             <ul className="mt-3 list-disc space-y-2 pl-5 text-[var(--tp-muted)]">
               <li>Physical goods inside a container</li>
               <li>Customs clearance or ICEGATE filing</li>
-              <li>AI approval, rejection, or confirmed sanctions match without authoritative evidence</li>
+              <li>AI approval, rejection, or confirmed sanctions without authoritative evidence</li>
             </ul>
           </div>
 
-          <div className="max-w-2xl">
-            <h2 className="font-display text-3xl font-semibold text-[var(--tp-navy)]">
-              Demo path
-            </h2>
-            <p className="mt-3 text-[var(--tp-muted)] leading-relaxed">
-              Enter the workbench, seed sample cases (or upload a packet), open a quantity-mismatch
-              case, and use Investigate to see evidence side by side—then Decide with dual control.
-            </p>
-            <Link href="/workbench" className="tp-btn-primary mt-6">
-              Open officer workbench
+          <div className="flex flex-wrap items-center gap-4 rounded-2xl border border-[var(--tp-line)] bg-[var(--tp-bg)] p-6 sm:p-8">
+            <BrandMark className="h-14 w-14" />
+            <div className="min-w-0 flex-1">
+              <h2 className="font-display text-2xl font-semibold text-[var(--tp-navy)]">
+                Try the officer workbench
+              </h2>
+              <p className="mt-1 text-sm text-[var(--tp-muted)]">
+                Open the queue, pick a labeled sample pack from the cloud library, or upload your own
+                invoice / BoL — then review the identity ladder and examiner pack.
+              </p>
+            </div>
+            <Link href="/workbench" className="tp-btn-primary shrink-0">
+              Enter workbench
             </Link>
           </div>
         </div>

@@ -265,6 +265,26 @@ export const api = {
   examinerPack: (caseId: string) =>
     request<Record<string, unknown>>(`/cases/${caseId}/examiner-pack`),
 
+  listSamplePacks: () =>
+    request<
+      Array<{
+        pack_id: string;
+        title: string;
+        summary: string;
+        data_label: string;
+        default_profile: string;
+        include_bol: boolean;
+        files: Array<{ role: string; filename: string; media_type: string }>;
+      }>
+    >("/demo/sample-packs"),
+
+  fetchSampleFile: async (packId: string, filename: string): Promise<File> => {
+    const res = await fetch(`${baseUrl()}/demo/sample-packs/${packId}/files/${encodeURIComponent(filename)}`);
+    if (!res.ok) throw new Error(`Sample file failed: ${res.status}`);
+    const blob = await res.blob();
+    return new File([blob], filename, { type: blob.type || "text/plain" });
+  },
+
   regwatchEvents: () => request<RegWatchEvent[]>("/regwatch/events"),
 
   sources: () => request<Array<{ source_id: string; label?: string }>>("/sources"),

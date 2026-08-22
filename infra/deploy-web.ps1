@@ -50,6 +50,12 @@ aws cloudformation deploy `
     "ImageUri=$ImageUri"
 if ($LASTEXITCODE -ne 0) { throw "cloudformation deploy failed" }
 
+Write-Host "Forcing ECS to pull latest image..."
+aws ecs update-service --profile $Profile --region $Region `
+  --cluster tradepulse-web --service tradepulse-web --force-new-deployment | Out-Null
+aws ecs wait services-stable --profile $Profile --region $Region `
+  --cluster tradepulse-web --services tradepulse-web
+
 $WebUrl = (aws cloudformation describe-stacks --profile $Profile --region $Region `
   --stack-name tradepulse-web --query "Stacks[0].Outputs[?OutputKey=='WebUrl'].OutputValue" --output text).Trim()
 Write-Host ""

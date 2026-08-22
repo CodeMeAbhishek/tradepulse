@@ -42,6 +42,7 @@ Banks and GIFT City IBUs still examine documentary packs under UCP-style pressur
 | Agentic document swarm | Extractor → Validator → Challenger → Arbiter → cross-doc reconcile (**max 3 rounds**) |
 | Identity ladder | GLEIF candidates ≠ verified; LEI-compatible evidence stronger; vLEI separate / fixture-labelled |
 | Examiner case pack | Downloadable handoff for maker–checker |
+| Sample document library | Cloud-style SYNTHETIC_DEMO packs via API (`/demo/sample-packs`) for jury testing |
 | Risk / anomaly signals | Configured screening & price/duplicate cues as **review signals**, not verdicts |
 | Document policy awareness | Required / conditionally required / optional / not available — not silent skip |
 | Audit & versions | Provenance-minded results; replay must not overwrite history |

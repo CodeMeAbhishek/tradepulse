@@ -22,6 +22,8 @@ RUN pip install -r /tmp/requirements.txt \
     && pip uninstall -y pytest ruff mypy || true
 
 COPY apps/api /app
+# Jury sample library (SYNTHETIC_DEMO packs) — Canva-style cloud picker source
+COPY data/fixtures/synthetic-trade-docs /app/demo_samples
 
 EXPOSE 8000
 

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useDemo } from "@/lib/demo/DemoProvider";
 import { cn } from "@/lib/cn";
+import { BrandMark } from "@/components/BrandMark";
 
 const NAV = [
   { href: "/workbench", label: "Overview", match: "exact" as const },
@@ -53,10 +54,13 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <header className="border-b border-[var(--tp-line)] bg-[var(--tp-elevated)]/90 backdrop-blur-sm">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-4 py-3">
           <div className="min-w-0">
-            <Link href="/" className="font-display text-lg font-semibold tracking-tight text-[var(--tp-navy)]">
-              TradePulse
+            <Link href="/" className="flex items-center gap-2">
+              <BrandMark className="h-8 w-8" />
+              <span className="font-display text-lg font-semibold tracking-tight text-[var(--tp-navy)]">
+                TradePulse
+              </span>
             </Link>
-            <p className="text-[11px] uppercase tracking-[0.14em] text-[var(--tp-muted)]">
+            <p className="mt-0.5 pl-10 text-[11px] uppercase tracking-[0.14em] text-[var(--tp-muted)]">
               Officer workbench
             </p>
           </div>
