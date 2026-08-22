@@ -16,20 +16,29 @@
 4. **Prototype ≠ product** — say it once, out loud. Judges hunt for this.
 5. **Practice with a phone timer.** Cut anything that makes you rush. Pause after the one-liner and after “never PASS.”
 6. **Demo:** Pre-open a completed case. Do *not* create a fresh case live unless pre-warmed.
+7. **Hook cases:** Name Hin Leong + BlackRock/HPS. Do **not** claim TradePulse would have “caught” or “prevented” either fraud. Frame as *why paper without challengeable evidence is lethal*.
 
 ---
 
 ## SCRIPT (speak this)
 
-### [0:00–0:15] Hook + what we are
+### [0:00–0:35] Hook — two real cases + what we are
 
 Hi — we’re **TradePulse**.
 
-We build **documentary trade-compliance decision support** for the person who actually owns the exception queue: the **Head of Trade Finance Operations at a GIFT City IBU** — and the examiners on their desk.
+This is not a hypothetical.
+
+In **2020**, Singapore oil trader **Hin Leong** collapsed after disclosing **over $800 million** in hidden losses — with oil that had already been **pledged as collateral and sold to multiple lenders** through **duplicate financing** and **forged trade documents**. Bank exposure ran into the **billions**.
+
+And it is not only commodities history. Lenders led by **BlackRock’s HPS**, with **BNP Paribas** as a major co-financier, have alleged a roughly **$500 million** receivables fraud built on **fabricated customer invoices** and **fake verification emails**. One **email-domain anomaly** cracked years of paper that looked “verified.”
+
+**Same failure mode:** financing that trusts documents the desk cannot stress-test fast enough.
+
+We build **documentary trade-compliance decision support** for the person who owns that desk: the **Head of Trade Finance Operations at a GIFT City IBU** — and their examiners.
 
 We do **not** approve trades. We do **not** clear Customs. We make the documentary pack **defensible** — faster.
 
-### [0:15–0:50] Problem + why current tools fail
+### [0:35–1:00] Problem + why current tools fail
 
 Cross-border trade still runs on PDFs: commercial invoice, bill of lading, party names, amounts, routes.
 
@@ -37,9 +46,9 @@ Today that work is either **manual UCP-style grind**, or “AI checkers” that 
 
 That creates two failures banks cannot afford: **false certainty** in audit — or **endless exceptions** that kill turnaround.
 
-GIFT IFSC is scaling trade finance through IBUs — IFSCA has been explicitly enabling trade credit, factoring, forfaiting; IBU trade-finance outstanding was on the order of **tens of billions of USD**. Volume is rising. Scrutiny is not going away.
+GIFT IFSC is scaling trade finance through IBUs. Volume is rising. Scrutiny is not going away.
 
-### [0:50–1:35] Solution + why now + differentiation
+### [1:00–1:40] Solution + why now + differentiation
 
 **TradePulse** is an agentic examiner workbench.
 
@@ -49,11 +58,11 @@ On identity we use a **confidence ladder**: a GLEIF name candidate is **not** pr
 
 Missing source data stays **DATA_UNAVAILABLE**. It **cannot become PASS**.
 
-**Why now:** agentic model costs finally make multi-step debate affordable; LEI/vLEI rails are maturing for cross-border counterparties; and **IFSCA’s GIFT trade-finance posture** means IBUs need audit-grade speed without autopilot risk.
+**Why now:** agentic model costs finally make multi-step debate affordable; LEI/vLEI rails are maturing; and **IFSCA’s GIFT trade-finance posture** means IBUs need audit-grade speed without autopilot risk.
 
 That’s our innovation — not “more agents.” **Epistemic honesty baked into the product.**
 
-### [1:35–2:20] Proof (technical execution — say “working live”)
+### [1:40–2:20] Proof (technical execution — say “working live”)
 
 This is not a slideware prototype.
 
@@ -81,7 +90,7 @@ TradePulse: **examiner decision support. Live. Honest. Built for GIFT trade ops.
 
 ## Word count check
 
-Full spoken body above ≈ **430 words** → ~2:50–3:00 at 145 wpm. If you speak fast, add a 2-second pause after “never PASS” and after “proof point.”
+Full spoken body above ≈ **440–460 words** → rehearse to ≤ 2:55. If over time, cut the GIFT sentence in the problem block first, then one proof sentence. Pause after “not a hypothetical” and after “never PASS.”
 
 ---
 
@@ -89,14 +98,37 @@ Full spoken body above ≈ **430 words** → ~2:50–3:00 at 145 wpm. If you spe
 
 | Time | On screen (max 6 words) |
 |------|-------------------------|
-| 0:00 | TradePulse · Decision support |
-| 0:20 | False certainty kills audits |
-| 0:50 | Bounded agents · Identity ladder |
-| 1:35 | Live on AWS · Examiner pack |
+| 0:00 | Hin Leong · BlackRock paper |
+| 0:35 | False certainty kills audits |
+| 1:00 | Bounded agents · Identity ladder |
+| 1:40 | Live on AWS · Examiner pack |
 | 2:20 | Buyer: GIFT IBU Trade Ops |
 | 2:45 | Prototype ≠ product · Ask |
 
 Do **not** read slides. Slides only reinforce.
+
+---
+
+## Speaker brief — the two hook cases (do not recite; use if judges ask)
+
+### 1) Hin Leong Trading (Singapore, 2020)
+
+- Founder disclosed **>$800m** undisclosed futures / trading losses; oil pledged as bank collateral had also been sold.
+- PwC (interim judicial managers): forged documents “on a massive scale,” **non-existent inventory**, **same cargo sold to multiple parties**, fabricated invoices for receivables / factoring facilities.
+- Bank / creditor liabilities reported around **~$3.5bn**.
+- **TradePulse angle (honest):** documentary inconsistency and duplicate-financing *signals* for human review — **not** physical oil verification, **not** a claim we would have stopped the collapse.
+
+Public framing sources: [GTR analysis](https://www.gtreview.com/news/asia/analysis-hin-leongs-vicious-cycle-of-trade-finance-fraud/), Business Times / PwC reporting on inventory shortfalls and fabricated docs.
+
+### 2) BlackRock / HPS × Bankim Brahmbhatt (alleged, 2025 filings)
+
+- Lenders led by **HPS Investment Partners** (BlackRock’s private-credit unit) alleged **~$500m+** fraud via **fabricated invoices / accounts receivable** at telecom firms (Broadband Telecom, Bridgevoice) and financing vehicles.
+- **BNP Paribas** reportedly co-financed a large share; later took material loan-loss provisions (press ~€190m / ~$220m).
+- Scheme allegedly relied on **fake customer emails / lookalike domains**; an HPS analyst’s domain anomaly triggered forensic review (Quinn Emanuel / auditors). Belgian carrier **BICS** reportedly confirmed emails as a fraud attempt.
+- Chapter 11 filings and civil suit reported **August 2025**; federal / FBI probes reported in coverage. Treat as **allegations** unless you have a later final judgment in hand.
+- **TradePulse angle (honest):** invoice authenticity, counterparty evidence, and “verification that is not verification” — **not** “we catch $500m frauds.”
+
+Public framing sources: [WSJ](https://www.wsj.com/finance/how-fake-invoices-duped-blackrock-unit-into-a-400-million-loan-888b7e06), [Yahoo / HPS flag](https://finance.yahoo.com/news/blackrock-unit-flags-suspected-400-150656293.html), Times of India explainers summarizing the WSJ account.
 
 ---
 
@@ -116,11 +148,15 @@ Speak these only in Q&A — do not cram into the 3 minutes unless a judge interr
 
 > Monday #1: trust core — identity ladder, failure states that never false-PASS, examiner pack, async job queue, SSO. Tonight is the **agentic + live AWS proof point**. Same spine — different completeness. Prototype ≠ product.
 
+### Bonus if they ask: “Would TradePulse have stopped Hin Leong / BlackRock?”
+
+> No honest founder claims that. Those cases mix forged paper, collusion, and sometimes physical inventory. We surface **documentary contradictions, weak identity evidence, and unavailable data that must not PASS** — so a human maker–checker can escalate before false certainty hardens. Decision support, not a fraud oracle.
+
 ---
 
 ## 30-second emergency cut (if timer is brutal)
 
-> We’re TradePulse — decision support for Head of Trade Finance Ops at a GIFT City IBU. Banks drown in PDFs; AI checkers create false certainty. We run bounded agents, an identity ladder, and never turn missing data into PASS. Working live on AWS with an examiner pack for maker–checker. Tonight is a proof point, not the finished bank product. We want GIFT pilots and IBU intros. Thank you.
+> We’re TradePulse. Hin Leong hid $800m+ losses with duplicate-pledged cargo and forged docs; BlackRock’s HPS and BNP allege ~$500m fake-invoice financing. Same lesson: paper without challengeable evidence. We give Head of Trade Finance Ops at a GIFT City IBU bounded agents, an identity ladder, and never turn missing data into PASS. Working live on AWS. Proof point, not finished bank product. We want GIFT pilots and IBU intros. Thank you.
 
 (~95 words ≈ 35–40s — only if forced)
 
@@ -129,6 +165,8 @@ Speak these only in Q&A — do not cram into the 3 minutes unless a judge interr
 ## Rehearsal checklist
 
 - [ ] Timer hits ≤ 2:55 with natural pauses  
+- [ ] Named **Hin Leong** and **BlackRock / HPS** once each in the hook  
+- [ ] Did **not** claim we would have prevented either case  
 - [ ] Said “Head of Trade Finance Ops at a GIFT City IBU” once  
 - [ ] Said “decision support” / “not approve” once  
 - [ ] Said “working live” / AWS once  
@@ -139,4 +177,4 @@ Speak these only in Q&A — do not cram into the 3 minutes unless a judge interr
 
 ---
 
-*Sources used for framing: YC short-pitch clarity principles; 3-minute Demo Day structures (hook → problem → solution → proof → team → ask); IFSCA public materials on GIFT IFSC trade-finance enablers / IBU outstanding scale; Young Builders scoring + Judges’ Q&A guidebook.*
+*Sources used for framing: YC short-pitch clarity; Demo Day 3-min structure; GTR / PwC reporting on Hin Leong (2020); WSJ and follow-on coverage of HPS–Brahmbhatt alleged receivables fraud (2025); IFSCA/GIFT trade-finance context; Young Builders scoring + Judges’ Q&A guidebook.*
