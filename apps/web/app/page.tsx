@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useDemo } from "@/lib/demo/DemoProvider";
 import { RiskChip, WorkflowChip } from "@/components/ui/StatusChips";
 import { profileLabel } from "@/lib/demo/store";
+import { useCountUp } from "@/lib/useCountUp";
 
 export default function OverviewPage() {
   const { cases, ready, mode, seedSamples, apiOnline, error } = useDemo();
@@ -63,13 +64,8 @@ export default function OverviewPage() {
           { label: "Awaiting maker", value: pending, href: "/queue" },
           { label: "Checker inbox", value: checker, href: "/approvals" },
           { label: "Needs scrutiny", value: review, href: "/queue" },
-        ].map((k) => (
-          <Link key={k.label} href={k.href} className="tp-card p-4 transition hover:border-slate-400">
-            <p className="text-xs font-medium uppercase tracking-wide text-[var(--tp-muted)]">
-              {k.label}
-            </p>
-            <p className="mt-2 text-3xl font-semibold text-[var(--tp-navy)]">{k.value}</p>
-          </Link>
+        ].map((k, i) => (
+          <StatTile key={k.label} label={k.label} value={k.value} href={k.href} index={i} />
         ))}
       </section>
 
@@ -86,11 +82,11 @@ export default function OverviewPage() {
           </p>
         ) : (
           <ul className="divide-y divide-[var(--tp-line)]">
-            {attention.map((c) => (
-              <li key={c.id}>
+            {attention.map((c, i) => (
+              <li key={c.id} className="tp-reveal" style={{ "--i": i } as React.CSSProperties}>
                 <Link
                   href={`/cases/${c.id}`}
-                  className="flex flex-wrap items-center justify-between gap-3 px-4 py-3 hover:bg-slate-50"
+                  className="tp-row flex flex-wrap items-center justify-between gap-3 px-4 py-3 hover:bg-slate-50"
                 >
                   <div className="min-w-0">
                     <p className="font-medium text-[var(--tp-navy)]">{c.reference}</p>
@@ -109,5 +105,33 @@ export default function OverviewPage() {
         )}
       </section>
     </div>
+  );
+}
+
+/**
+ * A count-up tile. The number settles rather than snapping, so a queue filling
+ * in reads as data arriving. The value shown is always the exact figure.
+ */
+function StatTile({
+  label,
+  value,
+  href,
+  index,
+}: {
+  label: string;
+  value: number;
+  href: string;
+  index: number;
+}) {
+  const shown = useCountUp(value);
+  return (
+    <Link
+      href={href}
+      className="tp-card tp-reveal p-4 hover:border-slate-400"
+      style={{ "--i": index } as React.CSSProperties}
+    >
+      <p className="text-xs font-medium uppercase tracking-wide text-[var(--tp-muted)]">{label}</p>
+      <p className="mt-2 text-3xl font-semibold tabular-nums text-[var(--tp-navy)]">{shown}</p>
+    </Link>
   );
 }

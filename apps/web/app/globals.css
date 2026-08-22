@@ -2,27 +2,88 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+ * Colour only — the TradePulse eight-colour design system.
+ *
+ * Variable names are unchanged so the 119 `var(--tp-…)` usages across the app
+ * keep working; only the values behind them moved.
+ *
+ *   bench #F4F2ED   page background
+ *   paper #FFFDF8   surfaces
+ *   ink   #12202E   headings, dark planes
+ *   slate #3A4A5C   body copy, metadata
+ *   rule  #D9D4CB   every hairline
+ *   stamp #C1272D   critical
+ *   amber #D68910   needs review  (fills and rules only)
+ *   verified #2D7D5A  passed
+ */
+
 :root {
-  --tp-bg: #eef2f6;
-  --tp-surface: #ffffff;
-  --tp-ink: #0b1220;
-  --tp-muted: #5b6b7c;
-  --tp-line: #d7e0ea;
-  --tp-navy: #0c2340;
-  --tp-teal: #0f766e;
-  --tp-accent: #1d4ed8;
-  --tp-warn: #b45309;
-  --tp-danger: #b91c1c;
-  --tp-ok: #047857;
+  --tp-bg: oklch(0.955 0.011 85.8); /* bench  */
+  --tp-surface: oklch(0.99 0.011 90.5); /* paper  */
+  --tp-ink: oklch(0.245 0.031 249.2); /* ink    */
+  --tp-muted: oklch(0.407 0.031 254.1); /* slate  */
+  --tp-line: oklch(0.867 0.011 79.6); /* rule   */
+  --tp-navy: oklch(0.245 0.031 249.2); /* ink — the dark plane */
+
+  /* The palette has no teal or blue. Both resolve to ink so accents read as
+     one family rather than introducing a colour the system does not contain. */
+  --tp-teal: oklch(0.245 0.031 249.2);
+  --tp-accent: oklch(0.245 0.031 249.2);
+
+  /* Severity, in the text-safe inks. --amber measures 2.9:1 on paper, so the
+     lighter fill value can mark a rule or a chip but must never be the colour
+     of a word; these darker variants are for text. */
+  --tp-warn: oklch(0.505 0.114 62.9); /* amber-ink    */
+  --tp-danger: oklch(0.455 0.176 26.5); /* stamp-ink    */
+  --tp-ok: oklch(0.436 0.086 158.9); /* verified-ink */
 }
 
 body {
   margin: 0;
   min-height: 100vh;
   color: var(--tp-ink);
-  background:
-    linear-gradient(180deg, #f7f9fc 0%, var(--tp-bg) 40%, #e8eef5 100%);
+  /* Flat bench, not the blue-grey gradient — the system is one paper stock. */
+  background: var(--tp-bg);
   font-family: var(--font-ibm-plex-sans), "IBM Plex Sans", "Segoe UI", sans-serif;
+  font-size: 17px;
+  line-height: 1.62;
+}
+
+/*
+ * Headings are monospace, in ink, on tabular figures.
+ *
+ * This is the most visible part of the design system: a heading reads as a
+ * document header rather than a web heading, which is the whole point in a
+ * compliance tool. Remove this block to put headings back to sans.
+ */
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-ibm-plex-mono), ui-monospace, monospace;
+  color: var(--tp-ink);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Monospace data always sits on tabular figures, so columns of numbers line up. */
+.font-mono {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Small uppercase label — the condensed family's only job. */
+.tp-label {
+  font-family: var(--font-ibm-plex-condensed), "IBM Plex Sans", sans-serif;
+  font-size: 12px;
+  line-height: 1.2;
+  letter-spacing: 0.1em;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+::selection {
+  background: var(--tp-ink);
+  color: var(--tp-surface);
 }
 
 * {
@@ -38,7 +99,7 @@ a {
   background: var(--tp-surface);
   border: 1px solid var(--tp-line);
   border-radius: 12px;
-  box-shadow: 0 1px 2px rgba(12, 35, 64, 0.04);
+  box-shadow: 0 1px 2px oklch(0.245 0.031 249.2 / 0.04);
 }
 
 .tp-chip {
@@ -54,27 +115,328 @@ a {
   white-space: nowrap;
 }
 
+/* Chip fills are the palette hues at tint strength; the label stays on the
+   text-safe ink so every chip is readable. */
 .tp-chip-ok {
-  background: #ecfdf5;
-  border-color: #a7f3d0;
+  background: oklch(0.97 0.016 158.9);
+  border-color: oklch(0.88 0.0463 158.9);
   color: var(--tp-ok);
 }
 .tp-chip-review {
-  background: #fffbeb;
-  border-color: #fcd34d;
+  background: oklch(0.97 0.0259 62.9);
+  border-color: oklch(0.88 0.0749 62.9);
   color: var(--tp-warn);
 }
 .tp-chip-block {
-  background: #fef2f2;
-  border-color: #fecaca;
+  background: oklch(0.97 0.0331 26.5);
+  border-color: oklch(0.88 0.0957 26.5);
   color: var(--tp-danger);
 }
 .tp-chip-info {
-  background: #eff6ff;
-  border-color: #bfdbfe;
-  color: var(--tp-accent);
+  background: oklch(0.955 0.011 85.8);
+  border-color: oklch(0.867 0.011 79.6);
+  color: var(--tp-ink);
 }
 .tp-chip-neutral {
-  background: #f8fafc;
+  background: oklch(0.99 0.011 90.5);
   color: var(--tp-muted);
+}
+
+/* ---------------------------------------------------------------------------
+   Motion
+   
+   Rules for a compliance tool: motion explains what the system is doing and
+   never decorates. No spring or bounce easing — that reads as a consumer app.
+   Nothing loops, because an officer stares at this screen all day. Nothing runs
+   longer than 220ms except the deliberate staged reveal of findings.
+   
+   Every rule below is switched off wholesale by the prefers-reduced-motion
+   block at the end of this file.
+   --------------------------------------------------------------------------- */
+
+:root {
+  /* Decisive: fast out of the gate, settles without overshoot. */
+  --tp-ease: cubic-bezier(0.2, 0, 0, 1);
+  --tp-fast: 140ms;
+  --tp-base: 200ms;
+}
+
+/* --- 1. Findings arrive one at a time, worst first ------------------------ */
+
+@keyframes tp-rise {
+  from {
+    opacity: 0;
+    transform: translateY(3px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.tp-reveal {
+  animation: tp-rise var(--tp-base) var(--tp-ease) both;
+  /* --i is set per item; 70ms apart reads as considered, not slow. */
+  animation-delay: calc(var(--i, 0) * 70ms);
+}
+
+/* --- 2. Indeterminate processing rail ------------------------------------ */
+
+@keyframes tp-rail {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(400%);
+  }
+}
+
+.tp-rail {
+  position: relative;
+  overflow: hidden;
+  height: 2px;
+  background: var(--tp-line);
+}
+
+.tp-rail::after {
+  content: "";
+  position: absolute;
+  inset-block: 0;
+  left: 0;
+  width: 25%;
+  background: var(--tp-ink);
+  animation: tp-rail 1100ms var(--tp-ease) infinite;
+}
+
+/* --- 6. Nav underline ----------------------------------------------------- */
+
+.tp-nav-link {
+  position: relative;
+  transition: color var(--tp-fast) var(--tp-ease);
+}
+
+.tp-nav-link::after {
+  content: "";
+  position: absolute;
+  left: 0.75rem;
+  right: 0.75rem;
+  bottom: 0.25rem;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--tp-base) var(--tp-ease);
+}
+
+.tp-nav-link:hover::after,
+.tp-nav-link:focus-visible::after,
+.tp-nav-link[aria-current="page"]::after {
+  transform: scaleX(1);
+}
+
+/* --- 7. Route change ------------------------------------------------------ */
+
+.tp-route {
+  animation: tp-rise 180ms var(--tp-ease) both;
+}
+
+/* --- 5. Rows and cards ---------------------------------------------------- */
+
+.tp-row {
+  transition:
+    background-color var(--tp-fast) var(--tp-ease),
+    box-shadow var(--tp-fast) var(--tp-ease);
+}
+
+.tp-card {
+  transition:
+    border-color var(--tp-base) var(--tp-ease),
+    box-shadow var(--tp-base) var(--tp-ease);
+}
+
+/* --- 8. Focus ------------------------------------------------------------- */
+
+a,
+button,
+input,
+select,
+textarea,
+summary,
+[tabindex] {
+  transition:
+    outline-offset var(--tp-fast) var(--tp-ease),
+    background-color var(--tp-fast) var(--tp-ease),
+    border-color var(--tp-fast) var(--tp-ease);
+}
+
+:focus-visible {
+  outline: 2px solid var(--tp-ink);
+  outline-offset: 3px;
+}
+
+/* --- 9. Disclosures ------------------------------------------------------- */
+
+details > summary {
+  cursor: pointer;
+  transition: color var(--tp-fast) var(--tp-ease);
+}
+
+details[open] > summary ~ * {
+  animation: tp-rise var(--tp-base) var(--tp-ease) both;
+}
+
+/* --- The switch ----------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Preloader — "The Infinite Spin"
+   --------------------------------------------------------------------------- */
+
+#tp-preloader {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  background: var(--tp-bg);
+  opacity: 1;
+  transition: opacity 420ms var(--tp-ease);
+}
+
+#tp-preloader[data-state="done"] {
+  opacity: 0;
+  pointer-events: none;
+}
+
+#tp-preloader-word {
+  margin: 0;
+  font-family: var(--font-ibm-plex-condensed), "IBM Plex Sans", sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.32em;
+  text-indent: 0.32em; /* balances the trailing letter-space */
+  color: var(--tp-muted);
+  opacity: 0;
+  animation: tp-word-in 600ms var(--tp-ease) 200ms forwards;
+}
+
+@keyframes tp-word-in {
+  to {
+    opacity: 1;
+  }
+}
+
+/* --- The arcs -------------------------------------------------------------
+   transform-box: view-box + a centre origin in viewBox units. Without this the
+   browser rotates each arc around its own bounding-box centre, which is off to
+   one side of the circle, and the arcs wobble instead of spinning true.
+   -------------------------------------------------------------------------- */
+
+#outer-blue-arc,
+#outer-orange-arc {
+  transform-box: view-box;
+  transform-origin: 100px 100px;
+}
+
+@keyframes tp-spin-cw {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes tp-spin-ccw {
+  to {
+    transform: rotate(-360deg);
+  }
+}
+
+#tp-preloader[data-state="loading"] #outer-blue-arc {
+  animation: tp-spin-cw 1600ms linear infinite;
+}
+
+#tp-preloader[data-state="loading"] #outer-orange-arc {
+  animation: tp-spin-ccw 2100ms linear infinite;
+}
+
+/* Reveal: drop the animation and ease back to zero from wherever it stopped. */
+#tp-preloader[data-state="loaded"] #outer-blue-arc,
+#tp-preloader[data-state="loaded"] #outer-orange-arc,
+#tp-preloader[data-state="done"] #outer-blue-arc,
+#tp-preloader[data-state="done"] #outer-orange-arc {
+  animation: none;
+  transform: rotate(0deg);
+  transition: transform 620ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* --- The centre mark ------------------------------------------------------ */
+
+/* mask-position does not interpolate here — it snaps from one end to the other.
+   Registering the sweep as a typed custom property makes it animatable, so the
+   gradient stop itself can travel across the artwork. */
+@property --tp-sweep {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 0%;
+}
+
+#center-t-and-arrow {
+  transform-box: view-box;
+  transform-origin: 100px 100px;
+
+  /* The mark never moves. A soft edge in the mask travels across it instead,
+     so the T and the arrow develop from left to right while staying exactly in
+     place. Moving the artwork made it overlap the trend line. */
+  --tp-sweep: 0%;
+  -webkit-mask-image: linear-gradient(
+    to right,
+    #000 var(--tp-sweep),
+    transparent calc(var(--tp-sweep) + 34%)
+  );
+  mask-image: linear-gradient(
+    to right,
+    #000 var(--tp-sweep),
+    transparent calc(var(--tp-sweep) + 34%)
+  );
+
+  /* Opacity is a safety net: if a browser ignores masks or @property, the mark
+     still fades in rather than snapping on mid-spin. */
+  opacity: 0;
+  transition:
+    opacity 300ms var(--tp-ease),
+    --tp-sweep 820ms cubic-bezier(0.33, 0, 0.2, 1);
+}
+
+#tp-preloader[data-state="loaded"] #center-t-and-arrow,
+#tp-preloader[data-state="done"] #center-t-and-arrow {
+  opacity: 1;
+  /* Sweep past the right edge so the whole mark ends up inside the solid part
+     of the gradient. */
+  --tp-sweep: 120%;
+}
+
+/* Reduced motion: no spin, no spring — show the finished logo and get out of
+   the way. The global reduce block below also flattens every duration. */
+@media (prefers-reduced-motion: reduce) {
+  #tp-preloader[data-state="loading"] #outer-blue-arc,
+  #tp-preloader[data-state="loading"] #outer-orange-arc {
+    animation: none;
+  }
+  #center-t-and-arrow {
+    opacity: 1;
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
 }

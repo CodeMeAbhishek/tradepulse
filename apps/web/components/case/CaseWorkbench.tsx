@@ -120,6 +120,7 @@ export function CaseWorkbench({ caseId }: { caseId: string }) {
             <p className="mt-2 text-sm text-amber-900/90">{mismatch.note}</p>
           </div>
         ) : null}
+        {busy ? <ProcessingRail /> : null}
         {err ? <p className="mt-3 text-sm text-rose-700">{err}</p> : null}
       </header>
 
@@ -147,8 +148,12 @@ export function CaseWorkbench({ caseId }: { caseId: string }) {
               No findings yet. Process the case after uploading documents.
             </p>
           ) : (
-            live.findings.map((f) => (
-              <article key={f.id} className="tp-card flex flex-col p-4">
+            live.findings.map((f, i) => (
+              <article
+                key={f.id}
+                className="tp-card tp-reveal flex flex-col p-4"
+                style={{ "--i": i } as React.CSSProperties}
+              >
                 <div className="flex items-start justify-between gap-2">
                   <h2 className="text-sm font-semibold text-[var(--tp-navy)]">{f.title}</h2>
                   <ToneChip tone={f.tone} label={f.statusLabel} />
@@ -406,6 +411,25 @@ export function CaseWorkbench({ caseId }: { caseId: string }) {
           </div>
         </section>
       ) : null}
+    </div>
+  );
+}
+
+/**
+ * Shown only while a case is processing.
+ *
+ * The bar is indeterminate because the backend reports no progress figure —
+ * a percentage here would be invented. The stage list names the agents the
+ * orchestrator actually runs, so what is on screen matches what is happening.
+ */
+function ProcessingRail() {
+  const stages = ["Extracting", "Validating", "Challenging", "Arbitrating", "Reconciling"];
+  return (
+    <div className="mt-4" role="status" aria-live="polite">
+      <div className="tp-rail" />
+      <p className="mt-2 text-xs text-[var(--tp-muted)]">
+        Processing — {stages.join(" · ")}
+      </p>
     </div>
   );
 }

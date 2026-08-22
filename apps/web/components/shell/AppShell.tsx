@@ -14,6 +14,16 @@ const NAV = [
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  /**
+   * The page-in animation is replayed by re-rendering with a changing
+   * animation-name, not by remounting and not by touching classList.
+   *
+   * Both of those were tried and both broke navigation: `key={pathname}` on
+   * this wrapper makes React discard a subtree the App Router is concurrently
+   * patching, and mutating className behind React's back desynchronises its
+   * tree from the DOM. Either produces
+   * "insertBefore / removeChild: node is not a child of this node".
+   */
   const { reset, seedSamples, cases, ready, mode, apiOnline, error, refresh } = useDemo();
   const pendingChecker = cases.filter((c) => c.workflow === "MAKER_APPROVED").length;
 
@@ -61,8 +71,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                   href={item.href}
                   className={
                     active
-                      ? "rounded-md bg-white/15 px-3 py-1.5 text-sm font-medium"
-                      : "rounded-md px-3 py-1.5 text-sm text-slate-200 hover:bg-white/10"
+                      ? "tp-nav-link rounded-md bg-white/15 px-3 py-1.5 text-sm font-medium"
+                      : "tp-nav-link rounded-md px-3 py-1.5 text-sm text-slate-200 hover:bg-white/10 hover:text-white"
                   }
                   aria-current={active ? "page" : undefined}
                 >
@@ -105,7 +115,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </div>
       </header>
 
-      <div className="mx-auto max-w-7xl px-4 py-6">{children}</div>
+      <div data-route={pathname} className="tp-route mx-auto max-w-7xl px-4 py-6">
+        {children}
+      </div>
     </div>
   );
 }

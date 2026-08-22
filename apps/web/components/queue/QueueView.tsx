@@ -38,10 +38,11 @@ export function QueueTable({ cases }: { cases: QueueCase[] }) {
           </tr>
         </thead>
         <tbody>
-          {cases.map((row) => (
+          {cases.map((row, i) => (
             <tr
               key={row.id}
-              className="border-t border-slate-800 bg-slate-900/40 hover:bg-slate-900/80"
+              className="tp-row tp-reveal border-t border-slate-800 bg-slate-900/40 hover:bg-slate-900/80"
+              style={{ "--i": i } as React.CSSProperties}
             >
               <td className="px-3 py-3 align-top">
                 <Link

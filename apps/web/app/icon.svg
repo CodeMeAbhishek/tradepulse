@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <title>TradePulse</title>
+
+  <!-- Outer blue arc: open at the top right, where the arrow breaks out. -->
+  <path
+    d="M 119.7 26.6 A 76 76 0 1 0 171.4 74"
+    fill="none"
+    stroke="#1B4F9E"
+    stroke-width="15"
+    stroke-linecap="round"
+  />
+
+  <!-- Inner orange arc, sweeping over the top and down the right. -->
+  <path
+    d="M 48 70 A 60 60 0 0 1 156.4 120.5"
+    fill="none"
+    stroke="#E9631D"
+    stroke-width="13"
+    stroke-linecap="round"
+  />
+
+  <!-- The T -->
+  <path d="M 55 76 H 122 V 92 H 98 V 132 H 80 V 92 H 55 Z" fill="#1B4F9E" />
+
+  <!-- Rising trend line -->
+  <path
+    d="M 44 138 L 66 112 L 82 128 L 101 96 L 116 112 L 149 64"
+    fill="none"
+    stroke="#E9631D"
+    stroke-width="12"
+    stroke-linejoin="round"
+    stroke-linecap="round"
+  />
+
+  <!-- Arrow head, breaking through the ring -->
+  <path d="M 178 36 L 168 74 L 156 62 L 140 54 Z" fill="#2E6FB7" />
+</svg>
