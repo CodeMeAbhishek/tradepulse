@@ -63,6 +63,8 @@ export interface IdentityCard {
   candidateName: string | null;
   candidateLei: string | null;
   nameSimilarity: number | null;
+  /** Machine status code when known (API); used for identity ladder. */
+  resolutionStatus: string | null;
   outcome: string;
   action: string;
   vlei: string;
@@ -178,6 +180,7 @@ function seedCases(): TradeCase[] {
         candidateName: "Gulf Precision Trading LLC",
         candidateLei: "984500GULFPRE000001",
         nameSimilarity: 99,
+        resolutionStatus: "IDENTITY_VERIFIED_BY_LEI",
         outcome: "Identity verified by LEI",
         action: "Exact document LEI matches GLEIF fixture record.",
         vlei: "VLEI verification: Not configured in prototype",
@@ -254,6 +257,7 @@ function seedCases(): TradeCase[] {
         candidateName: "Sahara Metals FZE",
         candidateLei: "984500SAHARA00000012",
         nameSimilarity: 100,
+        resolutionStatus: "IDENTITY_VERIFIED_BY_LEI",
         outcome: "Identity verified by LEI",
         action: "Exact LEI match on fixture. Quantity issue is separate from identity.",
         vlei: "VLEI verification: Not configured in prototype",
@@ -332,6 +336,7 @@ function seedCases(): TradeCase[] {
         candidateName: "Eastern Horizon Logistics Limited",
         candidateLei: "549300EASTHORIZ00001",
         nameSimilarity: 92,
+        resolutionStatus: "POTENTIAL_ENTITY_MATCH_REVIEW",
         outcome: "Potential entity match — review required",
         action: "Request LEI, CIN, or official company-registration evidence.",
         vlei: "VLEI verification: Not configured in prototype",
@@ -519,6 +524,7 @@ export function createCase(input: {
       candidateName: null,
       candidateLei: null,
       nameSimilarity: null,
+      resolutionStatus: "IDENTITY_UNRESOLVED",
       outcome: "Identity unresolved",
       action: "Provide LEI or registry evidence when available.",
       vlei: "VLEI verification: Not configured in prototype",

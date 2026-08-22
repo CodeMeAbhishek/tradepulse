@@ -20,6 +20,8 @@ from app.services.case_service import (
     to_case_record,
     to_case_summary,
 )
+from app.services.examiner_pack import ExaminerCasePack, build_examiner_case_pack
+from app.services.identity_ladder import IdentityLadderView, ladders_for_identities
 from app.services.regwatch import ReplayService
 
 router = APIRouter(tags=["cases"])
@@ -146,3 +148,19 @@ def case_replay_endpoint(case_id: str, body: ReplayRequest) -> dict:
 @router.get("/cases/{case_id}/policy")
 def case_policy_endpoint(case_id: str) -> dict:
     return evaluate_case_policy(case_id, state=_state()).model_dump(mode="json")
+
+
+@router.get("/cases/{case_id}/identity-ladder", response_model=list[IdentityLadderView])
+def case_identity_ladder_endpoint(case_id: str) -> list[dict]:
+    """Confidence ladder per party — fuzzy candidates never appear as verified."""
+    case = _state().cases.require(case_id)
+    return ladders_for_identities(case.identities)
+
+
+@router.get("/cases/{case_id}/examiner-pack", response_model=ExaminerCasePack)
+def case_examiner_pack_endpoint(case_id: str) -> ExaminerCasePack:
+    """Audit-ready examiner case pack for human review (decision support only)."""
+    platform = _state()
+    case = platform.cases.require(case_id)
+    events = platform.audit.for_case(case_id)
+    return build_examiner_case_pack(case, audit_events=events)

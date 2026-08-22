@@ -243,6 +243,28 @@ export const api = {
 
   policy: (caseId: string) => request<WorkbenchSnapshot["policy"]>(`/cases/${caseId}/policy`),
 
+  identityLadder: (caseId: string) =>
+    request<
+      Array<{
+        role: string;
+        party_name: string | null;
+        resolution_status: string;
+        current_rung_id: string | null;
+        side_state: string | null;
+        safety_note: string;
+        steps: Array<{
+          rung_id: string;
+          label: string;
+          description: string;
+          reached: boolean;
+          current: boolean;
+        }>;
+      }>
+    >(`/cases/${caseId}/identity-ladder`),
+
+  examinerPack: (caseId: string) =>
+    request<Record<string, unknown>>(`/cases/${caseId}/examiner-pack`),
+
   regwatchEvents: () => request<RegWatchEvent[]>("/regwatch/events"),
 
   sources: () => request<Array<{ source_id: string; label?: string }>>("/sources"),

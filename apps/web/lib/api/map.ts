@@ -257,6 +257,7 @@ function mapIdentity(record: CaseRecord, wb: WorkbenchSnapshot | undefined): Ide
       candidateName: null,
       candidateLei: null,
       nameSimilarity: null,
+      resolutionStatus: "IDENTITY_UNRESOLVED",
       outcome: "Identity unresolved",
       action: "Process the case after uploading an invoice to resolve identity.",
       vlei: "vLEI check not enabled for this prototype",
@@ -271,6 +272,7 @@ function mapIdentity(record: CaseRecord, wb: WorkbenchSnapshot | undefined): Ide
     candidateName: id.lei?.legal_name || cand?.candidate_name || null,
     candidateLei: id.lei?.lei || cand?.stable_identifier || null,
     nameSimilarity: cand?.score != null ? Math.round(cand.score * 100) : null,
+    resolutionStatus: id.resolution_status || null,
     outcome: IDENTITY_OUTCOMES[id.resolution_status] || id.resolution_status.replaceAll("_", " "),
     action:
       id.resolution_status === "IDENTITY_VERIFIED_BY_LEI"
@@ -407,6 +409,7 @@ export function summaryToTradeCase(s: CaseSummary): TradeCase {
       candidateName: null,
       candidateLei: null,
       nameSimilarity: null,
+      resolutionStatus: "IDENTITY_UNRESOLVED",
       outcome: "Identity unresolved",
       action: "Open case for details",
       vlei: "vLEI check not enabled for this prototype",

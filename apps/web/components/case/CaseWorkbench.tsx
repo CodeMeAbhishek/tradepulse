@@ -3,8 +3,14 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { policyLabel, statusLabel } from "@/lib/api/map";
+import { api } from "@/lib/api/client";
 import { useDemo } from "@/lib/demo/DemoProvider";
 import { InvestigationCanvas } from "@/components/case/InvestigationCanvas";
+import {
+  IdentityLadder,
+  ladderFromStatus,
+  type IdentityLadderModel,
+} from "@/components/case/IdentityLadder";
 import { RiskChip, ToneChip, WorkflowChip } from "@/components/ui/StatusChips";
 import { profileLabel, type Finding, type TradeCase } from "@/lib/demo/store";
 
@@ -74,12 +80,75 @@ function buildBrief(live: TradeCase): { bullets: string[]; cta: string } {
   return { bullets, cta };
 }
 
+function buildDemoExaminerPack(live: TradeCase) {
+  const ladder = ladderFromStatus(live.identity.resolutionStatus);
+  return {
+    pack_version: "1.0.0",
+    generated_at: new Date().toISOString(),
+    disclaimer:
+      "Examiner case pack for human review. Not a Customs filing, payment instruction, or autonomous compliance decision.",
+    safety_notes: [
+      "TradePulse is decision-support software. It does not approve, reject, clear, sanction, or find fraud.",
+      "Fuzzy name matching is never identity proof.",
+      "DATA_UNAVAILABLE, NOT_AVAILABLE, and NOT_APPLICABLE must never be treated as PASS.",
+      "Agent consensus is an extraction-confidence signal only, never a compliance conclusion.",
+      "Checker approval cannot precede maker approval.",
+    ],
+    case: {
+      case_id: live.id,
+      reference: live.reference,
+      state: live.workflow,
+      corridor: live.corridor,
+      risk_route: live.riskRoute,
+      profile: live.profile,
+      data_label: "synthetic",
+    },
+    documents: live.docs.map((d) => ({
+      document_type: d.type,
+      label: d.label,
+      provided: d.provided,
+      requirement: d.policy,
+    })),
+    identity_ladders: [
+      {
+        ...ladder,
+        role: "SELLER",
+        party_name: live.identity.normalizedName,
+      },
+    ],
+    findings: live.findings.map((f) => ({
+      check_id: f.id,
+      title: f.title,
+      status: f.statusLabel,
+      reason: f.summary,
+      recommended_action: f.action,
+      source: f.source,
+    })),
+    reconciliation: live.recon,
+    agent_trace_summary: live.agentTrace,
+    audit_trail: live.audit,
+  };
+}
+
+function downloadJson(filename: string, payload: unknown) {
+  const blob = new Blob([JSON.stringify(payload, null, 2)], {
+    type: "application/json",
+  });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 export function CaseWorkbench({ caseId }: { caseId: string }) {
   const [tab, setTab] = useState<TabId>("investigate");
   const [note, setNote] = useState("");
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const [showEvidence, setShowEvidence] = useState<Record<string, boolean>>({});
+  const [ladder, setLadder] = useState<IdentityLadderModel | null>(null);
   const { ready, maker, checker, cases, loadCase, mode } = useDemo();
 
   useEffect(() => {
@@ -95,6 +164,42 @@ export function CaseWorkbench({ caseId }: { caseId: string }) {
   }, [caseId, mode]);
 
   const live = cases.find((x) => x.id === caseId);
+
+  useEffect(() => {
+    if (!live) {
+      setLadder(null);
+      return;
+    }
+    if (mode !== "api") {
+      setLadder(ladderFromStatus(live.identity.resolutionStatus));
+      return;
+    }
+    let cancelled = false;
+    void api
+      .identityLadder(caseId)
+      .then((rows) => {
+        if (cancelled) return;
+        if (rows[0]) {
+          setLadder({
+            role: rows[0].role,
+            party_name: rows[0].party_name,
+            resolution_status: rows[0].resolution_status,
+            current_rung_id: rows[0].current_rung_id,
+            side_state: rows[0].side_state,
+            safety_note: rows[0].safety_note,
+            steps: rows[0].steps,
+          });
+        } else {
+          setLadder(ladderFromStatus(live.identity.resolutionStatus));
+        }
+      })
+      .catch(() => {
+        if (!cancelled) setLadder(ladderFromStatus(live.identity.resolutionStatus));
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [caseId, live, mode, live?.identity.resolutionStatus, live?.updatedAt]);
 
   const reconBanner = useMemo(() => {
     if (!live?.recon.length) return null;
@@ -120,10 +225,7 @@ export function CaseWorkbench({ caseId }: { caseId: string }) {
       <div className="tp-card p-8 text-center">
         <h1 className="text-lg font-semibold text-[var(--tp-navy)]">Case not found</h1>
         {err ? <p className="mt-2 text-sm text-rose-700">{err}</p> : null}
-        <Link
-          href="/workbench/queue"
-          className="mt-3 inline-block text-sm text-[var(--tp-accent)]"
-        >
+        <Link href="/queue" className="mt-3 inline-block text-sm text-[var(--tp-accent)]">
           Back to queue
         </Link>
       </div>
@@ -144,10 +246,20 @@ export function CaseWorkbench({ caseId }: { caseId: string }) {
     }
   };
 
+  const downloadExaminerPack = () =>
+    void run(async () => {
+      if (mode === "api") {
+        const pack = await api.examinerPack(caseId);
+        downloadJson(`${caseId}-examiner-pack.json`, pack);
+        return;
+      }
+      downloadJson(`${caseId}-examiner-pack.json`, buildDemoExaminerPack(live));
+    });
+
   return (
     <div className="space-y-4">
       <p>
-        <Link href="/workbench/queue" className="text-sm font-medium text-[var(--tp-accent)]">
+        <Link href="/queue" className="text-sm font-medium text-[var(--tp-accent)]">
           ← Queue
         </Link>
       </p>
@@ -158,9 +270,7 @@ export function CaseWorkbench({ caseId }: { caseId: string }) {
             <p className="text-[11px] uppercase tracking-[0.14em] text-[var(--tp-muted)]">
               Case workbench {mode === "api" ? "· live API" : "· local demo"}
             </p>
-            <h1 className="font-display mt-1 text-2xl font-semibold text-[var(--tp-navy)]">
-              {live.reference}
-            </h1>
+            <h1 className="mt-1 text-2xl font-semibold text-[var(--tp-navy)]">{live.reference}</h1>
             <p className="mt-1 text-[var(--tp-ink)]">{live.counterparty}</p>
             <p className="mt-1 text-sm text-[var(--tp-muted)]">
               {live.corridor} · {profileLabel(live.profile)} · {live.currency} {live.amount}
@@ -170,6 +280,14 @@ export function CaseWorkbench({ caseId }: { caseId: string }) {
             <RiskChip route={live.riskRoute} />
             <WorkflowChip state={live.workflow} />
             <span className="text-xs text-[var(--tp-muted)]">{live.slaLabel}</span>
+            <button
+              type="button"
+              disabled={busy}
+              onClick={downloadExaminerPack}
+              className="rounded-lg border border-[var(--tp-line)] bg-white px-3 py-1.5 text-xs font-medium text-[var(--tp-navy)] hover:bg-slate-50 disabled:opacity-40"
+            >
+              Download examiner pack
+            </button>
           </div>
         </div>
 
@@ -205,7 +323,7 @@ export function CaseWorkbench({ caseId }: { caseId: string }) {
             <button
               type="button"
               onClick={() => setTab("decide")}
-              className="tp-btn-primary shrink-0"
+              className="shrink-0 rounded-lg bg-[var(--tp-navy)] px-4 py-2 text-sm font-medium text-white"
             >
               Go to Decide
             </button>
@@ -216,18 +334,16 @@ export function CaseWorkbench({ caseId }: { caseId: string }) {
         {err ? <p className="mt-3 text-sm text-rose-700">{err}</p> : null}
       </header>
 
-      <div className="flex flex-wrap gap-1 border-b border-[var(--tp-line)] pb-2" role="tablist">
+      <div className="flex flex-wrap gap-1 border-b border-[var(--tp-line)] pb-2">
         {TABS.map((t) => (
           <button
             key={t.id}
             type="button"
-            role="tab"
-            aria-selected={tab === t.id}
             onClick={() => setTab(t.id)}
             className={
               tab === t.id
-                ? "cursor-pointer rounded-md bg-[var(--tp-navy)] px-3 py-1.5 text-sm font-medium text-white transition duration-200"
-                : "cursor-pointer rounded-md px-3 py-1.5 text-sm text-[var(--tp-muted)] transition duration-200 hover:bg-white"
+                ? "rounded-md bg-[var(--tp-navy)] px-3 py-1.5 text-sm font-medium text-white"
+                : "rounded-md px-3 py-1.5 text-sm text-[var(--tp-muted)] hover:bg-white"
             }
           >
             {t.label}
@@ -369,62 +485,65 @@ export function CaseWorkbench({ caseId }: { caseId: string }) {
       ) : null}
 
       {tab === "party" ? (
-        <section className="tp-card grid gap-6 p-5 md:grid-cols-2">
-          <div>
-            <h2 className="text-sm font-semibold text-[var(--tp-navy)]">Document party</h2>
-            <dl className="mt-3 space-y-3 text-sm">
-              <div>
-                <dt className="text-xs uppercase tracking-wide text-[var(--tp-muted)]">
-                  Name on document
-                </dt>
-                <dd className="mt-0.5 font-medium">{live.identity.rawName}</dd>
-              </div>
-              <div>
-                <dt className="text-xs uppercase tracking-wide text-[var(--tp-muted)]">
-                  LEI on document
-                </dt>
-                <dd className="mt-0.5 font-mono text-xs">
-                  {live.identity.leiOnDocument ?? "Not provided"}
-                </dd>
-                <p className="mt-1 text-xs leading-relaxed text-[var(--tp-muted)]">
-                  LEI is a 20-character Legal Entity Identifier. When the invoice LEI matches a
-                  GLEIF registry record, that is strong identity evidence — not a sanctions clear.
-                </p>
-              </div>
-              {live.identity.candidateName ? (
+        <section className="space-y-4">
+          {ladder ? <IdentityLadder ladder={ladder} /> : null}
+          <div className="tp-card grid gap-6 p-5 md:grid-cols-2">
+            <div>
+              <h2 className="text-sm font-semibold text-[var(--tp-navy)]">Document party</h2>
+              <dl className="mt-3 space-y-3 text-sm">
                 <div>
                   <dt className="text-xs uppercase tracking-wide text-[var(--tp-muted)]">
-                    Registry legal name
+                    Name on document
                   </dt>
-                  <dd className="mt-0.5">{live.identity.candidateName}</dd>
+                  <dd className="mt-0.5 font-medium">{live.identity.rawName}</dd>
                 </div>
-              ) : null}
-            </dl>
-          </div>
-          <div>
-            <h2 className="text-sm font-semibold text-[var(--tp-navy)]">Identity outcome</h2>
-            <dl className="mt-3 space-y-3 text-sm">
-              <div>
-                <dt className="text-xs uppercase tracking-wide text-[var(--tp-muted)]">Status</dt>
-                <dd className="mt-0.5 text-base font-semibold text-[var(--tp-navy)]">
-                  {live.identity.outcome}
-                </dd>
-              </div>
-              <div>
-                <dt className="text-xs uppercase tracking-wide text-[var(--tp-muted)]">
-                  What this means
-                </dt>
-                <dd className="mt-0.5 leading-relaxed">{live.identity.action}</dd>
-              </div>
-              <div>
-                <dt className="text-xs uppercase tracking-wide text-[var(--tp-muted)]">vLEI</dt>
-                <dd className="mt-0.5 text-[var(--tp-muted)]">{live.identity.vlei}</dd>
-                <p className="mt-1 text-xs leading-relaxed text-[var(--tp-muted)]">
-                  vLEI is a verifiable credential for role/authority. A plain LEI string is not a
-                  vLEI. Fixture demos must stay labeled synthetic.
-                </p>
-              </div>
-            </dl>
+                <div>
+                  <dt className="text-xs uppercase tracking-wide text-[var(--tp-muted)]">
+                    LEI on document
+                  </dt>
+                  <dd className="mt-0.5 font-mono text-xs">
+                    {live.identity.leiOnDocument ?? "Not provided"}
+                  </dd>
+                  <p className="mt-1 text-xs leading-relaxed text-[var(--tp-muted)]">
+                    LEI is a 20-character Legal Entity Identifier. When the invoice LEI matches a
+                    GLEIF registry record, that is strong identity evidence — not a sanctions clear.
+                  </p>
+                </div>
+                {live.identity.candidateName ? (
+                  <div>
+                    <dt className="text-xs uppercase tracking-wide text-[var(--tp-muted)]">
+                      Registry legal name
+                    </dt>
+                    <dd className="mt-0.5">{live.identity.candidateName}</dd>
+                  </div>
+                ) : null}
+              </dl>
+            </div>
+            <div>
+              <h2 className="text-sm font-semibold text-[var(--tp-navy)]">Identity outcome</h2>
+              <dl className="mt-3 space-y-3 text-sm">
+                <div>
+                  <dt className="text-xs uppercase tracking-wide text-[var(--tp-muted)]">Status</dt>
+                  <dd className="mt-0.5 text-base font-semibold text-[var(--tp-navy)]">
+                    {live.identity.outcome}
+                  </dd>
+                </div>
+                <div>
+                  <dt className="text-xs uppercase tracking-wide text-[var(--tp-muted)]">
+                    What this means
+                  </dt>
+                  <dd className="mt-0.5 leading-relaxed">{live.identity.action}</dd>
+                </div>
+                <div>
+                  <dt className="text-xs uppercase tracking-wide text-[var(--tp-muted)]">vLEI</dt>
+                  <dd className="mt-0.5 text-[var(--tp-muted)]">{live.identity.vlei}</dd>
+                  <p className="mt-1 text-xs leading-relaxed text-[var(--tp-muted)]">
+                    vLEI is a verifiable credential for role/authority. A plain LEI string is not a
+                    vLEI. Fixture demos must stay labeled synthetic.
+                  </p>
+                </div>
+              </dl>
+            </div>
           </div>
         </section>
       ) : null}
