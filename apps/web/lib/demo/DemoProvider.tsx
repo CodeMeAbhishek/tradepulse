@@ -160,7 +160,11 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
           if (chosen.length > 0) {
             for (const pack of chosen) {
               const record = await api.createCase({
-                transaction_profile: pack.default_profile,
+                transaction_profile: pack.default_profile as
+                  | "INVOICE_ONLY_PRE_REVIEW"
+                  | "POST_SHIPMENT_DOCUMENT_REVIEW"
+                  | "LC_DOCUMENT_REVIEW"
+                  | "ENHANCED_TRADE_HOUSE_REVIEW",
                 corridor: pack.suggested_corridor,
                 assignee: pack.suggested_counterparty,
               });
