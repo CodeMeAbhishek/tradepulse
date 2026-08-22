@@ -287,6 +287,10 @@ export const api = {
     return new File([blob], filename, { type: blob.type || "text/plain" });
   },
 
+  /** Absolute URL for opening a sample document in a new tab / iframe. */
+  sampleFileUrl: (packId: string, filename: string): string =>
+    `${baseUrl()}/demo/sample-packs/${packId}/files/${encodeURIComponent(filename)}`,
+
   regwatchEvents: () => request<RegWatchEvent[]>("/regwatch/events"),
 
   sources: () => request<Array<{ source_id: string; label?: string }>>("/sources"),

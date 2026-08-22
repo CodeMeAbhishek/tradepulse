@@ -29,6 +29,19 @@ type SamplePack = {
   files: Array<{ role: string; filename: string; media_type: string }>;
 };
 
+type PreviewState = {
+  packTitle: string;
+  roleLabel: string;
+  filename: string;
+  mediaType: string;
+  text: string | null;
+  objectUrl: string | null;
+};
+
+function fileForRole(pack: SamplePack, role: string) {
+  return pack.files.find((f) => f.role === role) ?? null;
+}
+
 export default function NewCasePage() {
   const { create, mode } = useDemo();
   const router = useRouter();
@@ -44,6 +57,9 @@ export default function NewCasePage() {
   const [packsError, setPacksError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
+  const [preview, setPreview] = useState<PreviewState | null>(null);
+  const [previewBusy, setPreviewBusy] = useState<string | null>(null);
+  const [previewError, setPreviewError] = useState<string | null>(null);
 
   useEffect(() => {
     if (mode !== "api") {
@@ -68,6 +84,12 @@ export default function NewCasePage() {
     };
   }, [mode]);
 
+  useEffect(() => {
+    return () => {
+      if (preview?.objectUrl) URL.revokeObjectURL(preview.objectUrl);
+    };
+  }, [preview?.objectUrl]);
+
   const selectedPack = packs.find((p) => p.pack_id === selectedPackId) ?? null;
 
   useEffect(() => {
@@ -77,6 +99,57 @@ export default function NewCasePage() {
     setProfile(selectedPack.default_profile as Profile);
     setIncludeBol(selectedPack.include_bol);
   }, [selectedPack, docSource]);
+
+  const closePreview = () => {
+    setPreview((prev) => {
+      if (prev?.objectUrl) URL.revokeObjectURL(prev.objectUrl);
+      return null;
+    });
+    setPreviewError(null);
+  };
+
+  const openSampleDoc = async (pack: SamplePack, role: "commercial_invoice" | "bill_of_lading") => {
+    const meta = fileForRole(pack, role);
+    if (!meta) {
+      setPreviewError(role === "commercial_invoice" ? "No invoice in this packet." : "No Bill of Lading in this packet.");
+      return;
+    }
+    const key = `${pack.pack_id}:${meta.filename}`;
+    setPreviewBusy(key);
+    setPreviewError(null);
+    try {
+      const file = await api.fetchSampleFile(pack.pack_id, meta.filename);
+      const isPdf =
+        meta.media_type.includes("pdf") ||
+        meta.filename.toLowerCase().endsWith(".pdf") ||
+        file.type.includes("pdf");
+      if (isPdf) {
+        const objectUrl = URL.createObjectURL(file);
+        setPreview({
+          packTitle: pack.title,
+          roleLabel: role === "commercial_invoice" ? "Commercial invoice" : "Bill of Lading",
+          filename: meta.filename,
+          mediaType: "application/pdf",
+          text: null,
+          objectUrl,
+        });
+      } else {
+        const text = await file.text();
+        setPreview({
+          packTitle: pack.title,
+          roleLabel: role === "commercial_invoice" ? "Commercial invoice" : "Bill of Lading",
+          filename: meta.filename,
+          mediaType: meta.media_type || "text/plain",
+          text,
+          objectUrl: null,
+        });
+      }
+    } catch (ex: unknown) {
+      setPreviewError(ex instanceof Error ? ex.message : "Could not open sample document");
+    } finally {
+      setPreviewBusy(null);
+    }
+  };
 
   return (
     <div className="mx-auto max-w-3xl space-y-4">
@@ -163,37 +236,76 @@ export default function NewCasePage() {
               <div className="space-y-2">
                 <p className="text-xs text-[var(--tp-muted)]">
                   Pick a demo packet — counterparty, corridor, and profile update from that packet’s
-                  documents.
+                  documents. Use View invoice to inspect the source file before creating the case.
                 </p>
                 {packsError ? <p className="text-xs text-rose-700">{packsError}</p> : null}
+                {previewError ? <p className="text-xs text-rose-700">{previewError}</p> : null}
                 <div className="grid gap-2 sm:grid-cols-2">
                   {packs.map((p) => {
                     const active = p.pack_id === selectedPackId;
+                    const inv = fileForRole(p, "commercial_invoice");
+                    const bol = fileForRole(p, "bill_of_lading");
+                    const invKey = inv ? `${p.pack_id}:${inv.filename}` : "";
+                    const bolKey = bol ? `${p.pack_id}:${bol.filename}` : "";
                     return (
-                      <button
+                      <div
                         key={p.pack_id}
-                        type="button"
-                        onClick={() => setSelectedPackId(p.pack_id)}
                         className={cn(
-                          "cursor-pointer rounded-lg border p-3 text-left transition",
+                          "rounded-lg border p-3 text-left transition",
                           active
                             ? "border-[var(--tp-brand-orange)] bg-[rgba(233,99,29,0.06)] ring-1 ring-[var(--tp-brand-orange)]"
                             : "border-[var(--tp-line)] bg-[var(--tp-elevated)] hover:border-[var(--tp-brand-blue)]",
                         )}
                       >
-                        <span className="block text-sm font-semibold text-[var(--tp-navy)]">
-                          {p.title}
-                        </span>
-                        <span className="mt-1 block text-[11px] font-semibold uppercase tracking-wide text-[var(--tp-brand-orange)]">
-                          Demo sample
-                        </span>
-                        <span className="mt-1 block font-mono text-[11px] text-[var(--tp-navy)]">
-                          {p.suggested_counterparty} · {p.suggested_corridor}
-                        </span>
-                        <span className="mt-1 block text-xs leading-snug text-[var(--tp-muted)]">
-                          {p.summary}
-                        </span>
-                      </button>
+                        <button
+                          type="button"
+                          onClick={() => setSelectedPackId(p.pack_id)}
+                          className="w-full cursor-pointer text-left"
+                        >
+                          <span className="block text-sm font-semibold text-[var(--tp-navy)]">
+                            {p.title}
+                          </span>
+                          <span className="mt-1 block text-[11px] font-semibold uppercase tracking-wide text-[var(--tp-brand-orange)]">
+                            Demo sample
+                          </span>
+                          <span className="mt-1 block font-mono text-[11px] text-[var(--tp-navy)]">
+                            {p.suggested_counterparty} · {p.suggested_corridor}
+                          </span>
+                          <span className="mt-1 block text-xs leading-snug text-[var(--tp-muted)]">
+                            {p.summary}
+                          </span>
+                        </button>
+                        <div className="mt-3 flex flex-wrap gap-2 border-t border-[var(--tp-line)] pt-2">
+                          {inv ? (
+                            <button
+                              type="button"
+                              className="cursor-pointer rounded-md border border-[var(--tp-line)] bg-white px-2.5 py-1 text-xs font-semibold text-[var(--tp-brand-blue)] hover:border-[var(--tp-brand-blue)] disabled:opacity-50"
+                              disabled={previewBusy === invKey}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setSelectedPackId(p.pack_id);
+                                void openSampleDoc(p, "commercial_invoice");
+                              }}
+                            >
+                              {previewBusy === invKey ? "Opening…" : "View invoice"}
+                            </button>
+                          ) : null}
+                          {bol ? (
+                            <button
+                              type="button"
+                              className="cursor-pointer rounded-md border border-[var(--tp-line)] bg-white px-2.5 py-1 text-xs font-semibold text-[var(--tp-navy)] hover:border-[var(--tp-brand-blue)] disabled:opacity-50"
+                              disabled={previewBusy === bolKey}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setSelectedPackId(p.pack_id);
+                                void openSampleDoc(p, "bill_of_lading");
+                              }}
+                            >
+                              {previewBusy === bolKey ? "Opening…" : "View BoL"}
+                            </button>
+                          ) : null}
+                        </div>
+                      </div>
                     );
                   })}
                 </div>
@@ -294,6 +406,55 @@ export default function NewCasePage() {
           {busy ? "Preparing case for review…" : "Create case & open for review"}
         </button>
       </form>
+
+      {preview ? (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="sample-preview-title"
+          onClick={closePreview}
+        >
+          <div
+            className="flex max-h-[85vh] w-full max-w-3xl flex-col overflow-hidden rounded-xl border border-[var(--tp-line)] bg-white shadow-xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-start justify-between gap-3 border-b border-[var(--tp-line)] px-4 py-3">
+              <div>
+                <p
+                  id="sample-preview-title"
+                  className="text-sm font-semibold text-[var(--tp-navy)]"
+                >
+                  {preview.roleLabel}
+                </p>
+                <p className="mt-0.5 text-xs text-[var(--tp-muted)]">
+                  {preview.packTitle} · {preview.filename} · Demo sample
+                </p>
+              </div>
+              <button
+                type="button"
+                className="cursor-pointer rounded-md px-2 py-1 text-sm font-medium text-[var(--tp-muted)] hover:bg-[var(--tp-bg)] hover:text-[var(--tp-navy)]"
+                onClick={closePreview}
+              >
+                Close
+              </button>
+            </div>
+            <div className="min-h-0 flex-1 overflow-auto bg-[var(--tp-bg)] p-4">
+              {preview.objectUrl ? (
+                <iframe
+                  title={preview.filename}
+                  src={preview.objectUrl}
+                  className="h-[65vh] w-full rounded-lg border border-[var(--tp-line)] bg-white"
+                />
+              ) : (
+                <pre className="whitespace-pre-wrap rounded-lg border border-[var(--tp-line)] bg-white p-4 font-mono text-xs leading-relaxed text-[var(--tp-ink)]">
+                  {preview.text}
+                </pre>
+              )}
+            </div>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }
