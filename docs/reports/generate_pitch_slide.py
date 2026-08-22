@@ -316,11 +316,11 @@ def main():
     set_shape_text(
         regulatory,
         [
-            ("4. Regulatory Requirements (Domestic/IFSC)", {"size": 11, "bold": True, "space_after": 4}),
-            ("• Focus: IFSCA / GIFT City trade desks; bank trade ops under RBI", {"size": 8.5, "space_after": 2}),
-            ("• Company ID: use official records when available — look-alike names are not proof", {"size": 8.5, "space_after": 2}),
-            ("• We never claim: AI approved / cleared / sanctioned a trade", {"size": 8.5, "space_after": 2}),
-            ("• Missing papers stay visible — officers stay in the loop on every material gap", {"size": 8.5, "space_after": 0}),
+            ("4. Regulatory Requirements (Domestic/IFSC)", {"size": 11, "bold": True, "space_after": 3}),
+            ("• Focus: IFSCA / GIFT City — including ITFS (International Trade Financing Services) platforms for cross-border trade finance", {"size": 8, "space_after": 2}),
+            ("• Also: bank / IBU trade desks under RBI where domestic banking rules apply", {"size": 8, "space_after": 2}),
+            ("• Company ID: official records when available — look-alike names are not proof", {"size": 8, "space_after": 2}),
+            ("• We never claim: AI approved / cleared / sanctioned a trade — officers stay in the loop", {"size": 8, "space_after": 0}),
         ],
     )
 
