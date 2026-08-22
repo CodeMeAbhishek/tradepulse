@@ -234,7 +234,7 @@ def main():
             "[0:35-1:00] Problem + why current tools fail",
             [
                 "Cross-border trade still runs on PDFs: commercial invoice, bill of lading, party names, amounts, routes.",
-                "Today that work is either <b>manual UCP-style grind</b>, or &quot;AI checkers&quot; that treat a <b>fuzzy name hit as identity</b> and quietly skip missing data as if it were a green pass.",
+                "Today that work is either <b>manual PDF grind</b>, or &quot;AI checkers&quot; that treat a <b>similar-looking name as the same company</b> and quietly skip missing papers as if everything were fine.",
                 "That creates two failures banks cannot afford: <b>false certainty</b> in audit - or <b>endless exceptions</b> that kill turnaround.",
                 "GIFT IFSC is scaling trade finance through IBUs. Volume is rising. Scrutiny is not going away.",
             ],

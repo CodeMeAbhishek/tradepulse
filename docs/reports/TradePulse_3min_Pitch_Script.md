@@ -42,7 +42,7 @@ We do **not** approve trades. We do **not** clear Customs. We make the documenta
 
 Cross-border trade still runs on PDFs: commercial invoice, bill of lading, party names, amounts, routes.
 
-Today that work is either **manual UCP-style grind**, or “AI checkers” that treat a **fuzzy name hit as identity** and quietly skip missing data as if it were a green pass.
+Today that work is either **manual PDF grind**, or “AI checkers” that treat a **similar-looking name as the same company** and quietly skip missing papers as if everything were fine.
 
 That creates two failures banks cannot afford: **false certainty** in audit — or **endless exceptions** that kill turnaround.
 

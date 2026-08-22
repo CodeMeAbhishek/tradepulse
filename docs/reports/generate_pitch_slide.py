@@ -147,7 +147,7 @@ def main():
         [
             ("1. Problem", {"size": 11, "bold": True, "space_after": 5}),
             ("• Who: Trade officers at banks and GIFT City IBUs — first buyer is Head of Trade Finance Ops", {"size": 8.5, "space_after": 3}),
-            ("• Today: Staff still grind through invoice + shipping PDFs by hand; weak name matches get treated as “confirmed”; missing papers get waved through", {"size": 8.5, "space_after": 3}),
+            ("• Today: Staff still grind through invoice + shipping PDFs by hand; a name that only looks alike gets treated as “confirmed”; missing papers get waved through", {"size": 8.5, "space_after": 3}),
             ("• Pain: Hours per file; risky audit trail; queues explode as cross-border / IFSC volume grows — ops cannot scale with more headcount alone", {"size": 8.5, "space_after": 0}),
         ],
     )
@@ -170,7 +170,7 @@ def main():
         [
             ("3. Validation", {"size": 11, "bold": True, "space_after": 5}),
             ("• Buyer locked: Head of Trade Finance Ops at a GIFT City IBU / bank trade desk (formal interview log expands after the hackathon)", {"size": 8.5, "space_after": 3}),
-            ("• What we heard: Banks review the paperwork — they do not “see inside the container”; name similarity is not proof of who someone is", {"size": 8.5, "space_after": 3}),
+            ("• What we heard: Banks review the paperwork — they do not “see inside the container”; a look-alike name is not proof of who someone is", {"size": 8.5, "space_after": 3}),
             ("• Evidence: Working live demo on AWS (Mumbai); officers can open a case, see mismatches, and download a handoff pack — demo data clearly labelled", {"size": 8.5, "space_after": 0}),
         ],
     )
