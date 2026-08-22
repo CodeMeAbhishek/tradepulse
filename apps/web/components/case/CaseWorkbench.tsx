@@ -187,7 +187,7 @@ export function CaseWorkbench({ caseId }: { caseId: string }) {
         ) : null}
 
         {brief ? (
-          <div className="mt-4 flex flex-col gap-3 rounded-lg border border-[var(--tp-line)] bg-slate-50 px-4 py-3 sm:flex-row sm:items-end sm:justify-between">
+          <div className="mt-4 flex flex-col gap-3 rounded-lg border border-[var(--tp-line)] bg-[var(--tp-bg)] px-4 py-3 sm:flex-row sm:items-end sm:justify-between">
             <div className="min-w-0">
               <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--tp-muted)]">
                 Case brief
@@ -212,6 +212,7 @@ export function CaseWorkbench({ caseId }: { caseId: string }) {
           </div>
         ) : null}
 
+        {busy ? <ProcessingRail /> : null}
         {err ? <p className="mt-3 text-sm text-rose-700">{err}</p> : null}
       </header>
 
@@ -243,8 +244,12 @@ export function CaseWorkbench({ caseId }: { caseId: string }) {
               No checks yet. Process the case after uploading documents.
             </p>
           ) : (
-            live.findings.map((f: Finding) => (
-              <article key={f.id} className="tp-card flex flex-col p-4">
+            live.findings.map((f: Finding, i) => (
+              <article
+                key={f.id}
+                className="tp-card tp-reveal flex flex-col p-4"
+                style={{ "--i": i } as React.CSSProperties}
+              >
                 <div className="flex items-start justify-between gap-2">
                   <h2 className="text-sm font-semibold text-[var(--tp-navy)]">{f.title}</h2>
                   <ToneChip tone={f.tone} label={f.statusLabel} />
@@ -521,6 +526,25 @@ export function CaseWorkbench({ caseId }: { caseId: string }) {
           </div>
         </section>
       ) : null}
+    </div>
+  );
+}
+
+/**
+ * Shown only while a case is processing.
+ *
+ * The bar is indeterminate because the backend reports no progress figure —
+ * a percentage here would be invented. The stage list names the agents the
+ * orchestrator actually runs, so what is on screen matches what is happening.
+ */
+function ProcessingRail() {
+  const stages = ["Extracting", "Validating", "Challenging", "Arbitrating", "Reconciling"];
+  return (
+    <div className="mt-4" role="status" aria-live="polite">
+      <div className="tp-rail" />
+      <p className="mt-2 text-xs text-[var(--tp-muted)]">
+        Processing — {stages.join(" · ")}
+      </p>
     </div>
   );
 }
