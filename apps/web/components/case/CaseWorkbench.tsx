@@ -11,7 +11,7 @@ import {
   ladderFromStatus,
   type IdentityLadderModel,
 } from "@/components/case/IdentityLadder";
-import { RiskChip, ToneChip, WorkflowChip } from "@/components/ui/StatusChips";
+import { MismatchFlag, RiskChip, ToneChip, WorkflowChip } from "@/components/ui/StatusChips";
 import { profileLabel, type Finding, type TradeCase } from "@/lib/demo/store";
 import { parseLegacySourceString } from "@/lib/sources/resolve";
 
@@ -302,15 +302,15 @@ export function CaseWorkbench({ caseId }: { caseId: string }) {
         </div>
 
         {mismatch ? (
-          <div className="mt-4 rounded-lg border border-amber-300 bg-amber-50 px-4 py-3">
-            <p className="text-sm font-semibold text-amber-950">
-              Document discrepancy — human review required
+          <div className="tp-banner-mismatch mt-4 rounded-lg px-4 py-3">
+            <p className="text-sm font-semibold tracking-wide">
+              Flagged — document discrepancy · human review required
             </p>
-            <p className="mt-1 text-sm text-amber-900">
+            <p className="mt-1 text-sm text-white/95">
               Invoice: <strong>{mismatch.invoice}</strong> · Bill of lading:{" "}
               <strong>{mismatch.bol}</strong>
             </p>
-            <p className="mt-2 text-sm text-amber-900/90">{mismatch.note}</p>
+            <p className="mt-2 text-sm text-white/90">{mismatch.note}</p>
           </div>
         ) : null}
 
@@ -496,21 +496,26 @@ export function CaseWorkbench({ caseId }: { caseId: string }) {
                   </tr>
                 ) : (
                   live.recon.map((r) => (
-                    <tr key={r.field} className="border-t border-[var(--tp-line)]">
+                    <tr
+                      key={r.field}
+                      className={
+                        r.status === "MISMATCH"
+                          ? "tp-row-mismatch border-t border-[var(--tp-line)]"
+                          : "border-t border-[var(--tp-line)]"
+                      }
+                    >
                       <td className="px-3 py-2.5 font-medium">{r.field}</td>
                       <td className="px-3 py-2.5">{r.invoice}</td>
                       <td className="px-3 py-2.5">{r.bol ?? "—"}</td>
                       <td className="px-3 py-2.5">
-                        <ToneChip
-                          tone={
-                            r.status === "MATCH"
-                              ? "clear"
-                              : r.status === "MISMATCH"
-                                ? "review"
-                                : "info"
-                          }
-                          label={statusLabel(r.status)}
-                        />
+                        {r.status === "MISMATCH" ? (
+                          <MismatchFlag label={statusLabel(r.status)} />
+                        ) : (
+                          <ToneChip
+                            tone={r.status === "MATCH" ? "clear" : "info"}
+                            label={statusLabel(r.status)}
+                          />
+                        )}
                       </td>
                       <td className="px-3 py-2.5 text-[var(--tp-muted)]">{r.note}</td>
                     </tr>

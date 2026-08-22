@@ -28,3 +28,8 @@ export function ToneChip({ tone, label }: { tone: FindingTone; label: string }) 
           : "tp-chip-info";
   return <span className={`tp-chip ${cls}`}>{label}</span>;
 }
+
+/** Red-gradient flag for document mismatches (coach: not soft amber). */
+export function MismatchFlag({ label = "Mismatch" }: { label?: string }) {
+  return <span className="tp-flag-mismatch">{label}</span>;
+}
