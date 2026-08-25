@@ -13,7 +13,7 @@
 
 Upload either to `POST /api/v1/cases/{id}/documents` with `document_type=commercial_invoice` or `bill_of_lading`.
 
-**PDF honesty:** text extraction uses a printable-text fallback (not Textract OCR). Born-digital synthetic PDFs work in demo; scanned image PDFs still need OCR later. **Invoice structured extraction** can use Amazon Bedrock (`LLM_PROVIDER=bedrock`, Nova Lite) after text is available.
+**PDF honesty:** on GCP demo, text extraction uses **Document AI OCR** (`TEXT_EXTRACT_MODE=document_ai`) with **local PDF fallback** if OCR fails. Born-digital synthetic PDFs work either way. **Invoice structured extraction** uses Vertex Gemini (`LLM_PROVIDER=vertex`) after text is available (Bedrock still supported locally).
 
 ```bash
 python scripts/build_synthetic_pdfs.py

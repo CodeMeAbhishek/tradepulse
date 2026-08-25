@@ -195,7 +195,7 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 }
 
 export const api = {
-  health: () => fetch(`${baseUrl().replace(/\/api\/v1$/, "")}/healthz`).then((r) => r.ok),
+  health: () => fetch(`${baseUrl().replace(/\/api\/v1$/, "")}/readyz`).then((r) => r.ok),
 
   listCases: () => request<CaseSummary[]>("/cases"),
 

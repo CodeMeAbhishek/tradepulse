@@ -2,13 +2,10 @@
 
 from __future__ import annotations
 
-from functools import lru_cache
-
 import boto3
 from botocore.exceptions import BotoCoreError, ClientError
 
 from app.adapters.storage.base import StoredObject
-from app.config import get_settings
 
 
 class S3DocumentStorage:
@@ -61,19 +58,3 @@ class S3DocumentStorage:
             bucket=self._bucket,
             key=key,
         )
-
-
-@lru_cache
-def get_document_storage():
-    settings = get_settings()
-    backend = (settings.document_storage_backend or "memory").lower()
-    if backend == "s3":
-        return S3DocumentStorage(
-            bucket=settings.s3_documents_bucket,
-            prefix=settings.s3_documents_prefix,
-            region=settings.aws_region,
-            profile=(settings.aws_profile or "").strip() or None,
-        )
-    from app.adapters.storage.memory import MemoryDocumentStorage
-
-    return MemoryDocumentStorage()

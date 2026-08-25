@@ -12,6 +12,7 @@ router = APIRouter(tags=["health"])
 
 
 @router.get("/healthz", response_model=HealthResponse)
+@router.get("/health", response_model=HealthResponse, include_in_schema=False)
 def healthz() -> HealthResponse:
     """Liveness: process is up. Does not check dependencies."""
     settings = get_settings()

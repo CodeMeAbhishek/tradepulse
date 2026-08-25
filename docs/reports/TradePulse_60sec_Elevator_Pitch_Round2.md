@@ -1,115 +1,130 @@
-# TradePulse — Round 2: 60-Second Elevator Pitch + Q&A Pack
+# TradePulse — 60-Second Pitch (Business Audience)
 
-**Format source:** [Founder Institute — Perfect 60 Second Pitch](https://fi.co/insight/how-to-create-the-perfect-60-second-pitch-for-your-startup) (Startup Madlibs → 60s)  
-**Event use:** Round 2 (Top 20) — **1-minute elevator pitch** + **4-minute rapid Q&A**  
-**Rules:** Objective · Short · Simple · one ask · no “revolutionary AI” fluff  
+**Audience:** business people with **little/no product context** — think in **time, cost, risk, who pays**  
+**Format:** **4 Ps first** (cold room) · optional problem-led variant · one ask  
+**Full 4 Ps write-up:** [`TradePulse_4Ps.md`](./TradePulse_4Ps.md)  
+**Event use:** Round 2 — **1-minute pitch** + **4-minute Q&A**
 
----
+**Wallet card**
 
-## 1) Startup Madlibs (memorize this first)
-
-**Template:**  
-My company, __(NAME)__, is developing __(OFFERING)__ to help __(AUDIENCE)__ __(PROBLEM)__ with __(SECRET SAUCE)__.
-
-| Slot | TradePulse fill (plain language) |
-|------|----------------------------------|
-| **NAME** | TradePulse |
-| **OFFERING** | review-desk software for trade documents |
-| **AUDIENCE** | Heads of Trade Finance Ops at GIFT City IBUs (and their examiners) |
-| **PROBLEM** | finish invoice and shipping-PDF reviews faster without fake “all clears” |
-| **SECRET SAUCE** | automatic double-checks that flag gaps and mismatches, keep an audit trail, and leave the decision to maker–checker humans |
-
-**One sentence (speak this):**
-
-> My company, **TradePulse**, is developing **review-desk software for trade documents** to help **Heads of Trade Finance Ops at GIFT City IBUs** **finish invoice and shipping-PDF reviews faster without fake “all clears,”** with **automatic double-checks that flag gaps and mismatches, keep an audit trail, and leave the final call to maker–checker humans.**
-
-**Why this passes FI checks**
-- Offering = **software**, not vague “platform”  
-- Audience = **specific title + place** (not “banks”)  
-- Problem = **time + audit risk** (not jargon)  
-- Sauce = **how** we differ — not “we use AI”  
+| P | One line |
+|---|----------|
+| **Product** | Review desk → audit-ready case file; humans decide |
+| **Price** | Pilot → SaaS + per case; Ops pays |
+| **Place** | GIFT IBU trade-ops desk; cloud workbench |
+| **Promotion** | Live demo + intros + supervised pilot |
 
 ---
 
-## 2) Full 60-second script (~155 words ≈ 60s at calm pace)
+## 1) One-liner (memorize)
 
-**Speak this. One speaker. Phone timer on.**
+> **TradePulse** is review-desk software that helps **Heads of Trade Finance Ops** clear invoice and shipping PDFs **faster and cleaner** — flags mismatches and missing papers, keeps an audit trail, and **leaves the yes/no to your maker–checker team**.
+
+---
+
+## 2) PRIMARY — 4 Ps script for cold rooms (~140 words)
+
+**Use this when they don’t know TradePulse. One speaker. Timer on.**
 
 Thank you for having us.
 
-I’m **[Name]**, and with my teammates we built TradePulse after watching how hard trade desks still work through paper-heavy files at places like GIFT.
+I’m **[Name]**. Quick **four P’s** so you know who we are.
 
-My company, **TradePulse**, is developing **review-desk software for trade documents** to help **Heads of Trade Finance Ops at GIFT City IBUs** **finish invoice and shipping-PDF reviews faster without fake “all clears,”** with **automatic double-checks that flag gaps and mismatches, keep an audit trail, and leave the final call to maker–checker humans.**
+**Product:** TradePulse is review-desk software. Trade still runs on invoices and shipping PDFs. We turn that messy pack into **one audit-ready case file** — flag mismatches, refuse fake all-clears when data is missing — and **your officers still decide**.
 
-**Traction today:** we have a **working live demo on AWS in Mumbai** — officers can open a case, see a quantity mismatch flagged in red, and download a handoff pack. Demo data is labelled. This is a **prototype**, not a finished bank install.
+**Price:** Ops budget pays — first a **supervised pilot**, then **software subscription plus per case**. We charge for faster, cleaner review — not for robot approvals.
 
-**Customer problem:** desks still grind PDFs by hand; look-alike names get treated as confirmed; missing papers get waved through — that burns hours and weakens the audit trail as IFSC trade volume rises, including flows around **ITFS** trade-finance activity.
+**Place:** We sell into **GIFT City IBU trade-ops desks** first, delivered as a **cloud workbench** — live today on GCP Cloud Run.
 
-**Opportunity:** GIFT needs faster review **without** autopilot approval. We prepare the case file; humans decide.
+**Promotion:** We don’t run ads. We need **one intro** to a trade-ops head, show the live demo, and run a short pilot.
 
-**Ask:** please introduce us to a **Head of Trade Finance Ops at a GIFT City IBU** (or a mentor who can) so we can run a short supervised pilot next.
+That’s TradePulse. Happy to take questions.
+
+---
+
+## 2b) Alternate — problem-led (if they already know “trade docs”)
+
+Thank you for having us.
+
+I’m **[Name]**. In trade, money sits stuck while people chase paperwork. Most document packs still bounce on first bank review — **delayed payment, extra fees, expensive exception queues**.
+
+**TradePulse** is review-desk software for **Heads of Trade Finance Ops at GIFT City IBUs**. Messy PDF pack in → gaps and mismatches flagged → **audit-ready case file** out. We do **not** auto-approve.
+
+**Traction:** live on **AWS Mumbai**. **Ask:** intro to a trade-ops head for a short pilot.
 
 Thank you — happy to take questions.
 
 ---
 
-## 3) Delivery checklist (60 seconds)
+## 3) Even more “business room” cut (~55s, if they hate “GIFT” jargon)
 
-- [ ] Timer ≤ **0:58** with natural pauses  
-- [ ] Said the **Madlibs sentence** once, cleanly  
-- [ ] Said **live demo** / prototype once  
-- [ ] Said **one ask** only (IBU Ops intro)  
-- [ ] Did **not** say: AI approved, Customs cleared, sanctioned, or “we’re an ITFS platform”  
-- [ ] Did **not** say “revolutionary” / “disrupt”  
+Thank you for having us.
+
+I’m **[Name]**. Trade still runs on PDFs. Officers spend hours matching invoices to shipping papers. Most packs fail first review — cash delays, fees, and risk if someone waves through a look-alike name or a missing page.
+
+**TradePulse** is the review desk that does the first pass: flags mismatches, refuses fake all-clears when data is missing, keeps the paper trail, and prepares the file for **human maker–checker**. We sell **speed and cleaner files** — not robot approvals.
+
+Live demo on AWS. Prototype. **Ask:** one intro to a trade-ops buyer for a supervised pilot.
+
+Thank you.
 
 ---
 
-## 4) Rapid Q&A pack (4 minutes) — short answers
+## 4) Delivery checklist
 
-Judges will interrupt. Answer in **2–4 sentences**, then stop.
+- [ ] Hit all **4 Ps** once each (Product → Price → Place → Promotion)  
+- [ ] Say **what you don’t sell** once (no auto-approve)  
+- [ ] One **ask** only (buyer intro / pilot)  
+- [ ] Never: Customs cleared, AI sanctioned, “we’re the bank”  
 
-### Who pays / first customer?
-> Head of Trade Finance Ops at a GIFT City IBU. We sell faster, safer documentary review and an examiner handoff pack — not autopilot approval. Compliance must accept the decision-support framing.
+---
 
-### What is ITFS and how do you fit?
-> **ITFS** is IFSCA’s International Trade Financing Services setup in GIFT IFSC — digital trade-finance marketplaces. We are **not** an ITFS operator. We help officers review the **documents** that sit under those trades so false certainty doesn’t enter the file.
+## 5) Rapid Q&A — answers businessmen actually ask
 
-### Would you have stopped Hin Leong / BlackRock-style fraud?
-> No honest founder claims that. Those cases mix forged paper and sometimes physical inventory. We surface mismatches, weak identity evidence, and missing data that must not pass — so a human can escalate.
+### What’s the product in one sentence?
+> Software that turns a trade document pack into one review-ready case file — with flags, evidence, and maker–checker handoff.
 
-### What is counterparty screening?
-> Checking the company name on the documents against a configured risk list. A hit is a **flag for humans**, not “confirmed sanctioned.” If the list is down, that is **not** a pass.
+### Who pays?
+> Head of Trade Finance Ops (or Ops budget at a GIFT IBU / trade desk). Economic buyer is Ops; Compliance must accept “decision support, not autopilot.”
+
+### How do you make money?
+> SaaS / per-case or seat licensing for the review desk, starting with a supervised pilot. We charge for faster, cleaner examination — not for “AI approvals.”
+
+### What’s the ROI story?
+> Hours off manual PDF matching, fewer exception loops, cleaner audit trail as volume grows — without hiring linearly. We do **not** claim we close the $2.5T finance gap alone.
+
+### Why won’t ChatGPT / generic PDF AI replace you?
+> Generic tools invent confidence. We refuse fake passes when data is missing, keep cross-document conflicts visible, and leave the decision to humans. Banks buy **defensible process**, not a chatbot.
+
+### Competitor vs you?
+> Document-check tools race to automate the examiner. We race to **prepare** the examiner — with honesty when evidence is weak. That’s safer for regulated desks.
+
+### Would this have stopped big trade frauds?
+> No honest pitch claims that. We surface mismatches, weak identity, and missing docs so a human escalates earlier. Physical goods and forged originals still need humans and process.
 
 ### What’s live vs demo?
-> Live path on AWS Mumbai. Some sample packets and list snapshots are labelled demo. Case storage in this prototype can reset on redeploy — we say that out loud.
+> Live path on AWS Mumbai. Sample packs labelled demo. Prototype — we say that out loud.
 
-### What’s your secret sauce vs generic AI PDF tools?
-> We refuse fake all-clears when data is missing; we flag document conflicts; we keep sources and maker–checker handoff. Generic tools often skip gaps or treat look-alike names as confirmed.
-
-### What do you need from Young Builders / GIFT IFIH?
-> One clear ask: intros to GIFT trade-ops buyers and mentors toward a **supervised pilot** — and guidance on the residency / sandbox path if we earn it. Not a louder deck.
-
-### What breaks first in a real bank next week?
-> Enterprise login, private network, model-risk review, live list contracts, and latency SLAs — not the happy-path demo. We would sell a supervised pilot, not production autopilot.
+### What do you need from us?
+> One intro to a trade-ops buyer for a short supervised pilot — and mentor guidance on the GIFT / IBU path if we earn it.
 
 ---
 
-## 5) Emergency 20-second cut (if timer is brutal)
+## 6) Emergency 20-second cut
 
-> TradePulse is review-desk software for Heads of Trade Finance Ops at GIFT City IBUs — faster PDF review without fake all-clears. Live on AWS. Humans decide. Ask: intro to a GIFT IBU trade-ops head for a supervised pilot. Thank you.
-
----
-
-## 6) Word-count / timing notes
-
-| Block | ~Words | ~Seconds |
-|-------|--------|----------|
-| Full script above | ~155 | ~55–60 |
-| Madlibs alone | ~55 | ~20 |
-| Emergency cut | ~45 | ~18–20 |
-
-Practice once at **normal** speed, once **slow**. If you rush, the Madlibs sentence is the only mandatory line.
+> TradePulse: Product = review desk for trade PDFs. Price = pilot then SaaS + per case. Place = GIFT IBU ops. Promotion = demo + intro. Humans decide. Ask: one trade-ops intro. Thank you.
 
 ---
 
-*Anchored to Founder Institute Madlibs + 60s structure ([fi.co insight](https://fi.co/insight/how-to-create-the-perfect-60-second-pitch-for-your-startup)). Adapted for GIFT IFIH Round 2: honesty over hype, one ask, ITFS as context not product claim.*
+## 7) Sources (only if a business person asks “says who?”)
+
+| Claim | Source |
+|-------|--------|
+| Most packs fail first review | ICC / industry: ~60–80% first-presentation discrepancies |
+| Delay + fee pain | Typical discrepancy fees + payment delay days (bank tariffs / trade guides) |
+| $2.5T gap | ADB Trade Finance Gap Survey |
+| Pitch shape | Founder Institute 60s Madlibs |
+
+---
+
+*Business framing: cash delay, desk cost, risk of false certainty, who pays, pilot ask. Honest decision-support — never “AI approved the deal.”*

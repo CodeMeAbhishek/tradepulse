@@ -1,6 +1,6 @@
 # TradePulse — Project Status
 
-> Last updated: 2026-08-22 · Branch: `main` · Total tests: **341 passing, 0 failing**
+> Last updated: 2026-08-25 · Branch: `main` · Live demo: **GCP Cloud Run** (`tradepulse-demo` / `asia-south1`)
 
 ---
 
@@ -24,12 +24,13 @@
 - **Entity & Compliance:** GLEIF/LEI entity resolution, vLEI credential verification fixtures, sanctions screening, price plausibility audit, duplicate submission indexing, risk routing.
 - **Audit & Governance:** Maker/checker workflow state machine (checker cannot precede maker), cryptographic audit hash chain, RegWatch rule proposals with approve/reject lifecycle, immutable replay and result versioning.
 
-### Backend — New Features (added 2026-08-22)
+### Backend — Cloud / adapters (updated 2026-08-25)
 
-- **Live API Adapters:** AWS Bedrock (`BedrockLLMAdapter`), GLEIF HTTP (`HttpGleifAdapter`), OpenSanctions (`OpenSanctionsScreeningAdapter`), Yahoo Finance Futures (`YahooFinanceCommodityAdapter`) — all fail-closed to `DATA_UNAVAILABLE` on any outage or HTTP error.
-- **Storage Adapters:** `S3DocumentStorage` (with `RuntimeError` on AWS `ClientError`) and `MemoryDocumentStorage` in-memory fallback.
-- **Amazon Textract OCR:** `TEXT_EXTRACT_MODE=textract` routes PDF/TIFF bytes to AWS Textract, with automatic fallback to printable-text extraction if Textract is unavailable.
-- **Bedrock Nova Fix:** Aligned tool-use schema with Amazon Nova Converse API; `kg_per_unit` weight fields from document text are now correctly preserved.
+- **Live demo host:** GCP project `tradepulse-demo` — Cloud Run (web + API), Artifact Registry, GCS docs bucket, Vertex AI Gemini, Document AI OCR.
+- **LLM adapters:** `VertexLLMAdapter` (GCP demo) and `BedrockLLMAdapter` (AWS local/profile) — fail-closed to empty/`REVIEW_REQUIRED` upstream.
+- **Storage adapters:** `GcsDocumentStorage`, `S3DocumentStorage`, `MemoryDocumentStorage`.
+- **OCR:** `TEXT_EXTRACT_MODE=document_ai` (Google Document AI, local fallback) or `textract` (AWS) or `local` (stdlib PDF Tj / printable).
+- **Also live:** GLEIF HTTP, OpenSanctions, Yahoo Finance Futures — fail-closed to `DATA_UNAVAILABLE` on outage.
 - **Price Unit Normalization:** Full conversion pipeline from invoice units (kg, lb, carton, bag, etc.) to USD/MT using `kg_per_unit` or `net_weight_kg ÷ quantity`. Missing weight evidence returns `DATA_UNAVAILABLE`, never a silent `PASS`.
 - **Identity Confidence Ladder:** Derives a 4-rung view per party (`document_name → registry_candidate → verified_by_lei → supported_by_vlei`) from `IdentityResolutionStatus`. Source outages are explicit side-states — they do not advance the rung.
 - **Examiner Case Pack:** Structured audit-ready JSON export for human officer review. Bundles findings, identity ladders, agent trace summaries, document hashes, and 5 mandatory safety disclaimers.

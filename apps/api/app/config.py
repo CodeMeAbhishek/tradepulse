@@ -43,10 +43,18 @@ class Settings(BaseSettings):
     document_storage_backend: str = "memory"
     s3_documents_bucket: str = ""
     s3_documents_prefix: str = "tradepulse/docs/"
-    # local = stdlib PDF/text; textract = Amazon Textract (falls back to local)
+    # GCP (Cloud Run / Vertex / GCS)
+    gcp_project: str = ""
+    gcp_region: str = "asia-south1"
+    gcs_documents_bucket: str = ""
+    gcs_documents_prefix: str = "tradepulse/docs/"
+    vertex_model_id: str = "gemini-2.0-flash-001"
+    # local | textract | document_ai (falls back to local)
     text_extract_mode: str = "local"
     textract_poll_seconds: float = 1.0
     textract_max_polls: int = 60
+    document_ai_processor_id: str = ""
+    document_ai_location: str = "us"
 
 
 @lru_cache

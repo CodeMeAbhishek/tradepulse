@@ -115,7 +115,8 @@ def extract_text(
 
     Modes (TEXT_EXTRACT_MODE):
     - local (default): stdlib UTF-8 / PDF Tj parse
-    - textract: Amazon Textract (S3Object for PDF; Bytes for JPEG/PNG), then local fallback
+    - document_ai: Google Document AI OCR, then local fallback
+    - textract: Amazon Textract, then local fallback
     """
     normalized_type = (content_type or "").split(";")[0].strip().lower()
     lower_name = (filename or "").lower()
@@ -129,14 +130,61 @@ def extract_text(
             content=content, content_type=content_type, filename=filename
         )
 
-    from app.adapters.textract import get_textract_adapter, parse_s3_uri
     from app.config import get_settings
 
     mode = (get_settings().text_extract_mode or "local").strip().lower()
+
+    if mode in {"document_ai", "documentai", "gcp_ocr"}:
+        from app.adapters.document_ai import get_document_ai_adapter
+
+        adapter = get_document_ai_adapter()
+        if adapter is not None:
+            dai = adapter.extract(
+                content=content,
+                content_type=normalized_type,
+                filename=filename,
+            )
+            if dai.available and dai.text.strip():
+                return ExtractedDocumentText(
+                    text=dai.text,
+                    page_count=dai.page_count,
+                    extractor=dai.extractor,
+                    warning=None,
+                )
+            local = extract_text_local(
+                content=content, content_type=content_type, filename=filename
+            )
+            detail = dai.detail or "Document AI unavailable"
+            warning = (
+                f"{local.warning + ' ' if local.warning else ''}"
+                f"Document AI fallback: {detail}"
+            ).strip()
+            return ExtractedDocumentText(
+                text=local.text,
+                page_count=local.page_count,
+                extractor=local.extractor,
+                warning=warning,
+            )
+        local = extract_text_local(
+            content=content, content_type=content_type, filename=filename
+        )
+        warning = (
+            f"{local.warning + ' ' if local.warning else ''}"
+            "Document AI fallback: processor not configured"
+        ).strip()
+        return ExtractedDocumentText(
+            text=local.text,
+            page_count=local.page_count,
+            extractor=local.extractor,
+            warning=warning,
+        )
+
     if mode not in {"textract", "aws", "live"}:
         return extract_text_local(
             content=content, content_type=content_type, filename=filename
         )
+
+    from app.adapters.textract import get_textract_adapter, parse_s3_uri
 
     bucket, key = s3_bucket, s3_key
     if (not bucket or not key) and storage_uri:

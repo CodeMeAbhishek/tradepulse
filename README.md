@@ -46,7 +46,7 @@ Banks and GIFT City IBUs still examine documentary packs under UCP-style pressur
 | Risk / anomaly signals | Configured screening & price/duplicate cues as **review signals**, not verdicts |
 | Document policy awareness | Required / conditionally required / optional / not available — not silent skip |
 | Audit & versions | Provenance-minded results; replay must not overwrite history |
-| Live cloud demo | AWS `ap-south-1`: ECS Fargate + ALB + S3 + Textract + Bedrock |
+| Live cloud demo | GCP `asia-south1`: Cloud Run + GCS + Vertex Gemini + Document AI OCR |
 
 Platform roadmap (LC-lite, packing list, RegWatch, merchant readiness, authorised gov adapters, etc.) lives in the PRD — not claimed as live product surface.
 
@@ -61,27 +61,28 @@ apps/api (FastAPI modular monolith)
     │  typed contracts
 packages/contracts
     │
-    ├── Bedrock (LLM agent roles)
-    ├── Textract (OCR / document assist)
-    ├── S3 (document objects)
+    ├── Vertex AI Gemini (LLM agent roles)
+    ├── Document AI OCR (PDF/image text; local fallback)
+    ├── GCS (document objects)
     ├── GLEIF / sanctions adapters (live or fixture-labelled)
     └── local/SQLite (dev) + audit trail
 ```
 
-**Hosting (hackathon):** ECR images → ECS Fargate services → Application Load Balancers (web + API). Amplify deferred (GitHub OAuth); see `infra/README.md`.
+**Hosting (hackathon):** Artifact Registry → Cloud Run (web + API). See `infra/gcp/README.md`.
 
 ---
 
-## Live demo (AWS)
+## Live demo (GCP)
 
 | Service | URL |
 |--------|-----|
-| Web UI | http://tradepulse-web-80820411.ap-south-1.elb.amazonaws.com |
-| API | http://tradepulse-api-1608361585.ap-south-1.elb.amazonaws.com |
-| Health | http://tradepulse-api-1608361585.ap-south-1.elb.amazonaws.com/healthz |
-| OpenAPI | http://tradepulse-api-1608361585.ap-south-1.elb.amazonaws.com/docs |
+| Web UI | https://tradepulse-web-gk63mqpoca-el.a.run.app |
+| API | https://tradepulse-api-gk63mqpoca-el.a.run.app |
+| Ready | https://tradepulse-api-gk63mqpoca-el.a.run.app/readyz |
+| OpenAPI | https://tradepulse-api-gk63mqpoca-el.a.run.app/docs |
 
-Region: `ap-south-1`. Redeploy / tear-down: `infra/README.md`. Always-on demo cost is roughly low tens of USD/month (ALB + Fargate); tear stacks down when idle. Bedrock/Textract spend scales with demo usage.
+Project: `tradepulse-demo` · Region: `asia-south1`. Redeploy: `infra/gcp/README.md`.  
+Health check for the web UI: use **`/readyz`** (not `/healthz` — Cloud Run edge can return a Google HTML 404 for `/healthz`).
 
 ---
 
@@ -93,7 +94,7 @@ apps/web              Next.js examiner workbench & product flow (Ansh)
 packages/contracts    Shared typed enums/models (shared review gate)
 data/                 Fixtures, reference, snapshots
 docs/                 ADRs, runbooks, hackathon reports
-infra/                ECS/ECR/ALB deploy scripts & CloudFormation
+infra/                GCP Cloud Run deploy (`infra/gcp/`) + legacy AWS scripts
 scripts/              Dev/ops helpers
 .cursor/rules         Agent safety, ownership, document & identity policy
 ```
@@ -123,8 +124,8 @@ uvicorn app.main:app --reload --port 8000
 
 | Endpoint | Purpose |
 |----------|---------|
-| `GET /healthz` | Liveness |
-| `GET /readyz` | Readiness (requires SQLite) |
+| `GET /healthz` | Liveness (local); on Cloud Run prefer `/readyz` |
+| `GET /readyz` | Readiness (requires SQLite) — use this for live demo health |
 | `http://localhost:8000/docs` | OpenAPI |
 | `http://localhost:8000/api/v1` | API base |
 
@@ -133,7 +134,7 @@ cd apps/api
 pytest -q
 ```
 
-Configure Bedrock / Textract / S3 via `apps/api/.env` for live adapters. Empty `AWS_PROFILE` in containers — use task IAM role, not a desktop profile name.
+Configure Vertex / Document AI / GCS via `apps/api/.env` for GCP live adapters (`LLM_PROVIDER=vertex`, `TEXT_EXTRACT_MODE=document_ai`, `DOCUMENT_STORAGE_BACKEND=gcs`). Bedrock / Textract / S3 remain available for AWS local profiles.
 
 ---
 
