@@ -58,12 +58,14 @@ if ($LASTEXITCODE -ne 0) { throw "Cloud Run web deploy failed" }
 $WebUrl = (gcloud run services describe $Service --project=$ProjectId --region=$Region --format="value(status.url)").Trim()
 
 Write-Host "Updating API CORS for web origin..."
+$CorsFile = Join-Path $env:TEMP "tradepulse-cors.env.yaml"
+"CORS_ORIGINS: `"$WebUrl,http://localhost:3000,http://127.0.0.1:3000`"" | Set-Content -Path $CorsFile -Encoding utf8
 gcloud run services update $ApiService `
   --project=$ProjectId `
   --region=$Region `
-  --update-env-vars="CORS_ORIGINS=$WebUrl,http://localhost:3000,http://127.0.0.1:3000" | Out-Null
+  --env-vars-file=$CorsFile | Out-Null
 
 Write-Host ""
 Write-Host "WEB URL: $WebUrl"
 Write-Host "API URL: $ApiUrl"
-Write-Host "Health:  $ApiUrl/healthz"
+Write-Host "Ready:   $ApiUrl/readyz"
