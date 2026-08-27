@@ -2,10 +2,12 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import datetime
 from uuid import UUID, uuid4
 
 from pydantic import BaseModel, ConfigDict, Field
+
+from app.utils.datetime import utc_now
 
 
 class TradePulseModel(BaseModel):
@@ -30,5 +32,5 @@ class EntityBase(TradePulseModel):
     """Common identity fields for persisted entities (placeholder)."""
 
     id: UUID = Field(default_factory=uuid4)
-    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    created_at: datetime = Field(default_factory=utc_now)
+    updated_at: datetime = Field(default_factory=utc_now)

@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import datetime
 from typing import Any
 
 from tradepulse_contracts.enums import CaseState, DataLabel, DocumentType
@@ -19,6 +19,7 @@ from app.services.audit.hash_chain import AppendOnlyAuditLog
 from app.services.audit.workflow import CaseWorkflow
 from app.services.compliance.risk_router import RiskRoute
 from app.services.regwatch.replay import CaseResultStore
+from app.utils.datetime import utc_now
 
 
 @dataclass
@@ -48,7 +49,7 @@ class CaseAggregate:
         self.workflow = CaseWorkflow(case_id=self.case_id, state=self.state)
 
     def touch(self) -> None:
-        self.updated_at = datetime.now(timezone.utc)
+        self.updated_at = utc_now()
         self.state = self.workflow.state
 
     def provided_document_types(self) -> list[DocumentType]:

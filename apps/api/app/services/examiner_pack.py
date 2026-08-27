@@ -2,13 +2,14 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import datetime
 from typing import Any
 
 from pydantic import BaseModel, Field
 
 from app.repositories.case_store import CaseAggregate
 from app.services.identity_ladder import ladders_for_identities
+from app.utils.datetime import utc_now
 
 
 PACK_VERSION = "1.0.0"
@@ -134,7 +135,7 @@ def build_examiner_case_pack(
     }
 
     return ExaminerCasePack(
-        generated_at=datetime.now(timezone.utc),
+        generated_at=utc_now(),
         case={
             "case_id": case.case_id,
             "transaction_profile": case.transaction_profile.value

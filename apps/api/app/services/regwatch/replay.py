@@ -4,10 +4,11 @@ from __future__ import annotations
 
 import uuid
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import datetime
 from typing import Any
 
 from app.services.audit.hash_chain import AppendOnlyAuditLog
+from app.utils.datetime import utc_now
 
 
 @dataclass(frozen=True)
@@ -51,7 +52,7 @@ class CaseResultStore:
             version=1,
             result_payload=dict(result_payload),
             rule_pack_version=rule_pack_version,
-            created_at=datetime.now(timezone.utc),
+            created_at=utc_now(),
             created_by=actor,
             note=note,
         )
@@ -100,7 +101,7 @@ class ReplayService:
             version=prior.version + 1,
             result_payload=dict(new_result_payload),
             rule_pack_version=rule_pack_version,
-            created_at=datetime.now(timezone.utc),
+            created_at=utc_now(),
             created_by=actor,
             replay_of_version_id=prior_version_id,
             note=note,

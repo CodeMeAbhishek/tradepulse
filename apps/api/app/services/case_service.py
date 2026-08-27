@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import uuid
-from datetime import datetime, timezone
+from datetime import datetime
 from typing import Any
 
 from tradepulse_contracts.enums import (
@@ -40,6 +40,7 @@ from app.services.entity_resolution import EntityResolutionService, PartyIdentit
 from app.services.regwatch import RegWatchService, ReplayService, SourceRegistry, seed_demo_registry
 from app.services.regwatch.replay import CaseResultVersion
 from app.services.screening import screen_subject
+from app.utils.datetime import utc_now
 from tradepulse_contracts import ApiError
 
 
@@ -71,10 +72,6 @@ def reset_platform_state() -> PlatformState:
     global _STATE
     _STATE = PlatformState()
     return _STATE
-
-
-def _now() -> datetime:
-    return datetime.now(timezone.utc)
 
 
 def to_case_summary(case: CaseAggregate) -> CaseSummary:
@@ -122,7 +119,7 @@ def create_case(
         if isinstance(transaction_profile, TradeProfile)
         else TradeProfile(transaction_profile)
     )
-    now = _now()
+    now = utc_now()
     case = CaseAggregate(
         case_id=f"CASE-{uuid.uuid4().hex[:8].upper()}",
         transaction_profile=profile,
@@ -174,7 +171,7 @@ def add_document(
         sha256=digest,
         storage_uri=stored.storage_uri,
         processing_state=DocumentProcessingState.UPLOADED,
-        uploaded_at=_now(),
+        uploaded_at=utc_now(),
     )
     case.documents.append(meta)
     case.document_bytes[document_id] = content
@@ -339,7 +336,7 @@ def process_case(case_id: str, *, state: PlatformState | None = None) -> dict[st
                 version=prior.version + 1,
                 result_payload=result_payload,
                 rule_pack_version=None,
-                created_at=_now(),
+                created_at=utc_now(),
                 created_by="system",
                 replay_of_version_id=prior.version_id,
                 note="Automatic re-process; prior version retained",

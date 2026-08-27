@@ -5,10 +5,12 @@ from __future__ import annotations
 import hashlib
 import json
 import uuid
-from datetime import datetime, timezone
+from datetime import datetime
 from typing import Any
 
 from tradepulse_contracts.audit import AuditEvent
+
+from app.utils.datetime import utc_now
 
 
 def _canonical_payload(payload: dict[str, Any]) -> str:
@@ -66,7 +68,7 @@ class AppendOnlyAuditLog:
         rule_pack_version: str | None = None,
         snapshot_ids: list[str] | None = None,
     ) -> AuditEvent:
-        occurred_at = datetime.now(timezone.utc)
+        occurred_at = utc_now()
         event_id = str(uuid.uuid4())
         prior = self.head_hash()
         body = payload or {}
