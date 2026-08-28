@@ -2,14 +2,7 @@
 
 from __future__ import annotations
 
-import re
-
-
-def normalize_entity_name(name: str | None) -> str | None:
-    if name is None:
-        return None
-    cleaned = re.sub(r"[^a-z0-9]+", " ", name.lower()).strip()
-    return cleaned or None
+from app.utils.normalization import normalize_entity_name
 
 
 def score_name_similarity(left: str | None, right: str | None) -> float:
