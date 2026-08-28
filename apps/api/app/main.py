@@ -3,10 +3,10 @@
 from __future__ import annotations
 
 import uuid
-from collections.abc import AsyncIterator
+from collections.abc import AsyncIterator, Awaitable, Callable
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Response
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
@@ -100,7 +100,10 @@ def create_app() -> FastAPI:
     )
 
     @application.middleware("http")
-    async def correlation_id_middleware(request: Request, call_next):  # type: ignore[no-untyped-def]
+    async def correlation_id_middleware(
+        request: Request,
+        call_next: Callable[[Request], Awaitable[Response]]
+    ) -> Response:
         correlation_id = request.headers.get("X-Correlation-ID") or str(uuid.uuid4())
         request.state.correlation_id = correlation_id
         response = await call_next(request)
