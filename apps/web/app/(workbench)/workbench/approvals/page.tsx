@@ -3,14 +3,15 @@
 import Link from "next/link";
 import { useDemo } from "@/lib/demo/DemoProvider";
 import { RiskChip, WorkflowChip } from "@/components/ui/StatusChips";
+import { CaseStatus } from "../../../../../packages/contracts/types";
 
 export default function ApprovalsPage() {
   const { cases, ready } = useDemo();
   if (!ready) return <p className="text-sm text-[var(--tp-muted)]">Loading…</p>;
 
-  const inbox = cases.filter((c) => c.workflow === "MAKER_APPROVED");
+  const inbox = cases.filter((c) => c.workflow === CaseStatus.MAKER_APPROVED);
   const decided = cases.filter(
-    (c) => c.workflow === "CHECKER_APPROVED" || c.workflow === "CHECKER_REJECTED",
+    (c) => c.workflow === CaseStatus.CHECKER_APPROVED || c.workflow === CaseStatus.CHECKER_REJECTED,
   );
 
   return (

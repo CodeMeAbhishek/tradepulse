@@ -2,19 +2,25 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { policyLabel, statusLabel } from "@/lib/status-labels";
 import { api } from "@/lib/api/client";
 import { useDemo } from "@/lib/demo/DemoProvider";
 import { InvestigationCanvas } from "@/components/case/InvestigationCanvas";
 import {
-  IdentityLadder,
   ladderFromStatus,
   type IdentityLadderModel,
 } from "@/components/case/IdentityLadder";
-import { MismatchFlag, RiskChip, ToneChip, WorkflowChip } from "@/components/ui/StatusChips";
-import { profileLabel, type Finding, type TradeCase } from "@/lib/demo/store";
-import { parseLegacySourceString } from "@/lib/sources/resolve";
+import { RiskChip, WorkflowChip } from "@/components/ui/StatusChips";
+import { profileLabel, type TradeCase } from "@/lib/demo/store";
 import { CaseStatus } from "../../../../packages/contracts/types";
+import {
+  ChecksTab,
+  DocsTab,
+  CompareTab,
+  PartyTab,
+  HowCheckedTab,
+  DecideTab,
+} from "@/components/case/tabs";
+import { CaseProvider } from "@/components/case/CaseContext";
 
 const TABS = [
   { id: "investigate", label: "Investigate" },
@@ -27,24 +33,6 @@ const TABS = [
 ] as const;
 
 type TabId = (typeof TABS)[number]["id"];
-
-function agentStepTitle(agent: string): string {
-  const key = agent.trim().toLowerCase();
-  if (key.includes("extract")) return "Document extraction";
-  if (key.includes("valid")) return "Independent field check";
-  if (key.includes("challeng")) return "Exception review";
-  if (key.includes("arbit")) return "Settled values";
-  if (key.includes("reconcil") || key.includes("cross")) return "Cross-document check";
-  return agent;
-}
-
-function agentStatusLabel(status: string): string {
-  const key = status.trim().toUpperCase();
-  if (key === "COMPLETE" || key === "DONE") return "Done";
-  if (key === "REVIEW_REQUIRED") return "Needs officer review";
-  if (key === "QUEUED") return "Queued";
-  return status.replaceAll("_", " ");
-}
 
 function buildBrief(live: TradeCase): { bullets: string[]; cta: string } {
   const bullets: string[] = [];
@@ -345,350 +333,57 @@ export function CaseWorkbench({ caseId }: { caseId: string }) {
         {err ? <p className="mt-3 text-sm text-rose-700">{err}</p> : null}
       </header>
 
-      <div className="flex flex-wrap gap-1 border-b border-[var(--tp-line)] pb-2">
-        {TABS.map((t) => (
-          <button
-            key={t.id}
-            type="button"
-            onClick={() => setTab(t.id)}
-            className={
-              tab === t.id
-                ? "rounded-md bg-[var(--tp-navy)] px-3 py-1.5 text-sm font-medium text-white"
-                : "rounded-md px-3 py-1.5 text-sm text-[var(--tp-muted)] hover:bg-white"
-            }
-          >
-            {t.label}
-          </button>
-        ))}
-      </div>
+      <CaseProvider
+        value={{
+          live,
+          mode,
+          busy,
+          err,
+          ladder,
+          maker,
+          checker,
+          run,
+        }}
+      >
+        <div className="flex flex-wrap gap-1 border-b border-[var(--tp-line)] pb-2">
+          {TABS.map((t) => (
+            <button
+              key={t.id}
+              type="button"
+              onClick={() => setTab(t.id)}
+              className={
+                tab === t.id
+                  ? "rounded-md bg-[var(--tp-navy)] px-3 py-1.5 text-sm font-medium text-white"
+                  : "rounded-md px-3 py-1.5 text-sm text-[var(--tp-muted)] hover:bg-white"
+              }
+            >
+              {t.label}
+            </button>
+          ))}
+        </div>
 
-      {tab === "investigate" ? <InvestigationCanvas tradeCase={live} /> : null}
+        {tab === "investigate" ? <InvestigationCanvas tradeCase={live} /> : null}
 
-      {tab === "checks" ? (
-        <section className="grid gap-3 md:grid-cols-3">
-          {live.findings.length === 0 ? (
-            <p className="text-sm text-[var(--tp-muted)] md:col-span-3">
-              No checks yet. Process the case after uploading documents.
-            </p>
-          ) : (
-            live.findings.map((f: Finding, i) => (
-              <article
-                key={f.id}
-                className="tp-card tp-reveal flex flex-col p-4"
-                style={{ "--i": i } as React.CSSProperties}
-              >
-                <div className="flex items-start justify-between gap-2">
-                  <h2 className="text-sm font-semibold text-[var(--tp-navy)]">{f.title}</h2>
-                  <ToneChip tone={f.tone} label={f.statusLabel} />
-                </div>
-                <p className="mt-2 flex-1 text-sm leading-relaxed text-[var(--tp-ink)]">{f.summary}</p>
-                <p className="mt-3 text-sm font-medium text-[var(--tp-teal)]">
-                  Next: {f.action}
-                </p>
-                <button
-                  type="button"
-                  className="mt-3 self-start cursor-pointer text-xs font-medium text-[var(--tp-muted)] underline-offset-2 hover:underline"
-                  onClick={() =>
-                    setShowEvidence((prev) => ({ ...prev, [f.id]: !prev[f.id] }))
-                  }
-                >
-                  {showEvidence[f.id] ? "Hide evidence source" : "Show evidence source"}
-                </button>
-                {showEvidence[f.id] ? (
-                  <div className="mt-2 space-y-1.5">
-                    {(f.sources && f.sources.length > 0
-                      ? f.sources
-                      : parseLegacySourceString(f.source)
-                    ).map((src) => (
-                      <div key={src.label} className="rounded-md bg-[var(--tp-bg)] px-2.5 py-2">
-                        {src.platform ? (
-                          <p className="text-[10px] font-semibold uppercase tracking-wide text-[var(--tp-muted)]">
-                            {src.platform}
-                            {src.url ? " · open to verify" : " · no public URL"}
-                          </p>
-                        ) : null}
-                        {src.url ? (
-                          <a
-                            href={src.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="mt-0.5 inline-block cursor-pointer font-mono text-[11px] font-medium text-[var(--tp-brand-blue)] underline-offset-2 hover:underline"
-                          >
-                            {src.label}
-                          </a>
-                        ) : (
-                          <p className="mt-0.5 font-mono text-[11px] text-[var(--tp-muted)]">
-                            {src.label}
-                          </p>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                ) : null}
-              </article>
-            ))
-          )}
-        </section>
-      ) : null}
+        {tab === "checks" ? (
+          <ChecksTab
+            findings={live.findings}
+            showEvidence={showEvidence}
+            setShowEvidence={setShowEvidence}
+          />
+        ) : null}
 
-      {tab === "docs" ? (
-        <section className="tp-card overflow-hidden">
-          <div className="border-b border-[var(--tp-line)] px-4 py-3">
-            <h2 className="text-sm font-semibold text-[var(--tp-navy)]">Document checklist</h2>
-            <p className="mt-1 text-xs text-[var(--tp-muted)]">
-              Required items block completeness when missing. Optional items never block a case.
-            </p>
-          </div>
-          <table className="min-w-full text-sm">
-            <thead className="bg-slate-50 text-xs uppercase text-[var(--tp-muted)]">
-              <tr>
-                <th className="px-3 py-2 text-left">Document</th>
-                <th className="px-3 py-2 text-left">Requirement</th>
-                <th className="px-3 py-2 text-left">Provided</th>
-                <th className="px-3 py-2 text-left">Blocks if missing</th>
-              </tr>
-            </thead>
-            <tbody>
-              {live.docs.map((d) => (
-                <tr key={d.type} className="border-t border-[var(--tp-line)]">
-                  <td className="px-3 py-2.5 font-medium capitalize">{d.label}</td>
-                  <td className="px-3 py-2.5">{policyLabel(d.policy)}</td>
-                  <td className="px-3 py-2.5">{d.provided ? "Yes" : "No"}</td>
-                  <td className="px-3 py-2.5">{d.blocker ? "Yes" : "No"}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </section>
-      ) : null}
+        {tab === "docs" ? <DocsTab /> : null}
 
-      {tab === "compare" ? (
-        <section className="space-y-3">
-          {reconBanner ? (
-            <div className="rounded-lg border border-sky-200 bg-sky-50 px-4 py-3 text-sm text-sky-950">
-              {reconBanner}
-            </div>
-          ) : null}
-          <div className="tp-card overflow-x-auto">
-            <div className="border-b border-[var(--tp-line)] px-4 py-3">
-              <h2 className="text-sm font-semibold text-[var(--tp-navy)]">
-                Invoice vs bill of lading
-              </h2>
-              <p className="mt-1 text-xs text-[var(--tp-muted)]">
-                Side-by-side field compare. Mismatches need a human — they are not proof of fraud.
-              </p>
-            </div>
-            <table className="min-w-full text-sm">
-              <thead className="bg-slate-50 text-xs uppercase text-[var(--tp-muted)]">
-                <tr>
-                  <th className="px-3 py-2 text-left">Field</th>
-                  <th className="px-3 py-2 text-left">Invoice</th>
-                  <th className="px-3 py-2 text-left">Bill of lading</th>
-                  <th className="px-3 py-2 text-left">Status</th>
-                  <th className="px-3 py-2 text-left">Note</th>
-                </tr>
-              </thead>
-              <tbody>
-                {live.recon.length === 0 ? (
-                  <tr>
-                    <td colSpan={5} className="px-3 py-6 text-[var(--tp-muted)]">
-                      No comparison rows yet.
-                    </td>
-                  </tr>
-                ) : (
-                  live.recon.map((r) => (
-                    <tr
-                      key={r.field}
-                      className={
-                        r.status === "MISMATCH"
-                          ? "tp-row-mismatch border-t border-[var(--tp-line)]"
-                          : "border-t border-[var(--tp-line)]"
-                      }
-                    >
-                      <td className="px-3 py-2.5 font-medium">{r.field}</td>
-                      <td className="px-3 py-2.5">{r.invoice}</td>
-                      <td className="px-3 py-2.5">{r.bol ?? "—"}</td>
-                      <td className="px-3 py-2.5">
-                        {r.status === "MISMATCH" ? (
-                          <MismatchFlag label={statusLabel(r.status)} />
-                        ) : (
-                          <ToneChip
-                            tone={r.status === "MATCH" ? "clear" : "info"}
-                            label={statusLabel(r.status)}
-                          />
-                        )}
-                      </td>
-                      <td className="px-3 py-2.5 text-[var(--tp-muted)]">{r.note}</td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
-        </section>
-      ) : null}
+        {tab === "compare" ? <CompareTab reconBanner={reconBanner} /> : null}
 
-      {tab === "party" ? (
-        <section className="space-y-4">
-          {ladder ? <IdentityLadder ladder={ladder} /> : null}
-          <div className="tp-card grid gap-6 p-5 md:grid-cols-2">
-            <div>
-              <h2 className="text-sm font-semibold text-[var(--tp-navy)]">Document party</h2>
-              <dl className="mt-3 space-y-3 text-sm">
-                <div>
-                  <dt className="text-xs uppercase tracking-wide text-[var(--tp-muted)]">
-                    Name on document
-                  </dt>
-                  <dd className="mt-0.5 font-medium">{live.identity.rawName}</dd>
-                </div>
-                <div>
-                  <dt className="text-xs uppercase tracking-wide text-[var(--tp-muted)]">
-                    LEI on document
-                  </dt>
-                  <dd className="mt-0.5 font-mono text-xs">
-                    {live.identity.leiOnDocument ?? "Not provided"}
-                  </dd>
-                  <p className="mt-1 text-xs leading-relaxed text-[var(--tp-muted)]">
-                    LEI is a 20-character Legal Entity Identifier. When the invoice LEI matches a
-                    GLEIF registry record, that is strong identity evidence — not a sanctions clear.
-                  </p>
-                </div>
-                {live.identity.candidateName ? (
-                  <div>
-                    <dt className="text-xs uppercase tracking-wide text-[var(--tp-muted)]">
-                      Registry legal name
-                    </dt>
-                    <dd className="mt-0.5">{live.identity.candidateName}</dd>
-                  </div>
-                ) : null}
-              </dl>
-            </div>
-            <div>
-              <h2 className="text-sm font-semibold text-[var(--tp-navy)]">Identity outcome</h2>
-              <dl className="mt-3 space-y-3 text-sm">
-                <div>
-                  <dt className="text-xs uppercase tracking-wide text-[var(--tp-muted)]">Status</dt>
-                  <dd className="mt-0.5 text-base font-semibold text-[var(--tp-navy)]">
-                    {live.identity.outcome}
-                  </dd>
-                </div>
-                <div>
-                  <dt className="text-xs uppercase tracking-wide text-[var(--tp-muted)]">
-                    What this means
-                  </dt>
-                  <dd className="mt-0.5 leading-relaxed">{live.identity.action}</dd>
-                </div>
-                <div>
-                  <dt className="text-xs uppercase tracking-wide text-[var(--tp-muted)]">vLEI</dt>
-                  <dd className="mt-0.5 text-[var(--tp-muted)]">{live.identity.vlei}</dd>
-                  <p className="mt-1 text-xs leading-relaxed text-[var(--tp-muted)]">
-                    vLEI is a verifiable credential for role/authority. A plain LEI string is not a
-                    vLEI. Fixture demos must stay labeled synthetic.
-                  </p>
-                </div>
-              </dl>
-            </div>
-          </div>
-        </section>
-      ) : null}
+        {tab === "party" ? <PartyTab /> : null}
 
-      {tab === "how-checked" ? (
-        <section className="tp-card p-5">
-          <h2 className="text-sm font-semibold text-[var(--tp-navy)]">How we checked the documents</h2>
-          <p className="mb-4 mt-1 text-sm text-[var(--tp-muted)]">
-            Up to three review passes. You see short findings only — not private model reasoning.
-            Agreement between steps is never a compliance approval.
-          </p>
-          <ol className="space-y-3">
-            {live.agentTrace.map((step, idx) => (
-              <li
-                key={`${step.agent}-${idx}`}
-                className="rounded-lg border border-[var(--tp-line)] bg-slate-50 px-3 py-2.5"
-              >
-                <div className="flex justify-between gap-2">
-                  <span className="text-sm font-semibold text-[var(--tp-navy)]">
-                    {agentStepTitle(step.agent)}
-                  </span>
-                  <span className="text-[11px] font-medium uppercase tracking-wide text-[var(--tp-muted)]">
-                    {agentStatusLabel(step.status)}
-                  </span>
-                </div>
-                <p className="mt-1 text-sm leading-relaxed">{step.summary}</p>
-              </li>
-            ))}
-          </ol>
-        </section>
-      ) : null}
+        {tab === "how-checked" ? <HowCheckedTab /> : null}
 
-      {tab === "decide" ? (
-        <section className="grid gap-4 lg:grid-cols-2">
-          <div className="tp-card p-5">
-            <h2 className="text-sm font-semibold text-[var(--tp-navy)]">Maker / checker</h2>
-            <p className="mt-1 text-xs text-[var(--tp-muted)]">
-              Dual control: checker actions unlock only after maker submission.
-            </p>
-            <label className="mt-3 block text-sm">
-              Decision note
-              <textarea
-                className="mt-1 w-full rounded-lg border border-[var(--tp-line)] px-3 py-2"
-                rows={3}
-                value={note}
-                onChange={(e) => setNote(e.target.value)}
-                placeholder="Optional note for the audit trail"
-              />
-            </label>
-            <div className="mt-3 flex flex-wrap gap-2">
-              <button
-                type="button"
-                disabled={busy || live.workflow !== "PENDING_MAKER"}
-                onClick={() => void run(() => maker(live.id, "approve", note))}
-                className="rounded-lg bg-[var(--tp-navy)] px-3 py-2 text-sm font-medium text-white disabled:opacity-40"
-              >
-                Maker: submit to checker
-              </button>
-              <button
-                type="button"
-                disabled={busy || live.workflow !== "PENDING_MAKER"}
-                onClick={() => void run(() => maker(live.id, "investigate", note))}
-                className="rounded-lg border border-amber-400 bg-amber-50 px-3 py-2 text-sm font-medium text-amber-950 disabled:opacity-40"
-              >
-                Maker: escalate
-              </button>
-              <button
-                type="button"
-                disabled={busy || live.workflow !== "MAKER_APPROVED"}
-                onClick={() => void run(() => checker(live.id, "approve", note))}
-                className="rounded-lg bg-teal-700 px-3 py-2 text-sm font-medium text-white disabled:opacity-40"
-              >
-                Checker: approve
-              </button>
-              <button
-                type="button"
-                disabled={busy || live.workflow !== "MAKER_APPROVED"}
-                onClick={() => void run(() => checker(live.id, "reject", note))}
-                className="rounded-lg border border-rose-300 bg-rose-50 px-3 py-2 text-sm font-medium text-rose-900 disabled:opacity-40"
-              >
-                Checker: reject
-              </button>
-            </div>
-          </div>
-          <div className="tp-card p-5">
-            <h2 className="text-sm font-semibold text-[var(--tp-navy)]">Audit timeline</h2>
-            <ol className="mt-3 space-y-3 border-l border-[var(--tp-line)] pl-4">
-              {[...live.audit].reverse().map((e) => (
-                <li key={e.id} className="relative text-sm">
-                  <span className="absolute -left-[1.28rem] top-1.5 h-2 w-2 rounded-full bg-teal-600" />
-                  <p className="text-[11px] text-[var(--tp-muted)]">
-                    {new Date(e.at).toLocaleString()} · {e.actor}
-                  </p>
-                  <p className="font-medium text-[var(--tp-navy)]">{e.action}</p>
-                  {e.detail ? <p className="text-[var(--tp-muted)]">{e.detail}</p> : null}
-                </li>
-              ))}
-            </ol>
-          </div>
-        </section>
-      ) : null}
+        {tab === "decide" ? (
+          <DecideTab note={note} setNote={setNote} />
+        ) : null}
+      </CaseProvider>
     </div>
   );
 }
