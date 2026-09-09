@@ -17,6 +17,17 @@ import type {
   WorkflowState,
 } from "@/lib/demo/store";
 import { resolveSourceLinks } from "@/lib/sources/resolve";
+import { CaseStatus, ReadinessRoute, CheckStatus } from "../../../../packages/contracts/types";
+import {
+  FINDING_TITLES,
+  DOC_LABELS,
+  FIELD_LABELS,
+  IDENTITY_OUTCOMES,
+  AUDIT_ACTIONS,
+  AGENT_LABELS,
+  statusLabel,
+  policyLabel,
+} from "../status-labels";
 
 function asProfile(p: string): Profile {
   const allowed: Profile[] = [
@@ -30,119 +41,39 @@ function asProfile(p: string): Profile {
 
 function asWorkflow(s: string): WorkflowState {
   const map: Record<string, WorkflowState> = {
-    INGESTED: "INGESTED",
-    PROCESSING: "PROCESSING",
-    PENDING_MAKER: "PENDING_MAKER",
-    MAKER_APPROVED: "MAKER_APPROVED",
-    CHECKER_APPROVED: "CHECKER_APPROVED",
-    CHECKER_REJECTED: "CHECKER_REJECTED",
-    INVESTIGATION_REQUIRED: "INVESTIGATION_REQUIRED",
-    EXTRACTION_REVIEW: "DRAFT",
-    PROCESSING_FAILED: "DRAFT",
+    INGESTED: CaseStatus.INGESTED,
+    PROCESSING: CaseStatus.PROCESSING,
+    PENDING_MAKER_REVIEW: CaseStatus.PENDING_MAKER_REVIEW,
+    MAKER_APPROVED: CaseStatus.MAKER_APPROVED,
+    CHECKER_APPROVED: CaseStatus.CHECKER_APPROVED,
+    CHECKER_REJECTED: CaseStatus.CHECKER_REJECTED,
+    INVESTIGATION_REQUIRED: CaseStatus.INVESTIGATION_REQUIRED,
+    EXTRACTION_REVIEW: CaseStatus.DRAFT,
+    PROCESSING_FAILED: CaseStatus.DRAFT,
   };
-  return map[s] ?? "PENDING_MAKER";
+  return map[s] ?? CaseStatus.PENDING_MAKER_REVIEW;
 }
 
 function asRisk(r: string | null | undefined): RiskRoute {
-  if (!r) return "READY_FOR_HUMAN_REVIEW";
+  if (!r) return ReadinessRoute.READY_FOR_HUMAN_REVIEW;
   const known: RiskRoute[] = [
-    "READY_FOR_HUMAN_REVIEW",
-    "REVIEW_REQUIRED",
-    "DOCUMENT_PACK_INCOMPLETE",
-    "MAKER_REVIEW_REQUIRED",
-    "HIGH_RISK_ESCALATION",
-    "DATA_REVIEW_REQUIRED",
+    ReadinessRoute.READY_FOR_HUMAN_REVIEW,
+    ReadinessRoute.DOCUMENT_PACK_INCOMPLETE,
+    ReadinessRoute.EXTRACTION_REVIEW_REQUIRED,
+    ReadinessRoute.MAKER_REVIEW_REQUIRED,
+    ReadinessRoute.HIGH_RISK_ESCALATION,
+    ReadinessRoute.DATA_REVIEW_REQUIRED,
   ];
-  return known.includes(r as RiskRoute) ? (r as RiskRoute) : "REVIEW_REQUIRED";
+  return known.includes(r as RiskRoute) ? (r as RiskRoute) : ReadinessRoute.DATA_REVIEW_REQUIRED;
 }
 
 function toneForStatus(status: string): FindingTone {
-  if (status === "PASS") return "clear";
-  if (status === "DATA_UNAVAILABLE" || status === "NOT_APPLICABLE") return "info";
-  if (status === "FAIL") return "block";
+  if (status === CheckStatus.PASS) return "clear";
+  if (status === CheckStatus.DATA_UNAVAILABLE || status === CheckStatus.NOT_APPLICABLE) return "info";
+  if (status === CheckStatus.FAIL) return "block";
   return "review";
 }
 
-const FINDING_TITLES: Record<string, string> = {
-  "SCREEN-PARTY-001": "Counterparty screening",
-  "PRICE-001": "Price plausibility",
-  "DUP-001": "Duplicate submission signal",
-};
-
-const STATUS_LABELS: Record<string, string> = {
-  PASS: "Clear",
-  DATA_UNAVAILABLE: "Data unavailable",
-  NOT_APPLICABLE: "Not applicable",
-  REVIEW_REQUIRED: "Review required",
-  FAIL: "Failed",
-  MATCH: "Match",
-  MISMATCH: "Mismatch",
-  NOT_AVAILABLE: "Not available",
-};
-
-const DOC_LABELS: Record<string, string> = {
-  commercial_invoice: "Commercial invoice",
-  bill_of_lading: "Bill of lading",
-  packing_list: "Packing list",
-  lc_terms_lite: "LC terms (lite)",
-  certificate_of_origin: "Certificate of origin",
-  insurance_certificate: "Insurance certificate",
-};
-
-const POLICY_LABELS: Record<DocSlot["policy"], string> = {
-  REQUIRED: "Required",
-  CONDITIONALLY_REQUIRED: "Conditionally required",
-  OPTIONAL: "Optional",
-  NOT_APPLICABLE: "Not applicable",
-};
-
-const FIELD_LABELS: Record<string, string> = {
-  "parties.seller_shipper": "Seller / shipper",
-  "parties.buyer_consignee": "Buyer / consignee",
-  "goods.description": "Goods description",
-  "goods.quantity": "Quantity",
-  "goods.unit": "Unit",
-  "ports.port_of_loading": "Port of loading",
-  "ports.port_of_discharge": "Port of discharge",
-  "references.invoice_number": "Invoice reference",
-  "dates.shipment_or_invoice": "Date",
-};
-
-const IDENTITY_OUTCOMES: Record<string, string> = {
-  IDENTITY_VERIFIED_BY_LEI: "Verified by LEI",
-  IDENTITY_SUPPORTED_BY_VLEI: "Supported by vLEI",
-  POTENTIAL_ENTITY_MATCH_REVIEW: "Possible match — review required",
-  IDENTITY_UNRESOLVED: "Identity unresolved",
-  IDENTITY_SOURCE_UNAVAILABLE: "Identity source unavailable",
-  VLEI_NOT_CONFIGURED: "vLEI not configured",
-};
-
-const AUDIT_ACTIONS: Record<string, string> = {
-  CASE_CREATED: "Case created",
-  DOCUMENT_UPLOADED: "Document uploaded",
-  CASE_PROCESSED: "Case processed",
-  CASE_STATE_TRANSITION: "Workflow updated",
-  MAKER_APPROVE: "Maker submitted to checker",
-  MAKER_INVESTIGATE: "Maker escalated",
-  CHECKER_APPROVE: "Checker approved",
-  CHECKER_REJECT: "Checker rejected",
-};
-
-const AGENT_LABELS: Record<string, string> = {
-  EXTRACTOR: "Extractor",
-  VALIDATOR: "Validator",
-  CHALLENGER: "Challenger",
-  ARBITER: "Arbiter",
-  CROSS_DOCUMENT_RECONCILER: "Cross-document reconciler",
-};
-
-export function policyLabel(p: DocSlot["policy"]): string {
-  return POLICY_LABELS[p] || p;
-}
-
-export function statusLabel(s: string): string {
-  return STATUS_LABELS[s] || s.replaceAll("_", " ").toLowerCase().replace(/^\w/, (c) => c.toUpperCase());
-}
 
 function mapFinding(f: RuleResult): Finding {
   const sources = resolveSourceLinks(f.data_sources);

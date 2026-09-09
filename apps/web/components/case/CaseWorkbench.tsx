@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { policyLabel, statusLabel } from "@/lib/api/map";
+import { policyLabel, statusLabel } from "@/lib/status-labels";
 import { api } from "@/lib/api/client";
 import { useDemo } from "@/lib/demo/DemoProvider";
 import { InvestigationCanvas } from "@/components/case/InvestigationCanvas";
@@ -14,6 +14,7 @@ import {
 import { MismatchFlag, RiskChip, ToneChip, WorkflowChip } from "@/components/ui/StatusChips";
 import { profileLabel, type Finding, type TradeCase } from "@/lib/demo/store";
 import { parseLegacySourceString } from "@/lib/sources/resolve";
+import { CaseStatus } from "../../../../packages/contracts/types";
 
 const TABS = [
   { id: "investigate", label: "Investigate" },
@@ -83,7 +84,7 @@ function buildBrief(live: TradeCase): { bullets: string[]; cta: string } {
     cta = "Resolve the document mismatch on Compare, then continue to Decide.";
   } else if (price && price.tone !== "clear") {
     cta = "Review price plausibility, then continue to Decide.";
-  } else if (live.workflow === "PENDING_MAKER") {
+  } else if (live.workflow === CaseStatus.PENDING_MAKER_REVIEW) {
     cta = "Packet is ready for maker action on Decide.";
   }
 

@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { ToneChip } from "@/components/ui/StatusChips";
 import type { FindingTone, TradeCase } from "@/lib/demo/store";
+import { ReadinessRoute } from "../../../../packages/contracts/types";
 
 type NodeKind = "case" | "doc" | "identity" | "finding" | "recon" | "route";
 
@@ -45,11 +46,11 @@ function buildGraph(c: TradeCase): { nodes: GraphNode[]; edges: GraphEdge[] } {
   const edges: GraphEdge[] = [];
 
   const routeTone: FindingTone =
-    c.riskRoute === "READY_FOR_HUMAN_REVIEW"
+    c.riskRoute === ReadinessRoute.READY_FOR_HUMAN_REVIEW
       ? "clear"
-      : c.riskRoute === "HIGH_RISK_ESCALATION"
+      : c.riskRoute === ReadinessRoute.HIGH_RISK_ESCALATION
         ? "block"
-        : c.riskRoute === "DOCUMENT_PACK_INCOMPLETE" || c.riskRoute === "DATA_REVIEW_REQUIRED"
+        : c.riskRoute === ReadinessRoute.DOCUMENT_PACK_INCOMPLETE || c.riskRoute === ReadinessRoute.DATA_REVIEW_REQUIRED
           ? "info"
           : "review";
 
