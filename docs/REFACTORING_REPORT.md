@@ -3,7 +3,7 @@
 **Project:** TradePulse  
 **Branch:** `code-refactor`  
 **Started:** 2026-08-27  
-**Status:** ✅ Phase 3 complete; Phase 4 pending
+**Status:** ✅ Phase 3 complete; ✅ Phase 4 complete
 
 This document tracks the execution of refactoring work identified in `REFACTORING_PLAN.md`. Each phase documents what was completed, files changed, verification steps, and measured improvements.
 
@@ -996,14 +996,21 @@ export function useCase() { ... }
 
 ## Phase 4: Type Safety & Polish
 
-**Status:** 🔲 Not Started  
-**Planned Start:** TBD
+**Status:** ✅ Complete  
+**Planned Start:** 2026-09-15
 
 ### Planned Refactorings
 
-1. **#9: Replace `Any` with Typed Models** (Orchestrator serialization)
-2. **#12: Introduce Agent Config Protocol** (Decouple agent implementations)
-3. **#13: Custom Exception Classes** (Better error handling)
+1. **#9: Replace `Any` with Typed Models** (Orchestrator serialization via TypedDict)
+2. **#12: Introduce Agent Config Protocol** (AgentConfig decouples critical paths + confidences)
+3. **#13: Custom Exception Classes** (TradePulseException hierarchy for clearer failures)
+
+### Phase 4 Verification
+
+- ✅ `apps/api/tests/test_invoice_extraction_swarm.py` passes
+- ✅ Full backend suite passes: **341 passed** (`pytest -q`)
+- ✅ `TradePulseException` inherits from `RuntimeError` to preserve existing RuntimeError expectations in tests
+- ✅ Fixed `utc_now` import breakage in `app/adapters/gleif/*` after Phase 1 moved it to `app/utils/datetime.py`
 
 ---
 
@@ -1038,8 +1045,8 @@ export function useCase() { ... }
 | Phase 1: Foundation | 3 of 3 | ✅ Complete | 100% |
 | Phase 2: Core | 4 of 4 | ✅ Complete | 100% |
 | Phase 3: Frontend | 4 of 4 | ✅ Complete | 100% |
-| Phase 4: Polish | 0 of 2 | 🔲 Not Started | 0% |
-| **Total** | **11 of 13** | ✅ Phase 3 Complete | **85%** |
+| Phase 4: Polish | 2 of 2 | ✅ Complete | 100% |
+| **Total** | **13 of 13** | ✅ Complete | **100%** |
 
 ---
 
@@ -1055,15 +1062,18 @@ export function useCase() { ... }
 | *phase2-commit* | 2026-09-09 | Phase 2 | #2 Dependency Injection | Replace global PlatformState singleton with FastAPI DI |
 | *pending* | 2026-09-09 | Phase 3 | #10 Replace Magic Strings | Import canonical contracts, replace 107+ strings across 8 frontend files |
 | *pending* | 2026-09-09 | Phase 3 | #6 Consolidate Status Labels | Create lib/status-labels.ts, consolidate 2 files into 1 labels module |
+| *phase4-fix* | 2026-09-15 | Phase 4 | #13 Custom Exception Classes | Ensure TradePulseException remains a RuntimeError |
+| *phase4-fix* | 2026-09-15 | Phase 4 | #12 Agent Config Protocol | Wire AgentConfig into extractor/validator/arbiter |
+| *phase4-fix* | 2026-09-15 | Phase 4 | #9 Typed Serialization | TypedDict serialization for orchestrator result |
 
 ---
 
 ## Next Steps
 
 **Phase 4 candidates (after Phase 3):**
-- [ ] **#9: Replace `Any` with Typed Models** - Orchestrator serialization
-- [ ] **#12: Introduce Agent Config Protocol** - Decouple agent implementations
-- [ ] **#13: Custom Exception Classes** - Better error handling
+- [x] **#9: Replace `Any` with Typed Models** - Orchestrator serialization
+- [x] **#12: Introduce Agent Config Protocol** - Decouple agent implementations
+- [x] **#13: Custom Exception Classes** - Better error handling
 
 **Completed (refactorings in this branch):**
 - #1 Break up `process_case` (Phase 2)
@@ -1076,12 +1086,15 @@ export function useCase() { ... }
 - #10 Replace magic strings with enums (Phase 3)
 - #3 Decompose CaseWorkbench (Phase 3)
 - #11 Introduce React Context (Phase 3)
+- #12 Introduce Agent Config Protocol (Phase 4)
+- #13 Custom Exception Classes (Phase 4)
 
 ---
 
-**Last updated:** 2026-09-09  
+**Last updated:** 2026-09-15  
 **Phase 1:** ✅ Complete  
 **Phase 2:** ✅ Complete  
 **Phase 3:** ✅ Complete  
-**Next:** Phase 4 (#9, #12, #13)
+**Phase 4:** ✅ Complete  
+**Status:** All phases complete
 

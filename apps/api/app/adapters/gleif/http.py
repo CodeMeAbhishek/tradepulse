@@ -6,7 +6,8 @@ from typing import Any
 
 import httpx
 
-from app.adapters.gleif.base import GleifLookupResult, GleifRecord, utc_now
+from app.adapters.gleif.base import GleifLookupResult, GleifRecord
+from app.utils.datetime import utc_now
 from app.adapters.gleif.cache import GleifCache
 
 DEFAULT_GLEIF_BASE = "https://api.gleif.org/api/v1"

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import re
+from dataclasses import dataclass
 from typing import Any
 
 from pydantic import ValidationError
@@ -33,6 +34,24 @@ _CRITICAL_PATHS = (
     "seller.legal_name",
     "buyer.legal_name",
 )
+
+
+@dataclass(frozen=True)
+class AgentConfig:
+    """Config for invoice extraction agent stages.
+
+    This isolates pipeline-specific choices (like which fields are considered
+    "critical" evidence requirements) from the agent implementations.
+    """
+
+    critical_paths: tuple[str, ...]
+    extractor_claim_confidence: float = 0.8
+    validator_claim_confidence: float = 0.9
+    max_retries: int = 3
+
+
+DEFAULT_INVOICE_AGENT_CONFIG = AgentConfig(critical_paths=_CRITICAL_PATHS)
+
 
 _EXTRACTOR_SYSTEM = (
     "Extract structured commercial invoice fields. Return JSON only. "
@@ -81,6 +100,7 @@ def run_extractor(
     document_id: str,
     document_text: str,
     round_number: int,
+    config: AgentConfig = DEFAULT_INVOICE_AGENT_CONFIG,
 ) -> tuple[InvoiceExtraction | None, AgentResponse]:
     raw = llm.complete_json(
         system_prompt=_EXTRACTOR_SYSTEM,
@@ -111,7 +131,7 @@ def run_extractor(
     extraction = _merge_labeled_weight_evidence(extraction, document_text)
 
     claims: list[FieldClaim] = []
-    for path in _CRITICAL_PATHS:
+    for path in config.critical_paths:
         value = _path_value(extraction, path)
         if value is None:
             continue
@@ -120,7 +140,7 @@ def run_extractor(
             FieldClaim(
                 field_path=path,
                 proposed_value=value,
-                confidence=0.8,
+                confidence=config.extractor_claim_confidence,
                 evidence=_evidence(document_id, source),
                 reason="Proposed from document-backed extraction",
             )
@@ -145,12 +165,13 @@ def run_validator(
     document_text: str,
     extraction: InvoiceExtraction,
     round_number: int,
+    config: AgentConfig = DEFAULT_INVOICE_AGENT_CONFIG,
 ) -> AgentResponse:
     claims: list[FieldClaim] = []
     challenges: list[FieldChallenge] = []
     haystack = document_text.lower()
 
-    for path in _CRITICAL_PATHS:
+    for path in config.critical_paths:
         value = _path_value(extraction, path)
         if value is None or value == "":
             challenges.append(
@@ -173,7 +194,7 @@ def run_validator(
                 FieldClaim(
                     field_path=path,
                     proposed_value=value,
-                    confidence=0.9,
+                    confidence=config.validator_claim_confidence,
                     evidence=_evidence(document_id, str(value)),
                     reason="Value located in source document text",
                 )
@@ -288,6 +309,7 @@ def run_arbiter(
     validator: AgentResponse,
     challenger: AgentResponse,
     round_number: int,
+    config: AgentConfig = DEFAULT_INVOICE_AGENT_CONFIG,
 ) -> tuple[InvoiceExtraction | None, ArbiterOutput]:
     if extraction is None:
         disagreement = FieldDisagreement(
@@ -318,7 +340,7 @@ def run_arbiter(
     decisions: list[ArbiterFieldDecision] = []
     disagreements: list[FieldDisagreement] = []
 
-    for path in _CRITICAL_PATHS:
+    for path in config.critical_paths:
         value = _path_value(extraction, path)
         path_challenges = [c for c in challenger.challenges if c.field_path == path]
         path_claims = [
@@ -358,7 +380,7 @@ def run_arbiter(
 
     # Non-critical arithmetic challenges also force review without inventing values.
     for challenge in challenger.challenges:
-        if challenge.field_path in _CRITICAL_PATHS:
+        if challenge.field_path in config.critical_paths:
             continue
         disagreement = FieldDisagreement(
             field_path=challenge.field_path,

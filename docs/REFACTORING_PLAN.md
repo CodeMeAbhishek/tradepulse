@@ -654,7 +654,7 @@ Using generic `RuntimeError` for business logic violations.
 **Refactoring Plan:**
 ```python
 # apps/api/app/exceptions.py
-class TradePulseException(Exception):
+class TradePulseException(RuntimeError):
     """Base exception for TradePulse business logic errors."""
 
 class InvalidVLEIStateError(TradePulseException):
@@ -669,6 +669,9 @@ if vlei_evidence.status is VLEIVerificationStatus.VERIFIED_LIVE:
         "Fixture VLEI verifier must not emit VERIFIED_LIVE. "
         "Check adapter configuration."
     )
+
+Implementation note:
+- `TradePulseException` intentionally inherits from `RuntimeError` to preserve existing test expectations and error semantics.
 ```
 
 ---
@@ -693,11 +696,14 @@ if vlei_evidence.status is VLEIVerificationStatus.VERIFIED_LIVE:
 - 🔲 Replace magic strings with enums (#10)
 
 ### Phase 4: Polish (Week 5)
-- 🔲 Introduce React Context (#11)
-- 🔲 Replace `Any` with typed models (#9)
-- 🔲 Custom exception classes (#13)
-- 🔲 Agent config protocol (#12)
+- ✅ Introduce React Context (#11)
+- ✅ Replace `Any` with typed models (#9)
+- ✅ Custom exception classes (#13)
+- ✅ Agent config protocol (#12)
 
+Notes:
+- During verification, `pytest -q` required installing a few missing optional runtime deps (e.g., `google-cloud-storage`, `boto3`, `python-multipart`).
+- A pre-existing `utc_now` import in `app/adapters/gleif/*` was fixed after test import surfaced it.
 ---
 
 ## Testing Strategy
