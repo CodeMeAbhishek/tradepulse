@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useDemo } from "@/lib/demo/DemoProvider";
 import { cn } from "@/lib/cn";
 import { BrandMark } from "@/components/BrandMark";
+import { CaseStatus } from "../../../packages/contracts/types";
 
 const NAV = [
   { href: "/workbench", label: "Desk home", match: "exact" as const },
@@ -27,7 +28,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
    * "insertBefore / removeChild: node is not a child of this node".
    */
   const { reset, seedSamples, cases, ready, mode, apiOnline, error, refresh } = useDemo();
-  const pendingChecker = cases.filter((c) => c.workflow === "MAKER_APPROVED").length;
+  const pendingChecker = cases.filter((c) => c.workflow === CaseStatus.MAKER_APPROVED).length;
 
   return (
     <div className="min-h-screen">

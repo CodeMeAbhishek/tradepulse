@@ -4,7 +4,28 @@ from __future__ import annotations
 
 import uuid
 from dataclasses import dataclass, field
-from typing import Any
+from typing import Any, TypedDict
+
+class SerializedIngestedDoc(TypedDict, total=False):
+    document_id: str
+    filename: str
+    content_type: str
+    byte_size: int
+    sha256: str
+    text: str
+    page_count: int | None
+    extractor: str
+    warning: str | None
+
+class SerializedPipelineResult(TypedDict):
+    ingested: SerializedIngestedDoc
+    cache_key: str
+    cache_hit: bool
+    extraction: dict[str, object] | None
+    extraction_result: dict[str, object]
+    arbiter: dict[str, object]
+    agent_trace: list[dict[str, object]]
+    debate_rounds_used: int
 
 from tradepulse_contracts import (
     AgentResponse,
@@ -26,6 +47,7 @@ from app.adapters.llm.base import LLMAdapter
 from app.adapters.llm.factory import build_llm_adapter
 from app.schemas.invoice import INVOICE_SCHEMA_VERSION, InvoiceExtraction
 from app.services.document_intelligence.agents import (
+    DEFAULT_INVOICE_AGENT_CONFIG,
     run_arbiter,
     run_challenger,
     run_extractor,
@@ -107,7 +129,7 @@ def _validation_for(arbiter: ArbiterOutput) -> ExtractionValidation:
     )
 
 
-def _serialize_result(result: InvoicePipelineResult) -> dict[str, Any]:
+def _serialize_result(result: InvoicePipelineResult) -> SerializedPipelineResult:
     return {
         "ingested": {
             "document_id": result.ingested.document_id,
@@ -130,7 +152,7 @@ def _serialize_result(result: InvoicePipelineResult) -> dict[str, Any]:
     }
 
 
-def _deserialize_result(payload: dict[str, Any]) -> InvoicePipelineResult:
+def _deserialize_result(payload: SerializedPipelineResult) -> InvoicePipelineResult:
     from app.adapters.pdf import ExtractedDocumentText
 
     ingested_raw = payload["ingested"]
@@ -206,6 +228,8 @@ class InvoiceExtractionService:
             return result
 
         active_run_id = run_id or str(uuid.uuid4())
+        agent_config = DEFAULT_INVOICE_AGENT_CONFIG
+
         agent_trace: list[AgentResponse] = []
         extraction: InvoiceExtraction | None = None
         arbiter: ArbiterOutput | None = None
@@ -217,6 +241,7 @@ class InvoiceExtractionService:
                 document_id=document_id,
                 document_text=ingested.text.text,
                 round_number=round_number,
+                config=agent_config,
             )
             agent_trace.append(extractor_resp)
 
@@ -246,6 +271,7 @@ class InvoiceExtractionService:
                     validator=failed_validator,
                     challenger=failed_challenger,
                     round_number=round_number,
+                    config=agent_config,
                 )
                 break
 
@@ -255,6 +281,7 @@ class InvoiceExtractionService:
                 document_text=ingested.text.text,
                 extraction=extraction,
                 round_number=round_number,
+                config=agent_config,
             )
             agent_trace.append(validator_resp)
 
@@ -275,6 +302,7 @@ class InvoiceExtractionService:
                 validator=validator_resp,
                 challenger=challenger_resp,
                 round_number=round_number,
+                config=agent_config,
             )
             agent_trace.append(
                 AgentResponse(

@@ -2,10 +2,12 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import datetime
 
 from tradepulse_contracts.enums import SourceAccessType, SourceRegistryStatus
 from tradepulse_contracts.source import SourceRegistryEntry
+
+from app.utils.datetime import utc_now
 
 
 class SourceRegistry:
@@ -27,7 +29,7 @@ class SourceRegistry:
         updated = entry.model_copy(
             update={
                 "status": status,
-                "last_success_at": datetime.now(timezone.utc)
+                "last_success_at": utc_now()
                 if status is SourceRegistryStatus.LIVE
                 else entry.last_success_at,
             }

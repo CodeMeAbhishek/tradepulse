@@ -4,7 +4,8 @@ from __future__ import annotations
 
 import re
 
-from app.adapters.gleif.base import GleifLookupResult, GleifRecord, utc_now
+from app.adapters.gleif.base import GleifLookupResult, GleifRecord
+from app.utils.datetime import utc_now
 from app.adapters.gleif.cache import GleifCache
 
 _FIXTURE_RECORDS: tuple[GleifRecord, ...] = (

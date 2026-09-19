@@ -1,24 +1,10 @@
 /** Typed TradePulse API client — browser calls only the local/backend API. */
 
-export type TradeProfile =
-  | "INVOICE_ONLY_PRE_REVIEW"
-  | "POST_SHIPMENT_DOCUMENT_REVIEW"
-  | "LC_DOCUMENT_REVIEW"
-  | "DOCUMENTARY_COLLECTION_REVIEW"
-  | "ENHANCED_TRADE_HOUSE_REVIEW"
-  | "DOMESTIC_INDIA_GOODS_MOVEMENT"
-  | "MERCHANT_SHIPMENT_READINESS";
+import { TradeProfile, CaseStatus } from "../../../../packages/contracts/types";
 
-export type CaseState =
-  | "INGESTED"
-  | "PROCESSING"
-  | "EXTRACTION_REVIEW"
-  | "PENDING_MAKER"
-  | "INVESTIGATION_REQUIRED"
-  | "MAKER_APPROVED"
-  | "CHECKER_APPROVED"
-  | "CHECKER_REJECTED"
-  | "PROCESSING_FAILED";
+/** Alias for API compatibility — maps contract CaseStatus to legacy CaseState. */
+export type CaseState = CaseStatus;
+export { TradeProfile };
 
 export interface CaseSummary {
   case_id: string;

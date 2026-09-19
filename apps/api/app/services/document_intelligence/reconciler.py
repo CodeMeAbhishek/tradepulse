@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import re
 from typing import Any
 
 from app.domain.enums import TradeProfile
@@ -13,17 +12,7 @@ from app.schemas.reconciliation import (
     InvoiceBolReconciliationResult,
     ReconciliationStatus,
 )
-
-_NON_ALNUM = re.compile(r"[^a-z0-9]+")
-
-
-def _norm_text(value: Any | None) -> str | None:
-    if value is None:
-        return None
-    text = str(value).strip().lower()
-    if not text:
-        return None
-    return _NON_ALNUM.sub(" ", text).strip()
+from app.utils.normalization import normalize_text
 
 
 def _norm_qty(value: float | None) -> float | None:
@@ -38,8 +27,8 @@ def _compare_text(
     invoice_value: Any | None,
     bol_value: Any | None,
 ) -> FieldComparison:
-    inv = _norm_text(invoice_value)
-    bol = _norm_text(bol_value)
+    inv = normalize_text(invoice_value)
+    bol = normalize_text(bol_value)
     if inv is None and bol is None:
         return FieldComparison(
             field_path=field_path,

@@ -4,10 +4,11 @@ from __future__ import annotations
 
 import uuid
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import datetime
 from enum import StrEnum
 
 from app.services.audit.hash_chain import AppendOnlyAuditLog
+from app.utils.datetime import utc_now
 
 
 class ProposalStatus(StrEnum):
@@ -24,7 +25,7 @@ class RulePackProposal:
     summary: str
     source_id: str | None
     status: ProposalStatus = ProposalStatus.PROPOSED
-    created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+    created_at: datetime = field(default_factory=utc_now)
     decided_at: datetime | None = None
     decided_by: str | None = None
 
@@ -87,7 +88,7 @@ class RegWatchService:
         if proposal.status is not ProposalStatus.PROPOSED:
             raise ValueError(f"Proposal {proposal_id} is {proposal.status}, not PROPOSED")
         proposal.status = ProposalStatus.APPROVED
-        proposal.decided_at = datetime.now(timezone.utc)
+        proposal.decided_at = utc_now()
         proposal.decided_by = actor
         active = ActiveRulePack(
             rule_pack_id=proposal.rule_pack_id,
@@ -115,7 +116,7 @@ class RegWatchService:
         if proposal.status is not ProposalStatus.PROPOSED:
             raise ValueError(f"Proposal {proposal_id} is {proposal.status}, not PROPOSED")
         proposal.status = ProposalStatus.REJECTED
-        proposal.decided_at = datetime.now(timezone.utc)
+        proposal.decided_at = utc_now()
         proposal.decided_by = actor
         self._audit.append(
             event_type="REGWATCH_PROPOSAL_REJECTED",

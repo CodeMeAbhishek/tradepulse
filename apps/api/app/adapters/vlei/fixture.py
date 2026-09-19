@@ -2,12 +2,13 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import datetime
 
 from tradepulse_contracts.enums import VLEIVerificationStatus
 from tradepulse_contracts.identity import VLEIEvidence
 
 from app.adapters.vlei.base import VleiCredentialInput
+from app.utils.datetime import utc_now
 
 
 class FixtureVLEIVerifier:
@@ -53,7 +54,7 @@ class FixtureVLEIVerifier:
                 source=self.SOURCE,
                 data_label=self.DATA_LABEL,
             )
-        now = datetime.now(timezone.utc)
+        now = utc_now()
         if credential.expires_at is not None and credential.expires_at <= now:
             return VLEIEvidence(
                 credential_id=credential.credential_id,

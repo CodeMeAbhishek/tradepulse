@@ -4,36 +4,20 @@
  * Persist to localStorage so the product feels stateful for demos.
  */
 
-export type Profile =
-  | "INVOICE_ONLY_PRE_REVIEW"
-  | "POST_SHIPMENT_DOCUMENT_REVIEW"
-  | "LC_DOCUMENT_REVIEW"
-  | "ENHANCED_TRADE_HOUSE_REVIEW";
+import { TradeProfile, CaseStatus, ReadinessRoute, DocumentRequirementState } from "../../../../packages/contracts/types";
+import { profileLabel as _profileLabel, riskLabel as _riskLabel, workflowLabel as _workflowLabel } from "../status-labels";
 
-export type RiskRoute =
-  | "READY_FOR_HUMAN_REVIEW"
-  | "REVIEW_REQUIRED"
-  | "DOCUMENT_PACK_INCOMPLETE"
-  | "MAKER_REVIEW_REQUIRED"
-  | "HIGH_RISK_ESCALATION"
-  | "DATA_REVIEW_REQUIRED";
-
-export type WorkflowState =
-  | "DRAFT"
-  | "INGESTED"
-  | "PROCESSING"
-  | "PENDING_MAKER"
-  | "MAKER_APPROVED"
-  | "CHECKER_APPROVED"
-  | "CHECKER_REJECTED"
-  | "INVESTIGATION_REQUIRED";
+/** Alias for demo store compatibility. */
+export type Profile = TradeProfile;
+export type RiskRoute = ReadinessRoute;
+export type WorkflowState = CaseStatus;
 
 export type FindingTone = "clear" | "review" | "block" | "info";
 
 export interface DocSlot {
   type: string;
   label: string;
-  policy: "REQUIRED" | "CONDITIONALLY_REQUIRED" | "OPTIONAL" | "NOT_APPLICABLE";
+  policy: DocumentRequirementState;
   provided: boolean;
   blocker: boolean;
 }
@@ -129,8 +113,8 @@ function seedCases(): TradeCase[] {
       counterparty: "Gulf Precision Trading LLC",
       corridor: "IN → AE",
       profile: "POST_SHIPMENT_DOCUMENT_REVIEW",
-      workflow: "PENDING_MAKER",
-      riskRoute: "READY_FOR_HUMAN_REVIEW",
+      workflow: CaseStatus.PENDING_MAKER_REVIEW,
+      riskRoute: ReadinessRoute.READY_FOR_HUMAN_REVIEW,
       amount: "1,250,000",
       currency: "USD",
       slaLabel: "Due in 6h",
@@ -208,8 +192,8 @@ function seedCases(): TradeCase[] {
       counterparty: "Sahara Metals FZE",
       corridor: "IN → AE",
       profile: "POST_SHIPMENT_DOCUMENT_REVIEW",
-      workflow: "PENDING_MAKER",
-      riskRoute: "MAKER_REVIEW_REQUIRED",
+      workflow: CaseStatus.PENDING_MAKER_REVIEW,
+      riskRoute: ReadinessRoute.MAKER_REVIEW_REQUIRED,
       amount: "890,400",
       currency: "USD",
       slaLabel: "Due in 2h",
@@ -285,8 +269,8 @@ function seedCases(): TradeCase[] {
       counterparty: "Eastern Horizon Logistics Co.",
       corridor: "IN → GB",
       profile: "ENHANCED_TRADE_HOUSE_REVIEW",
-      workflow: "PENDING_MAKER",
-      riskRoute: "MAKER_REVIEW_REQUIRED",
+      workflow: CaseStatus.PENDING_MAKER_REVIEW,
+      riskRoute: ReadinessRoute.MAKER_REVIEW_REQUIRED,
       amount: "412,750",
       currency: "USD",
       slaLabel: "Due today",
@@ -387,41 +371,10 @@ export function resetDemoData(): TradeCase[] {
   return seeded;
 }
 
-export function profileLabel(p: Profile): string {
-  const map: Record<Profile, string> = {
-    INVOICE_ONLY_PRE_REVIEW: "Invoice-only pre-review",
-    POST_SHIPMENT_DOCUMENT_REVIEW: "Post-shipment review",
-    LC_DOCUMENT_REVIEW: "LC document review",
-    ENHANCED_TRADE_HOUSE_REVIEW: "Enhanced trade-house",
-  };
-  return map[p];
-}
-
-export function riskLabel(r: RiskRoute): string {
-  const map: Record<RiskRoute, string> = {
-    READY_FOR_HUMAN_REVIEW: "Ready for human review",
-    REVIEW_REQUIRED: "Review required",
-    DOCUMENT_PACK_INCOMPLETE: "Document pack incomplete",
-    MAKER_REVIEW_REQUIRED: "Maker review required",
-    HIGH_RISK_ESCALATION: "High-risk escalation",
-    DATA_REVIEW_REQUIRED: "Data review required",
-  };
-  return map[r] || r.replaceAll("_", " ");
-}
-
-export function workflowLabel(w: WorkflowState): string {
-  const map: Partial<Record<WorkflowState, string>> = {
-    DRAFT: "Draft",
-    INGESTED: "Ingested",
-    PROCESSING: "Processing",
-    PENDING_MAKER: "Pending maker",
-    MAKER_APPROVED: "Awaiting checker",
-    CHECKER_APPROVED: "Checker approved",
-    CHECKER_REJECTED: "Checker rejected",
-    INVESTIGATION_REQUIRED: "Investigation required",
-  };
-  return map[w] || w.replaceAll("_", " ");
-}
+/** Re-export from consolidated labels module for backward compatibility. */
+export const profileLabel = _profileLabel;
+export const riskLabel = _riskLabel;
+export const workflowLabel = _workflowLabel;
 
 export function createCase(input: {
   counterparty: string;
@@ -468,12 +421,12 @@ export function createCase(input: {
     counterparty: input.counterparty || "New counterparty",
     corridor: input.corridor || "IN → AE",
     profile: input.profile,
-    workflow: incomplete ? "INGESTED" : "PENDING_MAKER",
+    workflow: incomplete ? CaseStatus.INGESTED : CaseStatus.PENDING_MAKER_REVIEW,
     riskRoute: incomplete
-      ? "DOCUMENT_PACK_INCOMPLETE"
-      : input.profile === "INVOICE_ONLY_PRE_REVIEW" && !bolProvided
-        ? "READY_FOR_HUMAN_REVIEW"
-        : "READY_FOR_HUMAN_REVIEW",
+      ? ReadinessRoute.DOCUMENT_PACK_INCOMPLETE
+      : input.profile === TradeProfile.INVOICE_ONLY_PRE_REVIEW && !bolProvided
+        ? ReadinessRoute.READY_FOR_HUMAN_REVIEW
+        : ReadinessRoute.READY_FOR_HUMAN_REVIEW,
     amount: "—",
     currency: "USD",
     slaLabel: "New",
@@ -555,7 +508,7 @@ export function applyMaker(
     if (decision === "approve") {
       return {
         ...c,
-        workflow: "MAKER_APPROVED",
+        workflow: CaseStatus.MAKER_APPROVED,
         makerNote: note,
         updatedAt: t,
         audit: [
@@ -566,8 +519,8 @@ export function applyMaker(
     }
     return {
       ...c,
-      workflow: "INVESTIGATION_REQUIRED",
-      riskRoute: "HIGH_RISK_ESCALATION",
+      workflow: CaseStatus.INVESTIGATION_REQUIRED,
+      riskRoute: ReadinessRoute.HIGH_RISK_ESCALATION,
       makerNote: note,
       updatedAt: t,
       audit: [
@@ -586,12 +539,12 @@ export function applyChecker(
 ): TradeCase[] {
   return cases.map((c) => {
     if (c.id !== caseId) return c;
-    if (c.workflow !== "MAKER_APPROVED") return c;
+    if (c.workflow !== CaseStatus.MAKER_APPROVED) return c;
     const t = nowIso();
     if (decision === "approve") {
       return {
         ...c,
-        workflow: "CHECKER_APPROVED",
+        workflow: CaseStatus.CHECKER_APPROVED,
         checkerNote: note,
         updatedAt: t,
         audit: [
@@ -602,7 +555,7 @@ export function applyChecker(
     }
     return {
       ...c,
-      workflow: "CHECKER_REJECTED",
+      workflow: CaseStatus.CHECKER_REJECTED,
       checkerNote: note,
       updatedAt: t,
       audit: [

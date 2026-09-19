@@ -22,6 +22,7 @@ from app.adapters.gleif.base import GleifAdapter, GleifRecord
 from app.adapters.gleif.factory import build_gleif_adapter
 from app.adapters.vlei.base import VLEIVerifier, VleiCredentialInput
 from app.adapters.vlei.fixture import UnavailableVLEIVerifier
+from app.exceptions import InvalidVLEIStateError
 from app.services.entity_resolution.scoring import (
     normalize_entity_name,
     score_name_similarity,
@@ -166,7 +167,9 @@ class EntityResolutionService:
         vlei_evidence = self._vlei.verify(party.vlei_credential)
         # Guardrail: fixture path must never claim live verification.
         if vlei_evidence.status is VLEIVerificationStatus.VERIFIED_LIVE:
-            raise RuntimeError("Fixture/unavailable VLEI verifier must not emit VERIFIED_LIVE")
+            raise InvalidVLEIStateError(
+                "Fixture/unavailable VLEI verifier must not emit VERIFIED_LIVE"
+            )
 
         resolution = _combine_status(lei_status, vlei_evidence)
         return IdentityEvidence(

@@ -6,6 +6,7 @@ import { useDemo } from "@/lib/demo/DemoProvider";
 import { RiskChip, WorkflowChip } from "@/components/ui/StatusChips";
 import { profileLabel } from "@/lib/demo/store";
 import { cn } from "@/lib/cn";
+import { CaseStatus, ReadinessRoute } from "../../../../../packages/contracts/types";
 
 type RouteFilter = "ALL" | "MAKER" | "CHECKER" | "SCRUTINY";
 
@@ -16,14 +17,14 @@ export default function QueuePage() {
 
   const filtered = useMemo(() => {
     let list = cases;
-    if (route === "MAKER") list = list.filter((c) => c.workflow === "PENDING_MAKER");
-    if (route === "CHECKER") list = list.filter((c) => c.workflow === "MAKER_APPROVED");
+    if (route === "MAKER") list = list.filter((c) => c.workflow === CaseStatus.PENDING_MAKER_REVIEW);
+    if (route === "CHECKER") list = list.filter((c) => c.workflow === CaseStatus.MAKER_APPROVED);
     if (route === "SCRUTINY") {
       list = list.filter(
         (c) =>
-          c.riskRoute === "MAKER_REVIEW_REQUIRED" ||
-          c.riskRoute === "REVIEW_REQUIRED" ||
-          c.riskRoute === "HIGH_RISK_ESCALATION",
+          c.riskRoute === ReadinessRoute.MAKER_REVIEW_REQUIRED ||
+          c.riskRoute === ReadinessRoute.DATA_REVIEW_REQUIRED ||
+          c.riskRoute === ReadinessRoute.HIGH_RISK_ESCALATION,
       );
     }
     const needle = q.trim().toLowerCase();

@@ -7,6 +7,7 @@ import { useDemo } from "@/lib/demo/DemoProvider";
 import { RiskChip, WorkflowChip } from "@/components/ui/StatusChips";
 import { profileLabel } from "@/lib/demo/store";
 import { useCountUp } from "@/lib/useCountUp";
+import { CaseStatus, ReadinessRoute } from "../../../../../packages/contracts/types";
 
 export default function OverviewPage() {
   const { cases, ready, mode, seedSamples, apiOnline, error } = useDemo();
@@ -30,13 +31,13 @@ export default function OverviewPage() {
 
   if (!ready) return <p className="text-sm text-[var(--tp-muted)]">Loading your review desk…</p>;
 
-  const pending = cases.filter((c) => c.workflow === "PENDING_MAKER").length;
-  const checker = cases.filter((c) => c.workflow === "MAKER_APPROVED").length;
+  const pending = cases.filter((c) => c.workflow === CaseStatus.PENDING_MAKER_REVIEW).length;
+  const checker = cases.filter((c) => c.workflow === CaseStatus.MAKER_APPROVED).length;
   const review = cases.filter(
     (c) =>
-      c.riskRoute === "MAKER_REVIEW_REQUIRED" ||
-      c.riskRoute === "REVIEW_REQUIRED" ||
-      c.riskRoute === "HIGH_RISK_ESCALATION",
+      c.riskRoute === ReadinessRoute.MAKER_REVIEW_REQUIRED ||
+      c.riskRoute === ReadinessRoute.DATA_REVIEW_REQUIRED ||
+      c.riskRoute === ReadinessRoute.HIGH_RISK_ESCALATION,
   ).length;
   const attention = [...cases].sort((a, b) => b.updatedAt.localeCompare(a.updatedAt)).slice(0, 5);
 
