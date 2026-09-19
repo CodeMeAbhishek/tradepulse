@@ -1,0 +1,186 @@
+@import "tailwindcss";
+@import "lenis/dist/lenis.css";
+
+/**
+ * TradePulse landing — block composition on a twelve-column grid.
+ *
+ * Measured against Stripe, Mercury, Cerebrium, Linear and Aspen Search: every
+ * one of them starts text at four or more column positions, sets body copy at
+ * 22–31px with leading near 1.2, and tiles the viewport with panels that touch
+ * its edges. The previous version put two thirds of its text against a single
+ * margin at 16px/1.63 inside a centred container, which is why it read as a
+ * template.
+ *
+ * Panels here are hard-edged and edge-to-edge; the rules between them come
+ * from the panels' own borders, the way a ledger rules its columns.
+ *
+ * Palette is switchable on <html data-palette> so options can be compared on
+ * real content rather than in the abstract.
+ */
+
+/* ── Palettes ─────────────────────────────────────────────────────────────
+ * Each is paper, ink, and one saturated signal. The signal is used only for
+ * the thing the product exists to find: a disagreement, and the action that
+ * follows from it.
+ */
+:root,
+:root[data-palette="ink"] {
+  --p-paper: #f2f1ec;
+  --p-paper-2: #e7e5dd;
+  --p-ink: #0b0b0c;
+  --p-ink-2: #1a1a1d;
+  --p-on-ink: #f5f4f0;
+  --p-mute: #63625d;
+  --p-mute-on-ink: #9b9a95;
+  --p-signal: #1f3be8;
+  --p-on-signal: #ffffff;
+  --p-rule: #cfcdc4;
+  --p-rule-on-ink: #2e2e32;
+}
+
+:root[data-palette="signal"] {
+  --p-paper: #f7f5f0;
+  --p-paper-2: #ebe8e1;
+  --p-ink: #101010;
+  --p-ink-2: #1c1c1c;
+  --p-on-ink: #f7f5f0;
+  --p-mute: #64625d;
+  --p-mute-on-ink: #9c9a94;
+  --p-signal: #e8452c;
+  --p-on-signal: #ffffff;
+  --p-rule: #d3d0c7;
+  --p-rule-on-ink: #2f2f2f;
+}
+
+:root[data-palette="ledger"] {
+  --p-paper: #eef0ea;
+  --p-paper-2: #e2e6de;
+  --p-ink: #12181a;
+  --p-ink-2: #1c2427;
+  --p-on-ink: #eef0ea;
+  --p-mute: #5b6561;
+  --p-mute-on-ink: #939d98;
+  --p-signal: #00875a;
+  --p-on-signal: #ffffff;
+  --p-rule: #ccd2cb;
+  --p-rule-on-ink: #28322f;
+}
+
+@theme inline {
+  --color-paper: var(--p-paper);
+  --color-paper-2: var(--p-paper-2);
+  --color-ink: var(--p-ink);
+  --color-ink-2: var(--p-ink-2);
+  --color-on-ink: var(--p-on-ink);
+  --color-mute: var(--p-mute);
+  --color-mute-on-ink: var(--p-mute-on-ink);
+  --color-signal: var(--p-signal);
+  --color-on-signal: var(--p-on-signal);
+  --color-rule: var(--p-rule);
+  --color-rule-on-ink: var(--p-rule-on-ink);
+
+  --font-sans: var(--font-switzer);
+  --font-display: var(--font-cabinet);
+  --font-mono: var(--font-mono);
+}
+
+html {
+  background: var(--p-paper);
+}
+
+body {
+  background: var(--p-paper);
+  color: var(--p-ink);
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 1.0625rem;
+  line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+}
+
+button,
+summary {
+  cursor: pointer;
+}
+
+/* Chrome paints a disclosure marker on <summary> that `list-style: none` alone
+   does not remove; both pseudo-elements have to be cleared. */
+summary::marker {
+  content: "";
+}
+
+summary::-webkit-details-marker {
+  display: none;
+}
+
+a,
+button,
+summary {
+  touch-action: manipulation;
+}
+
+::selection {
+  background: var(--p-signal);
+  color: var(--p-on-signal);
+}
+
+/* ── Type ────────────────────────────────────────────────────────────────
+ * Display type is set as image: very large, very tight. Body copy is 22–26px
+ * with leading near 1.2 and a short measure, which is where the reference
+ * sites actually sit and where the previous version did not.
+ */
+@utility type-display {
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  line-height: 0.88;
+  text-wrap: balance;
+}
+
+@utility type-body {
+  font-size: clamp(1.25rem, 1.6vw, 1.625rem);
+  line-height: 1.22;
+  letter-spacing: -0.015em;
+}
+
+/** Mono microcopy, always paired with a small square marker. */
+@utility type-label {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.75rem;
+  line-height: 1;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+@utility type-data {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+/* ── Composition ─────────────────────────────────────────────────────────
+ * One twelve-column grid across the whole viewport. Panels span ranges of it
+ * and carry their own padding, so they meet edge to edge with a single rule
+ * between them.
+ */
+@utility grid-page {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  @media (width >= 64rem) {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+  }
+}
+
+@utility panel {
+  padding: 2rem 1.25rem;
+  @media (width >= 40rem) {
+    padding: 2.5rem 2rem;
+  }
+  @media (width >= 64rem) {
+    padding: 3.5rem 2.5rem;
+  }
+}
+
+:where(a, button, summary, details):focus-visible {
+  outline: 2px solid var(--p-signal);
+  outline-offset: -4px;
+}
